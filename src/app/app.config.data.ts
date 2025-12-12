@@ -61,8 +61,10 @@ export interface TranslationResource {
   };
 }
 
+// --- DATEN-KONFIGURATION (Integriert) ---
+
 export const DATA_CONFIG = {
-  defaultAreaTab: 'location',
+  defaultAreaTab: 'selection',
   previewExampleLandmarkId: 'bank', 
 
   geocoder: {
@@ -112,9 +114,9 @@ export const DATA_CONFIG = {
   ],
 
   viewModeImages: {
-    '2d': 'https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=800',
-    '2.5d': 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&q=80&w=800',
-    '3d': 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&q=80&w=800'
+    twodimensional: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=800',
+    twoandhalfdimensional: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&q=80&w=800',
+    threedimensional: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&q=80&w=800'
   },
 
   landmarks: {
@@ -214,12 +216,13 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       manualSelectionTitle: 'Beliebte Orte',
     },
     viewModes: {
-      '2d': { name: 'Von oben', description: '' },
-      '2.5d': { name: 'Schräg', description: '' },
-      '3d': { name: '3D', description: '' },
+      'twodimensional': { name: 'Von oben', description: '' },
+      'twoandhalfdimensional': { name: 'Schräg', description: '' },
+      'threedimensional': { name: 'threedimensional', description: '' },
     },
     landmarks: {
       title: 'Was ist wichtig?',
+      expertTitle: '',
       subTabVisual: 'Bilder',
       subTabCatalog: 'Liste',
       items: {
@@ -292,9 +295,9 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       spatialLevelLabel: 'Raumebene wählen:',
     },
     viewModes: {
-      '2d': { name: '2D Karte', description: 'Klassische Draufsicht.' },
-      '2.5d': { name: '2.5D Gebäude', description: 'Extrudierte Gebäudekörper.' },
-      '3d': { name: '3D Umgebung', description: 'Freie 3D-Navigation.' },
+      'twodimensional': { name: '2D Karte', description: 'Klassische Draufsicht.' },
+      'twoandhalfdimensional': { name: '2.5D Gebäude', description: 'Extrudierte Gebäudekörper.' },
+      'threedimensional': { name: '3D Umgebung', description: 'Freie 3D-Navigation.' },
     },
     landmarks: {
       title: 'Kategorien',

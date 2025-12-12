@@ -89,15 +89,14 @@ export const DATA_CONFIG = {
   },
 
   mapStyles: [
-    { id: 'osm', image: 'https://images.unsplash.com/photo-1577086664693-894553e0ec04?auto=format&fit=crop&q=80&w=800' },
-    { id: 'grey', image: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=800&sat=-100' },
-    { id: 'ortho', image: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&q=80&w=800' }
+    { id: 'osm', image: 'assets/farbkarte.png' },
+    { id: 'grey', image: 'assets/graukarte.png' },
+    { id: 'ortho', image: 'assets/luftbildkarte.png' }
   ],
 
   simplePlaces: [
-    { name: 'Herne Zentrum', image: 'https://images.unsplash.com/photo-1549646473-b3c951052219?auto=format&fit=crop&q=80&w=800' },
-    { name: 'Schloss Strünkede', image: 'https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?auto=format&fit=crop&q=80&w=800' },
-    { name: 'Gysenbergpark', image: 'https://images.unsplash.com/photo-1444858291040-58f756a3bdd6?auto=format&fit=crop&q=80&w=800' }
+    { name: 'KIZ Herne', image: 'assets/KIZ_herne.png' },
+    { name: 'Emma the Muh', image: 'assets/emma_the_muh.png' }
   ],
 
   expertSpatialUnits: [
@@ -114,9 +113,9 @@ export const DATA_CONFIG = {
   ],
 
   viewModeImages: {
-    twodimensional: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=800',
-    twoandhalfdimensional: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&q=80&w=800',
-    threedimensional: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&q=80&w=800'
+    twodimensional: 'assets/viewmode-2d.png',
+    twoandhalfdimensional: 'assets/viewmode-2.5d.png',
+    threedimensional: 'assets/viewmode-3d.png'
   },
 
   landmarks: {

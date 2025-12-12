@@ -293,14 +293,31 @@ import { DATA_CONFIG, TEXTS, ProfileType } from './app.config.data';
                 <button type="button" (click)="config.symbolStyle = 'symbols'" [attr.aria-pressed]="config.symbolStyle === 'symbols'" class="group relative h-48 rounded-2xl border-2 overflow-hidden text-left transition-all focus:outline-none focus:ring-4 focus:ring-emerald-500/50 flex flex-col" [class.border-emerald-500]="config.symbolStyle === 'symbols'" [class.border-slate-200]="config.symbolStyle !== 'symbols'">
                   <div class="flex-1 bg-slate-100 relative overflow-hidden">
                     <div class="absolute inset-0 opacity-30" style="background-image: radial-gradient(#94a3b8 1px, transparent 1px); background-size: 10px 10px;"></div>
-                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"><div class="w-12 h-12 rounded-full bg-blue-600 border-2 border-white shadow-lg flex items-center justify-center text-white"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getPreviewIcon()" /></svg></div></div>
+
+
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                      <div class="w-12 h-12 rounded-full bg-blue-600/60 border-2 border-white shadow-lg flex items-center justify-center text-white">
+                        <!-- <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getPreviewIcon()" /></svg> -->
+                         <img [src]="getPreviewImage()" class="w-8 h-8" alt="Symbol">
+                      </div>
+                    </div>
+                 
+                 
+                 
                   </div>
                   <div class="p-3 bg-white border-t border-slate-100 flex justify-between items-center"><span class="font-bold text-slate-900 text-sm">{{ t().visuals.options['symbols'].name }}</span><div *ngIf="config.symbolStyle === 'symbols'" class="bg-emerald-500 text-white rounded-full p-1"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg></div></div>
                 </button>
                 <button type="button" (click)="config.symbolStyle = 'symbols_labels'" [attr.aria-pressed]="config.symbolStyle === 'symbols_labels'" class="group relative h-48 rounded-2xl border-2 overflow-hidden text-left transition-all focus:outline-none focus:ring-4 focus:ring-emerald-500/50 flex flex-col" [class.border-emerald-500]="config.symbolStyle === 'symbols_labels'" [class.border-slate-200]="config.symbolStyle !== 'symbols_labels'">
                   <div class="flex-1 bg-slate-100 relative overflow-hidden">
                     <div class="absolute inset-0 opacity-30" style="background-image: radial-gradient(#94a3b8 1px, transparent 1px); background-size: 10px 10px;"></div>
-                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"><div class="w-12 h-12 rounded-full bg-blue-600 border-2 border-white shadow-lg flex items-center justify-center text-white relative z-10"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getPreviewIcon()" /></svg></div><div class="mt-1 bg-white border-2 border-slate-200 rounded-lg shadow-sm px-2 py-0.5 text-xs font-bold text-slate-800 whitespace-nowrap z-0 -translate-y-2 pt-2">{{ t().landmarks.items[data.previewExampleLandmarkId] }}</div></div>
+
+
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+                      <div class="w-12 h-12 rounded-full bg-blue-600/60 border-2 border-white shadow-lg flex items-center justify-center text-white relative z-10">
+                        <!-- <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getPreviewIcon()" /></svg> -->
+                        <img [src]="getPreviewImage()" class="w-8 h-8" alt="Symbol">
+                      </div>
+                      <div class="mt-1 bg-white border-2 border-slate-200 rounded-lg shadow-sm px-2 py-0.5 text-xs font-bold text-slate-800 whitespace-nowrap z-0 -translate-y-2 pt-2">{{ t().landmarks.items[data.previewExampleLandmarkId] }}</div></div>
                   </div>
                   <div class="p-3 bg-white border-t border-slate-100 flex justify-between items-center"><span class="font-bold text-slate-900 text-sm">{{ t().visuals.options['symbols_labels'].name }}</span><div *ngIf="config.symbolStyle === 'symbols_labels'" class="bg-emerald-500 text-white rounded-full p-1"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg></div></div>
                 </button>
@@ -568,5 +585,9 @@ export class App implements OnInit {
   getPreviewIcon() {
     // Return icon for the example landmark defined in config
     return this.data.landmarks[DATA_CONFIG.previewExampleLandmarkId as keyof typeof this.data.landmarks].icon;
+  }
+  getPreviewImage() {
+    // Return icon for the example landmark defined in config
+    return this.data.landmarks[DATA_CONFIG.previewExampleLandmarkId as keyof typeof this.data.landmarks].image;
   }
 }

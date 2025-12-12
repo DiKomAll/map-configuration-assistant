@@ -65,7 +65,7 @@ export interface TranslationResource {
 
 export const DATA_CONFIG = {
   defaultAreaTab: 'selection',
-  previewExampleLandmarkId: 'bank', 
+  previewExampleLandmarkId: 'church', 
 
   geocoder: {
     searchUrl: 'https://geocoder.fbg-hsbo.de/nominatim/search',
@@ -76,7 +76,7 @@ export const DATA_CONFIG = {
 
   assets: {
     locationMapPlaceholder: 'https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?auto=format&fit=crop&q=80&w=600',
-    visualPreviewPhoto: 'https://images.unsplash.com/photo-1577412647305-991150c7d163?auto=format&fit=crop&q=80&w=400'
+    visualPreviewPhoto: 'assets/sankt_bonifacius.jpg'
   },
 
   icons: {
@@ -132,7 +132,7 @@ export const DATA_CONFIG = {
       icon: 'M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4' 
     },
     church: { 
-      image: 'assets/metacom/kirche.jpeg', 
+      image: 'assets/metacom/kirche2.png', 
       icon: 'M12 3v18M8 8h8M12 3l-4 4h8l-4-4' 
     },
     restaurant: { 

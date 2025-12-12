@@ -96,7 +96,7 @@ export const DATA_CONFIG = {
 
   simplePlaces: [
     { name: 'KIZ Herne', image: 'assets/KIZ_herne.png' },
-    { name: 'Emma the Muh', image: 'assets/emma_the_muh.png' }
+    { name: 'Emma the Mu', image: 'assets/emma_the_muh.png' }
   ],
 
   expertSpatialUnits: [
@@ -120,23 +120,23 @@ export const DATA_CONFIG = {
 
   landmarks: {
     bank: { 
-      image: 'https://images.unsplash.com/photo-1501167786227-4cba60f6d58f?auto=format&fit=crop&q=80&w=400', 
+      image: 'assets/metacom/bank2.jpeg', 
       icon: 'M3 21h18M5 21v-8M9 21v-8M13 21v-8M17 21v-8M3 10h18M5 6l7-3 7 3M4 10h16v11H4V10z' 
     },
     pharmacy: { 
-      image: 'https://images.unsplash.com/photo-1585435557343-3b092031a831?auto=format&fit=crop&q=80&w=400', 
+      image: 'assets/metacom/apotheke.jpg', 
       icon: 'M12 2v20M2 12h20M9 9h6v6H9z' 
     },
     stops: { 
-      image: 'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&q=80&w=400', 
+      image: 'assets/metacom/haltestelle.jpeg', 
       icon: 'M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4' 
     },
     church: { 
-      image: 'https://images.unsplash.com/photo-1548625361-988225e01dfb?auto=format&fit=crop&q=80&w=400', 
+      image: 'assets/metacom/kirche.jpeg', 
       icon: 'M12 3v18M8 8h8M12 3l-4 4h8l-4-4' 
     },
-    shop: { 
-      image: 'https://images.unsplash.com/photo-1472851294608-41510501f077?auto=format&fit=crop&q=80&w=400', 
+    restaurant: { 
+      image: 'assets/metacom/restaurant2orange.jpeg', 
       icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' 
     },
     icecream: { 
@@ -216,8 +216,8 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
     },
     viewModes: {
       'twodimensional': { name: 'Von oben', description: '' },
-      'twoandhalfdimensional': { name: 'Schräg', description: '' },
-      'threedimensional': { name: 'threedimensional', description: '' },
+      'twoandhalfdimensional': { name: 'Von oben mit Gebäuden', description: '' },
+      'threedimensional': { name: 'Schrägansicht', description: '' },
     },
     landmarks: {
       title: 'Was ist wichtig?',
@@ -226,7 +226,7 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       subTabCatalog: 'Liste',
       items: {
         bank: 'Bank', pharmacy: 'Apotheke', stops: 'Bus & Bahn',
-        church: 'Kirche', shop: 'Laden', icecream: 'Eis', meeting: 'Treffpunkt'
+        church: 'Kirche', restaurant: 'Restaurant', icecream: 'Eis', meeting: 'Treffpunkt'
       }
     },
     visuals: {
@@ -305,7 +305,7 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       subTabCatalog: 'KomMonitor Datenkatalog',
       items: {
         bank: 'Finanzwesen', pharmacy: 'Gesundheit', stops: 'Mobilität',
-        church: 'Kultur', shop: 'Versorgung', icecream: 'Gastronomie', meeting: 'Soziales'
+        church: 'Kultur', restaurant: 'Restaurant', icecream: 'Gastronomie', meeting: 'Soziales'
       }
     },
     visuals: {

@@ -265,12 +265,12 @@ import { DATA_CONFIG, TEXTS, ProfileType } from './app.config.data';
                <button (click)="expertLandmarkTab = 'catalog'" class="pb-2 px-1 text-sm font-medium transition-colors border-b-2" [class.border-emerald-500]="expertLandmarkTab === 'catalog'" [class.text-emerald-700]="expertLandmarkTab === 'catalog'" [class.border-transparent]="expertLandmarkTab !== 'catalog'" [class.text-slate-500]="expertLandmarkTab !== 'catalog'">{{ t().landmarks.subTabCatalog }}</button>
             </div>
             <div *ngIf="profile() === 'simple' || (profile() === 'expert' && expertLandmarkTab === 'visual')" class="grid grid-cols-2 md:grid-cols-3 gap-3">
-              <button *ngFor="let key of landmarkKeys" (click)="toggleLandmark(key)" class="group relative h-40 rounded-xl overflow-hidden border-2 text-left transition-all focus:outline-none focus:ring-4 focus:ring-emerald-500/50" [class.border-emerald-500]="config.landmarks.includes(key)" [class.border-slate-200]="!config.landmarks.includes(key)">
+              <button *ngFor="let key of landmarkKeys" (click)="toggleLandmark(key)" class="group relative h-60 rounded-xl overflow-hidden border-2 text-left transition-all focus:outline-none focus:ring-4 focus:ring-emerald-500/50" [class.border-emerald-500]="config.landmarks.includes(key)" [class.border-slate-200]="!config.landmarks.includes(key)">
                 <div class="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" [style.background-image]="'url(' + data.landmarks[key].image + ')'"><div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors" [ngClass]="{'bg-emerald-900/60': config.landmarks.includes(key), 'bg-black/40': !config.landmarks.includes(key)}"></div></div>
                 <div class="absolute inset-0 z-10 flex flex-col items-center justify-center p-2 text-center">
-                  <div class="w-12 h-12 rounded-full flex items-center justify-center mb-2 transition-all" [class.bg-white]="!config.landmarks.includes(key)" [class.text-emerald-700]="!config.landmarks.includes(key)" [class.bg-emerald-500]="config.landmarks.includes(key)" [class.text-white]="config.landmarks.includes(key)">
+                  <!-- <div class="w-12 h-12 rounded-full flex items-center justify-center mb-2 transition-all" [class.bg-white]="!config.landmarks.includes(key)" [class.text-emerald-700]="!config.landmarks.includes(key)" [class.bg-emerald-500]="config.landmarks.includes(key)" [class.text-white]="config.landmarks.includes(key)">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="data.landmarks[key].icon" /></svg>
-                  </div>
+                  </div> -->
                   <span class="text-white font-bold text-sm md:text-base leading-tight drop-shadow-md">{{ t().landmarks.items[key] }}</span>
                 </div>
                 <div *ngIf="config.landmarks.includes(key)" class="absolute top-2 right-2 bg-emerald-500 rounded-full p-1 z-20 shadow-md animate-scale-in"><svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg></div>
@@ -399,7 +399,7 @@ export class App implements OnInit {
   expertSelectedLevel = 'bezirke';
   viewModeKeys = ['twodimensional', 'twoandhalfdimensional', 'threedimensional'] as const;
 
-  landmarkKeys = ['meeting', 'icecream', 'shop', 'church', 'stops', 'pharmacy', 'bank'] as const;
+  landmarkKeys = ['restaurant', 'church', 'stops', 'pharmacy', 'bank'] as const;
 
   progressPercentage = computed(() => {
     return ((this.currentStep() + 1) / this.steps.length) * 100;

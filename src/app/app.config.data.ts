@@ -64,7 +64,8 @@ export interface TranslationResource {
 // --- DATEN-KONFIGURATION (Integriert) ---
 
 export const DATA_CONFIG = {
-  externalAppUrl: "http://localhost:8000/#!/",
+  externalAppUrl: "https://kommonitor.fbg-hsbo.de/#!/",
+  // externalAppUrl: "http://localhost:8000/#!/",
   defaultAreaTab: 'selection',
   previewExampleLandmarkId: 'church', 
 
@@ -187,8 +188,8 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       profileLabel: 'Modus: Einfach',
     },
     steps: [
-      { title: 'Farben wählen', description: '' },
       { title: 'Ort wählen', description: '' },
+      { title: 'Farben wählen', description: '' },
       { title: 'Ansicht', description: '' },
       { title: 'Wichtige Orte', description: '' },
       { title: 'Aussehen', description: '' },

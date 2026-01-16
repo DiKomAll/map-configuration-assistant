@@ -55,54 +55,8 @@ import { DATA_CONFIG, TEXTS, ProfileType } from './app.config.data';
 
         <div [ngSwitch]="currentStep()">
 
-          <!-- STEP 1: BASIS KARTE -->
-          <fieldset *ngSwitchCase="0" class="border-0 m-0 p-0">
-            <legend class="sr-only">{{ t().steps[0].title }}</legend>
-            <div class="grid gap-4" 
-                 [ngClass]="{
-                   'grid-cols-1 md:grid-cols-3': profile() === 'expert',
-                   'grid-cols-1 md:grid-cols-2': profile() === 'simple'
-                 }">
-              <button 
-                *ngFor="let map of data.mapStyles"
-                type="button"
-                (click)="selectMapStyle(map.id)"
-                [attr.aria-pressed]="config.mapStyle === map.id"
-                class="group relative overflow-hidden rounded-2xl border-2 transition-all duration-200 text-left w-full shadow-sm hover:shadow-md focus:outline-none focus:ring-4 focus:ring-emerald-500/50"
-                [class.border-emerald-500]="config.mapStyle === map.id"
-                [class.border-transparent]="config.mapStyle !== map.id"
-                [ngClass]="{
-                   'h-32 md:h-48': profile() === 'expert',
-                   'h-64 md:h-96': profile() === 'simple'
-                }"
-              >
-                <div class="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-                     [style.background-image]="'url(' + map.image + ')'">
-                     <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors"></div>
-                </div>
-                <div class="absolute bottom-0 left-0 right-0 p-4 z-10 bg-gradient-to-t from-black/90 to-transparent">
-                  <div class="flex items-end justify-between">
-                    <div>
-                      <span class="text-white font-bold block leading-tight"
-                            [class.text-lg]="profile() === 'expert'"
-                            [class.text-2xl]="profile() === 'simple'">
-                        {{ t().mapStyles[map.id].name }}
-                      </span>
-                      <span *ngIf="t().mapStyles[map.id].description" class="text-white/80 text-xs block mt-1">
-                        {{ t().mapStyles[map.id].description }}
-                      </span>
-                    </div>
-                    <div *ngIf="config.mapStyle === map.id" class="bg-emerald-500 text-white rounded-full p-1 shadow-lg shrink-0 ml-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
-                    </div>
-                  </div>
-                </div>
-              </button>
-            </div>
-          </fieldset>
-
-          <!-- STEP 2: BEREICH -->
-          <div *ngSwitchCase="1" class="max-w-lg mx-auto">
+        <!-- STEP 2: BEREICH -->
+          <div *ngSwitchCase="0" class="max-w-lg mx-auto">
             
             <div class="flex rounded-xl bg-slate-100 p-1 mb-6 shadow-inner">
               
@@ -245,6 +199,54 @@ import { DATA_CONFIG, TEXTS, ProfileType } from './app.config.data';
               </div>
             </div>
           </div>
+
+          <!-- STEP 1: BASIS KARTE -->
+          <fieldset *ngSwitchCase="1" class="border-0 m-0 p-0">
+            <legend class="sr-only">{{ t().steps[0].title }}</legend>
+            <div class="grid gap-4" 
+                 [ngClass]="{
+                   'grid-cols-1 md:grid-cols-3': profile() === 'expert',
+                   'grid-cols-1 md:grid-cols-2': profile() === 'simple'
+                 }">
+              <button 
+                *ngFor="let map of data.mapStyles"
+                type="button"
+                (click)="selectMapStyle(map.id)"
+                [attr.aria-pressed]="config.mapStyle === map.id"
+                class="group relative overflow-hidden rounded-2xl border-2 transition-all duration-200 text-left w-full shadow-sm hover:shadow-md focus:outline-none focus:ring-4 focus:ring-emerald-500/50"
+                [class.border-emerald-500]="config.mapStyle === map.id"
+                [class.border-transparent]="config.mapStyle !== map.id"
+                [ngClass]="{
+                   'h-32 md:h-48': profile() === 'expert',
+                   'h-64 md:h-96': profile() === 'simple'
+                }"
+              >
+                <div class="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                     [style.background-image]="'url(' + map.image + ')'">
+                     <div class="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors"></div>
+                </div>
+                <div class="absolute bottom-0 left-0 right-0 p-4 z-10 bg-gradient-to-t from-black/90 to-transparent">
+                  <div class="flex items-end justify-between">
+                    <div>
+                      <span class="text-white font-bold block leading-tight"
+                            [class.text-lg]="profile() === 'expert'"
+                            [class.text-2xl]="profile() === 'simple'">
+                        {{ t().mapStyles[map.id].name }}
+                      </span>
+                      <span *ngIf="t().mapStyles[map.id].description" class="text-white/80 text-xs block mt-1">
+                        {{ t().mapStyles[map.id].description }}
+                      </span>
+                    </div>
+                    <div *ngIf="config.mapStyle === map.id" class="bg-emerald-500 text-white rounded-full p-1 shadow-lg shrink-0 ml-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
+                    </div>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </fieldset>
+
+          
 
           <!-- STEP 3, 4, 5, 6 bleiben identisch mit den Referenzen auf 'data' -->
           <fieldset *ngSwitchCase="2" class="space-y-6 border-0 p-0 m-0">
@@ -419,8 +421,8 @@ export class App implements OnInit {
     landmarks: [] as string[],
     symbolStyle: 'symbols', 
     speechOutput: false,
-    lat: Number.NaN,
-    lon: Number.NaN,
+    lat: DATA_CONFIG.simplePlaces && DATA_CONFIG.simplePlaces[0] ? DATA_CONFIG.simplePlaces[0].lat : Number.NaN,
+    lon: DATA_CONFIG.simplePlaces && DATA_CONFIG.simplePlaces[0] ? DATA_CONFIG.simplePlaces[0].lon : Number.NaN,
   };
 
   steps = new Array(6);
@@ -632,6 +634,10 @@ export class App implements OnInit {
     // Visual style & audio
     params.set('symbolStyle', this.config.symbolStyle);
     params.set('speechOutput', this.config.speechOutput ? 'true' : 'false');
+
+    params.set( 'application', 'dikomall' );
+    params.set( 'ind', 'dikomall' );
+    params.set( 'hideIndicator', 'true' );
 
     const url = `${base}?${params.toString()}`;
     window.open(url, '_blank');

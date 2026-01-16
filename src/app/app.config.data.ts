@@ -64,6 +64,7 @@ export interface TranslationResource {
 // --- DATEN-KONFIGURATION (Integriert) ---
 
 export const DATA_CONFIG = {
+  externalAppUrl: "http://localhost:8000/#!/",
   defaultAreaTab: 'selection',
   previewExampleLandmarkId: 'church', 
 
@@ -89,14 +90,14 @@ export const DATA_CONFIG = {
   },
 
   mapStyles: [
-    { id: 'osm', image: 'assets/farbkarte.png' },
+    { id: 'color', image: 'assets/farbkarte.png' },
     { id: 'grey', image: 'assets/graukarte.png' },
     { id: 'ortho', image: 'assets/luftbildkarte.png' }
   ],
 
   simplePlaces: [
-    { name: 'KIZ Herne', image: 'assets/KIZ_herne.png' },
-    { name: 'Emma the Mu', image: 'assets/emma_the_muh.png' }
+    { name: 'KIZ Herne', image: 'assets/KIZ_herne.png', lat: 51.538957, lon: 7.221126 },
+    { name: 'Emma the Mu', image: 'assets/emma_the_muh.png' , lat: 51.539047, lon: 7.222529}
   ],
 
   expertSpatialUnits: [
@@ -194,7 +195,7 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       { title: 'Fertig!', description: '' },
     ],
     mapStyles: {
-      osm: { name: 'Bunt', description: '' },
+      color: { name: 'Bunt', description: '' },
       grey: { name: 'Grau', description: '' },
       ortho: { name: 'Luftbild', description: '' },
     },
@@ -272,9 +273,9 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       { title: 'Zusammenfassung', description: 'Prüfung der Konfiguration.' },
     ],
     mapStyles: {
-      osm: { name: 'Stadtplan (OSM)', description: 'Standardansicht mit hoher Detaildichte.' },
-      grey: { name: 'Graustufenkarte', description: 'Dezenter Plan, Fokus auf Fachdaten.' },
-      ortho: { name: 'Orthophoto', description: 'Luftbildaufnahmen.' },
+      color: { name: 'Stadtplan als Farbkarte', description: 'Standardansicht mit hoher Detaildichte.' },
+      grey: { name: 'Stadtplan als Graustufenkarte', description: 'Dezenter Plan, Fokus auf Fachdaten.' },
+      ortho: { name: 'Orthophoto - Satellitenbild', description: 'Luftbildaufnahmen.' },
     },
     areas: {
       tabLocation: 'Standort (GPS)',

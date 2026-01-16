@@ -366,7 +366,7 @@ import { DATA_CONFIG, TEXTS, ProfileType } from './app.config.data';
                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><dt class="text-slate-500">{{ t().summary.labels.visual }}</dt><dd class="font-medium text-slate-900">{{ t().visuals.options[config.symbolStyle].name }}</dd></div>
                <div class="flex justify-between items-center"><dt class="text-slate-500">{{ t().summary.labels.audio }}</dt><dd class="font-medium" [class.text-emerald-600]="config.speechOutput">{{ config.speechOutput ? t().summary.values.active : t().summary.values.inactive }}</dd></div>
             </dl>
-            <button class="w-full bg-emerald-600 hover:bg-emerald-700 focus:ring-4 focus:ring-emerald-500/50 text-white font-bold py-4 px-6 rounded-xl shadow-lg shadow-emerald-200 transform transition hover:scale-105 focus:scale-105 outline-none">{{ t().ui.finishBtn }}</button>
+            <button (click)="openExternalApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 focus:ring-4 focus:ring-emerald-500/50 text-white font-bold py-4 px-6 rounded-xl shadow-lg shadow-emerald-200 transform transition hover:scale-105 focus:scale-105 outline-none">{{ t().ui.finishBtn }}</button>
           </div>
 
         </div>
@@ -403,13 +403,24 @@ export class App implements OnInit {
   searchResults: any[] = [];
   searchTimeout: any;
 
-  config = {
-    mapStyle: 'osm',
-    area: '', // Start empty to force user interaction
+  config: {
+    mapStyle: string;
+    area: string;
+    viewMode: string;
+    landmarks: string[];
+    symbolStyle: string;
+    speechOutput: boolean;
+    lat: number;
+    lon: number;
+  } = {
+    mapStyle: 'color',
+    area: DATA_CONFIG.simplePlaces && DATA_CONFIG.simplePlaces[0] ? DATA_CONFIG.simplePlaces[0].name : '', // Start with first simple place
     viewMode: 'twodimensional',
     landmarks: [] as string[],
     symbolStyle: 'symbols', 
-    speechOutput: false 
+    speechOutput: false,
+    lat: Number.NaN,
+    lon: Number.NaN,
   };
 
   steps = new Array(6);
@@ -534,6 +545,16 @@ export class App implements OnInit {
     } else {
       this.config.area = area;
     }
+
+    // set coordinates in config object from selected place
+    const place = this.data.simplePlaces.find(p => p.name === area);
+    if (place) {
+      this.config.lat = place.lat;
+      this.config.lon = place.lon;
+    } else {
+      this.config.lat = Number.NaN;
+      this.config.lon = Number.NaN;
+    }
   }
 
   // ------------------------------------------------
@@ -580,6 +601,40 @@ export class App implements OnInit {
 
   getExpertFeatures() {
     return this.data.expertSpatialUnits.find(l => l.id === this.expertSelectedLevel)?.features || [];
+  }
+
+  // Build a query string from all summary values and open the target application in a new tab
+  openExternalApp() {
+    const base = this.data.externalAppUrl;
+    const params = new URLSearchParams();
+
+    // Location preference: if geolocation is present, include lat/lon + zoom
+    if (this.detectedLocation?.coords) {
+      params.set('lat', String(this.detectedLocation.coords.latitude));
+      params.set('lon', String(this.detectedLocation.coords.longitude));
+      params.set('zoom', '18');
+    }
+
+    // Fallback: include textual area/spu
+    if (this.config.area) {
+      params.set('lat', String(this.config.lat));
+      params.set('lon', String(this.config.lon));
+      params.set('zoom', '18');
+    }
+
+    // Map style & view
+    if (this.config.mapStyle) params.set('mapStyle', this.config.mapStyle);
+    if (this.config.viewMode) params.set('viewMode', this.config.viewMode);
+
+    // Landmarks (comma separated list)
+    if (this.config.landmarks && this.config.landmarks.length) params.set('landmarks', this.config.landmarks.join(','));
+
+    // Visual style & audio
+    params.set('symbolStyle', this.config.symbolStyle);
+    params.set('speechOutput', this.config.speechOutput ? 'true' : 'false');
+
+    const url = `${base}?${params.toString()}`;
+    window.open(url, '_blank');
   }
 
   getPreviewIcon() {

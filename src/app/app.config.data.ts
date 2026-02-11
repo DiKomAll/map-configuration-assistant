@@ -91,14 +91,14 @@ export const DATA_CONFIG = {
   },
 
   mapStyles: [
-    { id: 'color', image: 'assets/farbkarte.png' },
-    { id: 'grey', image: 'assets/graukarte.png' },
-    { id: 'ortho', image: 'assets/luftbildkarte.png' }
+    { id: 'color', image: 'assets/farbkarte.png', ttsText: 'Farbige Karte' },
+    { id: 'grey', image: 'assets/graukarte.png', ttsText: 'Graue Karte' },
+    { id: 'ortho', image: 'assets/luftbildkarte.png', ttsText: 'Luftbild Karte' }
   ],
 
   simplePlaces: [
-    { name: 'KIZ Herne', image: 'assets/KIZ_herne.png', lat: 51.538957, lon: 7.221126 },
-    { name: 'Emma the Mu', image: 'assets/emma_the_muh.png' , lat: 51.539047, lon: 7.222529}
+    { name: 'KIZ Herne', image: 'assets/KIZ_herne.png', lat: 51.538957, lon: 7.221126, ttsText: 'KIZ Herne' },
+    { name: 'Emma the Mu', image: 'assets/emma_the_muh.png' , lat: 51.539047, lon: 7.222529, ttsText: 'Emma the Mu'}
   ],
 
   expertSpatialUnits: [
@@ -123,31 +123,38 @@ export const DATA_CONFIG = {
   landmarks: {
     bank: { 
       image: 'assets/metacom/bank2.jpeg', 
-      icon: 'M3 21h18M5 21v-8M9 21v-8M13 21v-8M17 21v-8M3 10h18M5 6l7-3 7 3M4 10h16v11H4V10z' 
+      icon: 'M3 21h18M5 21v-8M9 21v-8M13 21v-8M17 21v-8M3 10h18M5 6l7-3 7 3M4 10h16v11H4V10z',
+      ttsText: 'Bank oder Geldautomat'
     },
     pharmacy: { 
       image: 'assets/metacom/apotheke.jpg', 
-      icon: 'M12 2v20M2 12h20M9 9h6v6H9z' 
+      icon: 'M12 2v20M2 12h20M9 9h6v6H9z',
+      ttsText: 'Apotheke'
     },
     stops: { 
       image: 'assets/metacom/haltestelle.jpeg', 
-      icon: 'M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4' 
+      icon: 'M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4',
+      ttsText: 'Haltestelle für Bus und Bahn'
     },
     church: { 
       image: 'assets/metacom/kirche2.png', 
-      icon: 'M12 3v18M8 8h8M12 3l-4 4h8l-4-4' 
+      icon: 'M12 3v18M8 8h8M12 3l-4 4h8l-4-4',
+      ttsText: 'Kirche'
     },
     restaurant: { 
       image: 'assets/metacom/restaurant2orange.jpeg', 
-      icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' 
+      icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z',
+      ttsText: 'Restaurant oder Gaststätte'
     },
     icecream: { 
       image: 'https://images.unsplash.com/photo-1563227812-0ea4c22e6cc8?auto=format&fit=crop&q=80&w=400', 
-      icon: 'M12 22l-6-9.5c0-3.5 2.5-6.5 6-6.5s6 3 6 6.5L12 22z M12 6a3 3 0 100-6 3 3 0 000 6z' 
+      icon: 'M12 22l-6-9.5c0-3.5 2.5-6.5 6-6.5s6 3 6 6.5L12 22z M12 6a3 3 0 100-6 3 3 0 000 6z',
+      ttsText: 'Eisdiele'
     },
     meeting: { 
       image: 'https://images.unsplash.com/photo-1563227812-0ea4c22e6cc8?auto=format&fit=crop&q=80&w=400', 
-      icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' 
+      icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z',
+      ttsText: 'Treffpunkt'
     }
   },
 

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +8,9 @@ export class TtsService {
   private utterance: SpeechSynthesisUtterance;
   private isTtsEnabled: boolean = false;
 
+  // Signal for voices to ensure reactivity
+  voices = signal<SpeechSynthesisVoice[]>([]);
+
   constructor() {
     this.speechSynthesis = window.speechSynthesis;
     this.utterance = new SpeechSynthesisUtterance();
@@ -15,21 +18,40 @@ export class TtsService {
 
     // Set a default voice if available
     this.speechSynthesis.onvoiceschanged = () => {
-      this.updateVoice();
+      this.updateVoicesList();
     };
     
     // Initial attempt to set voice
-    this.updateVoice();
+    this.updateVoicesList();
   }
 
-  private updateVoice(): void {
-    const voices = this.speechSynthesis.getVoices();
-    const germanVoice = voices.find(voice => voice.lang === 'de-DE' || voice.lang === 'de_DE');
-    if (germanVoice) {
-      this.utterance.voice = germanVoice;
-    } else if (voices.length > 0) {
-      this.utterance.voice = voices[0];
+  private updateVoicesList(): void {
+    const list = this.speechSynthesis.getVoices();
+    if (list.length > 0) {
+      this.voices.set(list);
+      
+      if (!this.utterance.voice) {
+        const germanVoice = list.find(voice => voice.lang === 'de-DE' || voice.lang === 'de_DE' || voice.lang.startsWith('de'));
+        if (germanVoice) {
+          this.utterance.voice = germanVoice;
+        } else {
+          this.utterance.voice = list[0];
+        }
+      }
     }
+  }
+
+  getVoices(): SpeechSynthesisVoice[] {
+    return this.voices();
+  }
+
+  setVoice(voice: SpeechSynthesisVoice): void {
+    this.utterance.voice = voice;
+    this.utterance.lang = voice.lang;
+  }
+
+  getSelectedVoice(): SpeechSynthesisVoice | null {
+    return this.utterance.voice;
   }
 
   enableTts(): void {
@@ -61,6 +83,6 @@ export class TtsService {
 
   setLanguage(lang: string): void {
     this.utterance.lang = lang;
-    this.updateVoice();
+    this.updateVoicesList();
   }
 }

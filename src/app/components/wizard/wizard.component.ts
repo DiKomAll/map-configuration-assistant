@@ -22,6 +22,43 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
             <app-tts-icon [text]="t().ui.appTitle"></app-tts-icon>
           </h1>
           <div class="flex items-center gap-2">
+            <!-- TTS Settings Toggle -->
+            <div class="relative">
+              <button 
+                (click)="toggleTtsMenu()" 
+                class="p-2 rounded-full border transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                [class.bg-emerald-500]="ttsService.isTtsActive()"
+                [class.text-white]="ttsService.isTtsActive()"
+                [class.bg-white]="!ttsService.isTtsActive()"
+                [class.text-slate-600]="!ttsService.isTtsActive()"
+                title="Vorleseeinstellungen"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor">
+                  <path d="M560-131v-82q90-26 145-100t55-167q0-93-55-167T560-747v-82q123 28 201.5 125.5T840-480q0 127-78.5 224.5T560-131ZM120-360v-240h160l200-200v640L280-360H120Zm440 40v-320q47 15 73.5 56.5T660-480q0 47-26.5 88.5T560-320ZM400-606l-86 86H200v80h114l86 86v-252ZM300-480Z"/>
+                </svg>
+              </button>
+
+              <!-- TTS Dropdown Menu (Mobile friendly) -->
+              <div *ngIf="showTtsMenu" class="absolute right-0 mt-2 w-64 bg-white border border-slate-200 rounded-xl shadow-xl z-50 p-4 animate-scale-in">
+                <div class="flex items-center justify-between mb-4">
+                  <span class="font-bold text-sm">Vorlesen</span>
+                  <button (click)="toggleTts()" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none" [class.bg-emerald-500]="ttsService.isTtsActive()" [class.bg-slate-300]="!ttsService.isTtsActive()">
+                    <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform" [class.translate-x-6]="ttsService.isTtsActive()" [class.translate-x-1]="!ttsService.isTtsActive()"></span>
+                  </button>
+                </div>
+
+                <div *ngIf="ttsService.isTtsActive() && getGermanVoices().length > 1" class="space-y-2">
+                  <label class="text-xs font-semibold text-slate-500 uppercase">Stimme</label>
+                  <select (change)="onVoiceChange($event)" [value]="getSelectedVoiceName()" class="w-full p-2 text-sm rounded border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <option *ngFor="let voice of getGermanVoices()" [value]="voice.name">{{ getFriendlyName(voice.name) }}</option>
+                  </select>
+                  <button (click)="ttsService.speak('Test')" class="w-full py-1 text-xs bg-slate-100 rounded hover:bg-slate-200 transition-colors">Stimme testen</button>
+                </div>
+                
+                <button (click)="showTtsMenu = false" class="w-full mt-4 py-2 text-sm font-bold text-emerald-600 hover:bg-emerald-50 rounded transition-colors border border-emerald-100">Schließen</button>
+              </div>
+            </div>
+
             <button 
               (click)="toggleProfile()"
               class="ml-2 px-3 py-1.5 rounded-full text-xs font-bold border transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -34,7 +71,6 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
             >
               {{ t().ui.profileLabel }}
             </button>
-            <app-tts-icon [text]="t().ui.profileLabel"></app-tts-icon>
           </div>
         </div>
         <div class="h-1.5 w-full bg-slate-100" role="progressbar">
@@ -431,6 +467,28 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
                 </button>
                 <app-tts-icon [text]="t().audio.btnTitle + (t().audio.btnDesc ? '. ' + t().audio.btnDesc : '')"></app-tts-icon>
               </div>
+              <div class="mt-4" *ngIf="getGermanVoices().length > 0">
+                <label class="block text-sm font-bold text-slate-700 mb-4">Bevorzugte Stimme:</label>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
+                  <button 
+                    *ngFor="let voice of getGermanVoices()" 
+                    (click)="ttsService.setVoice(voice)"
+                    class="flex flex-col items-center p-3 rounded-xl border-2 transition-all"
+                    [class.border-emerald-500]="getSelectedVoiceName() === voice.name"
+                    [class.bg-emerald-50]="getSelectedVoiceName() === voice.name"
+                    [class.border-slate-200]="getSelectedVoiceName() !== voice.name"
+                    [class.bg-white]="getSelectedVoiceName() !== voice.name"
+                  >
+                    <div class="w-10 h-10 mb-2" [class.text-emerald-600]="getSelectedVoiceName() === voice.name" [class.text-slate-400]="getSelectedVoiceName() !== voice.name">
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C9.24 2 7 4.24 7 7s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 12c-4.42 0-8 2.58-8 6v2h16v-2c0-3.42-3.58-6-8-6z"/>
+                      </svg>
+                    </div>
+                    <span class="text-xs font-bold truncate w-full text-center">{{ getFriendlyName(voice.name) }}</span>
+                  </button>
+                </div>
+                <button (click)="ttsService.speak('Stimme wurde gewechselt.')" class="w-full py-2 bg-slate-100 rounded-lg border border-slate-300 hover:bg-slate-200 font-bold text-sm">Auswahl testen</button>
+              </div>
             </section>
           </div>
 
@@ -501,6 +559,7 @@ export class WizardComponent implements OnInit {
   isSearching = false;
   searchResults: any[] = [];
   searchTimeout: any;
+  showTtsMenu = false;
 
   config: {
     mapStyle: string;
@@ -536,6 +595,49 @@ export class WizardComponent implements OnInit {
 
   ngOnInit() {
     this.checkGeolocation();
+  }
+
+  getGermanVoices(): SpeechSynthesisVoice[] {
+    return this.ttsService.getVoices().filter(v => v.lang.startsWith('de'));
+  }
+
+  getSelectedVoiceName(): string {
+    return this.ttsService.getSelectedVoice()?.name || '';
+  }
+
+  getFriendlyName(fullName: string): string {
+    let name = fullName.split('(')[0].split('-')[0].trim();
+    const prefixes = ['Microsoft', 'Google', 'Apple', 'Android'];
+    for (const prefix of prefixes) {
+      if (name.startsWith(prefix)) {
+        name = name.replace(prefix, '').trim();
+      }
+    }
+    if (!name || name.toLowerCase() === 'deutsch' || name.toLowerCase() === 'german') {
+      return 'Standard';
+    }
+    return name;
+  }
+
+  onVoiceChange(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    const voice = this.getGermanVoices().find(v => v.name === select.value);
+    if (voice) {
+      this.ttsService.setVoice(voice);
+    }
+  }
+
+  toggleTtsMenu() {
+    this.showTtsMenu = !this.showTtsMenu;
+  }
+
+  toggleTts() {
+    if (this.ttsService.isTtsActive()) {
+      this.ttsService.disableTts();
+    } else {
+      this.ttsService.enableTts();
+      this.ttsService.speak('Die Vorlesefunktion ist jetzt eingeschaltet.');
+    }
   }
 
   checkGeolocation() {

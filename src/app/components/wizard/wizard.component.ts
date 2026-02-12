@@ -606,6 +606,12 @@ export class WizardComponent implements OnInit {
         this.currentStep.set(stepIdx);
       }
     }
+
+    // Beim ersten Laden den aktuellen Schritt vorlesen, wenn TTS aktiv ist
+    if (this.ttsService.isTtsActive()) {
+      const currentTitle = this.t().steps[this.currentStep()].title;
+      this.ttsService.speak(currentTitle);
+    }
   }
 
   getGermanVoices(): SpeechSynthesisVoice[] {
@@ -660,10 +666,14 @@ export class WizardComponent implements OnInit {
     }
   }
 
-  private speakSelectionChange(name: string, isAdded: boolean) {
+  private speakSelectionChange(name: string, isAdded: boolean, description?: string) {
     if (this.ttsService.isTtsActive() && this.ttsService.isConfirmSelectionActive()) {
       const prefix = isAdded ? this.t().ui.selectionAdded : this.t().ui.selectionRemoved;
-      this.ttsService.speak(`${prefix} ${name}`);
+      let text = `${prefix} ${name}`;
+      if (isAdded && description) {
+        text += `. ${description}`;
+      }
+      this.ttsService.speak(text);
     }
   }
 
@@ -678,7 +688,8 @@ export class WizardComponent implements OnInit {
 
   selectMapStyle(id: string) {
     this.config.mapStyle = id;
-    this.speakSelectionChange(this.t().mapStyles[id].name, true);
+    const style = this.t().mapStyles[id];
+    this.speakSelectionChange(style.name, true, style.description);
   }
 
   onViewModeClick(mode: string) {
@@ -690,7 +701,7 @@ export class WizardComponent implements OnInit {
       return;
     }
     this.config.viewMode = mode;
-    this.speakSelectionChange(viewMode.name, true);
+    this.speakSelectionChange(viewMode.name, true, viewMode.description);
   }
 
   // --- AREA SELECTION LOGIC ---
@@ -790,16 +801,18 @@ export class WizardComponent implements OnInit {
   }
 
   toggleArea(area: string) {
+    const place = this.data.simplePlaces.find(p => p.name === area);
+    const description = place?.ttsText || '';
+
     if (this.config.area === area) {
       this.config.area = ''; 
       this.speakSelectionChange(area, false);
     } else {
       this.config.area = area;
-      this.speakSelectionChange(area, true);
+      this.speakSelectionChange(area, true, description);
     }
 
     // set coordinates in config object from selected place
-    const place = this.data.simplePlaces.find(p => p.name === area);
     if (place) {
       this.config.lat = place.lat;
       this.config.lon = place.lon;
@@ -814,12 +827,17 @@ export class WizardComponent implements OnInit {
   toggleLandmark(id: string) {
     const index = this.config.landmarks.indexOf(id);
     let name = this.t().landmarks.items[id] || id;
+    let description = '';
     
     // In expert mode, the id might be from catalog resources
     if (this.profile() === 'expert' && !this.t().landmarks.items[id]) {
        for (const cat of this.data.expertLandmarkResources) {
          const res = cat.resources.find(r => r.id === id);
-         if (res) { name = res.name; break; }
+         if (res) { 
+           name = res.name; 
+           description = res.description || '';
+           break; 
+         }
        }
     }
 
@@ -828,7 +846,7 @@ export class WizardComponent implements OnInit {
       this.speakSelectionChange(name, false);
     } else {
       this.config.landmarks.push(id);
-      this.speakSelectionChange(name, true);
+      this.speakSelectionChange(name, true, description);
     }
   }
 
@@ -840,7 +858,8 @@ export class WizardComponent implements OnInit {
 
   selectSymbolStyle(style: string) {
     this.config.symbolStyle = style;
-    this.speakSelectionChange(this.t().visuals.options[style].name, true);
+    const opt = this.t().visuals.options[style];
+    this.speakSelectionChange(opt.name, true, opt.description);
   }
 
   toggleProfile() {

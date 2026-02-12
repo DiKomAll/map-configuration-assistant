@@ -91,14 +91,14 @@ export const DATA_CONFIG = {
   },
 
   mapStyles: [
-    { id: 'color', image: 'assets/farbkarte.png', ttsText: 'Farbige Karte' },
-    { id: 'grey', image: 'assets/graukarte.png', ttsText: 'Graue Karte' },
-    { id: 'ortho', image: 'assets/luftbildkarte.png', ttsText: 'Luftbild Karte' }
+    { id: 'color', image: 'assets/farbkarte.png', ttsText: 'Farbige Hintergrundkarte' },
+    { id: 'grey', image: 'assets/graukarte.png', ttsText: 'Graue Hintergrundkarte' },
+    { id: 'ortho', image: 'assets/luftbildkarte.png', ttsText: 'Luftbild Hintegrundkarte' }
   ],
 
   simplePlaces: [
     { name: 'KIZ Herne', image: 'assets/KIZ_herne.png', lat: 51.538957, lon: 7.221126, ttsText: 'KIZ Herne' },
-    { name: 'Emma the Mu', image: 'assets/emma_the_muh.png' , lat: 51.539047, lon: 7.222529, ttsText: 'Emma the Mu'}
+    { name: 'Emma the Mu', image: 'assets/emma_the_muh.png' , lat: 51.539047, lon: 7.222529, ttsText: 'Eisdiele mit dem Namen Emma the Mu'}
   ],
 
   expertSpatialUnits: [
@@ -191,21 +191,21 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       stepIndicator: 'Schritt',
       nextBtn: 'Weiter',
       prevBtn: 'Zurück',
-      finishBtn: 'Karte starten',
+      finishBtn: 'zu deiner Karte',
       profileLabel: 'Modus: Einfach',
     },
     steps: [
-      { title: 'Ort wählen', description: '' },
-      { title: 'Farben wählen', description: '' },
-      { title: 'Ansicht', description: '' },
-      { title: 'Wichtige Orte', description: '' },
-      { title: 'Aussehen', description: '' },
-      { title: 'Fertig!', description: '' },
+      { title: 'Welchen Ort möchtest du sehen?', description: 'Wähle einen Ort aus der Liste oder suche nach einem bestimmten Ort.' },
+      { title: 'Wie soll deine Karte aussehen?', description: 'Wähle einen Hintergrund aus den verfügbaren Karten.' },
+      { title: 'Möchtest du Gebäude in der Karte anzeigen?', description: 'Wenn ja, werden Gebäude in der Karte angezeigt.' },
+      { title: 'Wonach suchst du in der Karte?', description: 'Wähle aus, nach welchen Orten du suchst.' },
+      { title: 'Wie sollen besondere Orte aussehen?', description: 'Wähle aus, wie besondere Orte in der Karte dargestellt werden sollen.' },
+      { title: 'Super! Deine Karte ist bereit!', description: 'Das hast du toll gemacht. Hier kannst du deine Karte aufrufen.' },
     ],
     mapStyles: {
-      color: { name: 'Bunt', description: '' },
-      grey: { name: 'Grau', description: '' },
-      ortho: { name: 'Luftbild', description: '' },
+      color: { name: 'Bunt', description: 'Hintergrundkarte mit Farben' },
+      grey: { name: 'Grau', description: 'Hintergrundkarte in Grautönen' },
+      ortho: { name: 'Luftbild', description: 'Luftbild mit realistischer Darstellung' },
     },
     areas: {
       tabLocation: 'Standort',
@@ -224,12 +224,12 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       manualSelectionTitle: 'Beliebte Orte',
     },
     viewModes: {
-      'twodimensional': { name: 'Von oben', description: '' },
+      'twodimensional': { name: 'Von oben ohne Gebäude', description: '' },
       'twoandhalfdimensional': { name: 'Von oben mit Gebäuden', description: '' },
-      'threedimensional': { name: 'Schrägansicht', description: '' },
+      'threedimensional': { name: 'Schrägansicht mit Gebäuden ()', description: '' },
     },
     landmarks: {
-      title: 'Was ist wichtig?',
+      title: 'Wonach suchst du in der Karte?',
       expertTitle: '',
       subTabVisual: 'Bilder',
       subTabCatalog: 'Liste',

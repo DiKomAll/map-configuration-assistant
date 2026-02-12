@@ -1,0 +1,23 @@
+/* Confetti Animation */
+.confetti-piece {
+  position: fixed;
+  top: -10px;
+  width: 10px;
+  height: 10px;
+  background-color: #ffd700;
+  z-index: 9999;
+  pointer-events: none;
+  border-radius: 2px;
+  animation: fall 4s ease-out forwards;
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}

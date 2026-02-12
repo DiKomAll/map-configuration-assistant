@@ -3,6 +3,19 @@
 
 export type ProfileType = 'simple' | 'expert';
 
+export type MapType = 'xyz' | 'wms';
+
+export interface MapServiceConfig {
+  type: MapType;
+  url: string;
+  layers?: string; // Für WMS
+  styles?: string; // Für WMS
+  format?: string; // Für WMS
+  transparent?: boolean; // Für WMS
+  version?: string; // Für WMS
+  attribution?: string;
+}
+
 export interface TranslationResource {
   ui: {
     appTitle: string;
@@ -80,6 +93,8 @@ export interface TranslationResource {
   summary: {
     title: string;
     intro: string;
+    congratsTitle: string;
+    congratsMessage: string;
     labels: { location: string; style: string; view: string; orientation: string; visual: string; audio: string; };
     values: { pointsSelected: string; noPoints: string; active: string; inactive: string; };
   };
@@ -92,6 +107,7 @@ export const DATA_CONFIG = {
   // externalAppUrl: "http://localhost:8000/#!/",
   defaultAreaTab: 'selection',
   previewExampleLandmarkId: 'church', 
+  celebrateAnimation: true,
 
   geocoder: {
     searchUrl: 'https://geocoder.fbg-hsbo.de/nominatim/search',
@@ -115,9 +131,40 @@ export const DATA_CONFIG = {
   },
 
   mapStyles: [
-    { id: 'color', image: 'assets/farbkarte.png', ttsText: 'Farbige Hintergrundkarte' },
-    { id: 'grey', image: 'assets/graukarte.png', ttsText: 'Graue Hintergrundkarte' },
-    { id: 'ortho', image: 'assets/luftbildkarte.png', ttsText: 'Luftbild Hintegrundkarte' }
+    { 
+      id: 'color', 
+      image: 'assets/farbkarte.png', 
+      ttsText: 'Farbige Hintergrundkarte',
+      map: {
+        type: 'xyz',
+        url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        attribution: '&copy; OpenStreetMap contributors'
+      }
+    },
+    { 
+      id: 'grey', 
+      image: 'assets/graukarte.png', 
+      ttsText: 'Graue Hintergrundkarte',
+      map: {
+        type: 'xyz',
+        url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+        attribution: '&copy; OpenStreetMap &copy; CARTO'
+      }
+    },
+    { 
+      id: 'ortho', 
+      image: 'assets/luftbildkarte.png', 
+      ttsText: 'Luftbild Hintegrundkarte',
+      map: {
+        type: 'wms',
+        url: 'https://www.wms.nrw.de/geobasis/wms_nw_dop',
+        layers: 'nw_dop_rgb',
+        format: 'image/png',
+        transparent: true,
+        version: '1.3.0',
+        attribution: 'Geobasis NRW'
+      }
+    }
   ],
 
   simplePlaces: [
@@ -343,6 +390,8 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
     summary: {
       title: 'Fertig',
       intro: 'Deine Einstellungen:',
+      congratsTitle: 'Super gemacht!',
+      congratsMessage: 'Du hast alle Schritte geschafft. Deine eigene Karte ist jetzt fertig!',
       labels: {
         location: 'Wo:', style: 'Farbe:', view: 'Ansicht:', orientation: 'Orte:', visual: 'Symbole:', audio: 'Ton:',
       },
@@ -448,6 +497,8 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
     summary: {
       title: 'Abschluss',
       intro: 'Gewählte Parameter:',
+      congratsTitle: 'Konfiguration erfolgreich!',
+      congratsMessage: 'Sie haben alle erforderlichen Schritte abgeschlossen. Ihre individuelle Kartenansicht wurde generiert.',
       labels: {
         location: 'Gebiet:', style: 'Karte:', view: 'Ansicht:', orientation: 'Layer:', visual: 'Stil:', audio: 'Audio:',
       },

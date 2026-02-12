@@ -579,12 +579,23 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
 
           <!-- STEP 5: Zusammenfassung -->
           <div *ngSwitchCase="5" class="text-center py-6">
-            <div class="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6 text-emerald-600" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg></div>
-            <h2 class="text-3xl font-bold text-slate-900 mb-4">
-              {{ t().summary.title }}
-              <app-tts-icon [text]="t().summary.title"></app-tts-icon>
+            <div class="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6 text-emerald-600 animate-bounce" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+            </div>
+            
+            <h2 class="text-4xl font-black text-slate-900 mb-2 drop-shadow-sm">
+              {{ t().summary.congratsTitle }}
+              <app-tts-icon [text]="t().summary.congratsTitle"></app-tts-icon>
             </h2>
-            <p class="text-lg text-slate-600 mb-8">
+            
+            <p class="text-xl text-emerald-700 font-bold mb-8 max-w-md mx-auto leading-tight">
+              {{ t().summary.congratsMessage }}
+              <app-tts-icon [text]="t().summary.congratsMessage"></app-tts-icon>
+            </p>
+
+            <div class="h-px w-full bg-slate-200 mb-8"></div>
+
+            <p class="text-lg text-slate-600 mb-4 font-bold">
               {{ t().summary.intro }}
               <app-tts-icon [text]="t().summary.intro"></app-tts-icon>
             </p>
@@ -1005,10 +1016,41 @@ export class WizardComponent implements OnInit {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       setTimeout(() => document.getElementById('main-content')?.focus(), 100);
       
+      const isFinalStep = this.currentStep() === this.steps.length - 1;
+
       if (this.ttsService.isTtsActive()) {
         const nextTitle = this.t().steps[this.currentStep()].title;
-        this.ttsService.speak(this.t().ui.nextStepLabel + " " + nextTitle);
+        let speakText = this.t().ui.nextStepLabel + " " + nextTitle;
+        
+        // Bei Schritt 6 (Index 5) gratulieren
+        if (isFinalStep) {
+          speakText = this.t().summary.congratsTitle + ". " + this.t().summary.congratsMessage;
+        }
+        this.ttsService.speak(speakText);
       }
+
+      if (isFinalStep && this.data.celebrateAnimation) {
+        this.showConfetti();
+      }
+    }
+  }
+
+  showConfetti() {
+    // Einfache CSS-basierte Konfetti-Animation
+    const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
+    const container = document.body;
+    
+    for (let i = 0; i < 50; i++) {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti-piece';
+      confetti.style.left = Math.random() * 100 + 'vw';
+      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.animationDelay = Math.random() * 2 + 's';
+      confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+      container.appendChild(confetti);
+      
+      // Nach Animation entfernen
+      setTimeout(() => confetti.remove(), 4000);
     }
   }
 

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TtsIconComponent } from '../tts-icon/tts-icon.component';
+import { MapPreviewComponent } from '../map-preview/map-preview.component';
 import { TtsService } from '../../services/tts.service';
 
 // Import der Konfigurationsdaten und Typen
@@ -11,7 +12,7 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
 @Component({
   selector: 'app-wizard',
   standalone: true,
-  imports: [CommonModule, FormsModule, TtsIconComponent],
+  imports: [CommonModule, FormsModule, TtsIconComponent, MapPreviewComponent],
   template: `
     <div class="min-h-screen bg-slate-50 font-sans text-slate-800 pb-28 relative overflow-hidden flex flex-col">
       
@@ -595,18 +596,32 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
 
             <div class="h-px w-full bg-slate-200 mb-8"></div>
 
-            <p class="text-lg text-slate-600 mb-4 font-bold">
-              {{ t().summary.intro }}
-              <app-tts-icon [text]="t().summary.intro"></app-tts-icon>
-            </p>
-            <dl class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 text-left space-y-3 mb-8">
-               <div class="flex justify-between items-center border-b border-slate-50 pb-2"><dt class="text-slate-500">{{ t().summary.labels.location }}</dt><dd class="font-medium text-slate-900 flex items-center gap-1">{{ config.area || t().areas.locationBtnStart }} <app-tts-icon [text]="config.area || t().areas.locationBtnStart"></app-tts-icon></dd></div>
-               <div class="flex justify-between items-center border-b border-slate-50 pb-2"><dt class="text-slate-500">{{ t().summary.labels.style }}</dt><dd class="font-medium text-slate-900 flex items-center gap-1">{{ t().mapStyles[config.mapStyle].name }} <app-tts-icon [text]="t().mapStyles[config.mapStyle].name"></app-tts-icon></dd></div>
-               <div class="flex justify-between items-center border-b border-slate-50 pb-2"><dt class="text-slate-500">{{ t().summary.labels.view }}</dt><dd class="font-medium text-slate-900 flex items-center gap-1">{{ t().viewModes[config.viewMode].name }} <app-tts-icon [text]="t().viewModes[config.viewMode].name"></app-tts-icon></dd></div>
-               <div class="flex justify-between items-center border-b border-slate-50 pb-2"><dt class="text-slate-500">{{ t().summary.labels.orientation }}</dt><dd class="font-medium text-right text-slate-900 flex items-center gap-1">{{ config.landmarks.length || t().summary.values.noPoints }} <app-tts-icon [text]="(config.landmarks.length || 'Keine') + ' Orte gewählt'"></app-tts-icon></dd></div>
-               <div class="flex justify-between items-center border-b border-slate-50 pb-2"><dt class="text-slate-500">{{ t().summary.labels.visual }}</dt><dd class="font-medium text-slate-900 flex items-center gap-1">{{ t().visuals.options[config.symbolStyle].name }} <app-tts-icon [text]="t().visuals.options[config.symbolStyle].name"></app-tts-icon></dd></div>
-               <div class="flex justify-between items-center"><dt class="text-slate-500">{{ t().summary.labels.audio }}</dt><dd class="font-medium flex items-center gap-1" [class.text-emerald-600]="config.speechOutput">{{ config.speechOutput ? t().summary.values.active : t().summary.values.inactive }} <app-tts-icon [text]="config.speechOutput ? t().summary.values.active : t().summary.values.inactive"></app-tts-icon></dd></div>
-            </dl>
+            <div class="mb-8 space-y-6">
+              <div class="bg-blue-50 border border-blue-100 rounded-2xl p-4 flex gap-4 items-center animate-fade-in shadow-sm">
+                <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </div>
+                <div class="text-left">
+                  <p class="text-blue-900 font-bold leading-tight">
+                      {{ t().ui.mapInstructions }}
+                      <app-tts-icon [text]="t().ui.mapInstructions"></app-tts-icon>
+                  </p>
+                </div>
+              </div>
+
+              <app-map-preview [config]="config" [profile]="profile()" [animationEnabled]="data.mapAnimationEnabled"></app-map-preview>
+
+              <div class="flex items-center justify-center gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                <label class="font-bold text-slate-700 cursor-pointer flex items-center gap-2" (click)="data.mapAnimationEnabled = !data.mapAnimationEnabled">
+                  <div class="w-12 h-7 rounded-full p-1 transition-colors duration-200 ease-in-out" [class.bg-emerald-500]="data.mapAnimationEnabled" [class.bg-slate-300]="!data.mapAnimationEnabled">
+                    <div class="bg-white w-5 h-5 rounded-full shadow-sm transform transition-transform duration-200 ease-in-out" [class.translate-x-5]="data.mapAnimationEnabled" [class.translate-x-0]="!data.mapAnimationEnabled"></div>
+                  </div>
+                  <span>{{ t().ui.mapAnimationLabel }}</span>
+                </label>
+                <app-tts-icon [text]="t().ui.mapAnimationLabel"></app-tts-icon>
+              </div>
+            </div>
+
             <div class="flex items-center gap-2">
               <button (click)="openExternalApp()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 focus:ring-4 focus:ring-emerald-500/50 text-white font-bold py-4 px-6 rounded-xl shadow-lg shadow-emerald-200 transform transition hover:scale-105 focus:scale-105 outline-none">
                 {{ t().ui.finishBtn }}

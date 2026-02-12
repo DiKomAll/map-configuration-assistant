@@ -42,6 +42,8 @@ export interface TranslationResource {
     audioConfirmOn: string;
     nextStepLabel: string;
     prevStepLabel: string;
+    mapInstructions: string;
+    mapAnimationLabel: string;
   };
   steps: {
     title: string;
@@ -108,6 +110,7 @@ export const DATA_CONFIG = {
   defaultAreaTab: 'selection',
   previewExampleLandmarkId: 'church', 
   celebrateAnimation: true,
+  mapAnimationEnabled: true,
 
   geocoder: {
     searchUrl: 'https://geocoder.fbg-hsbo.de/nominatim/search',
@@ -320,6 +323,8 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       audioConfirmOn: 'eingeschaltet.',
       nextStepLabel: 'Nächster Schritt:',
       prevStepLabel: 'Zurück zu:',
+      mapInstructions: 'Du kannst die Karte mit zwei Fingern bewegen und vergrößern.',
+      mapAnimationLabel: 'Soll die Karte sich automatisch bewegen?',
     },
     steps: [
       { title: 'Welchen Ort möchtest du sehen?', description: 'Wähle einen Ort aus der Liste oder suche nach einem bestimmten Ort.' },
@@ -426,6 +431,8 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       audioConfirmOn: 'aktiviert.',
       nextStepLabel: 'Nächster Schritt:',
       prevStepLabel: 'Vorheriger Schritt:',
+      mapInstructions: 'Nutzen Sie zwei Finger zur Navigation in der Karte.',
+      mapAnimationLabel: 'Automatische Karten-Animation aktivieren',
     },
     steps: [
       { title: 'Basiskarte', description: 'Wählen Sie die Datengrundlage.' },

@@ -49,31 +49,26 @@ import { TtsService } from '../../services/tts.service';
           </div>
 
           <div class="voice-selection-container" *ngIf="getGermanVoices().length > 0">
-            <p class="subtitle">Wähle deine Lieblings-Stimme:</p>
+            <p class="subtitle">Wähle deinen Begleiter:</p>
             <div class="voice-grid">
               <button 
                 *ngFor="let voice of getGermanVoices()" 
                 (click)="selectVoice(voice)"
                 class="voice-tile"
                 [class.active]="getSelectedVoiceName() === voice.name"
-                [attr.aria-label]="'Stimme ' + getFriendlyName(voice.name) + ' auswählen'"
+                [attr.aria-label]="'Begleiter ' + getFriendlyName(voice.name) + ' auswählen'"
               >
-                <div class="silhouette">
-                  <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2C9.24 2 7 4.24 7 7s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 12c-4.42 0-8 2.58-8 6v2h16v-2c0-3.42-3.58-6-8-6z"/>
-                  </svg>
+                <div class="avatar-container">
+                  <img [src]="getAvatarUrl(voice.name)" [alt]="getFriendlyName(voice.name)" class="avatar-img">
                 </div>
                 <span class="voice-name">{{ getFriendlyName(voice.name) }}</span>
                 <div class="check-icon" *ngIf="getSelectedVoiceName() === voice.name">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4">
                     <polyline points="20 6 9 17 4 12"></polyline>
                   </svg>
                 </div>
               </button>
             </div>
-            <button (click)="testVoice()" class="btn-test-large">
-              <span>🔊</span> Stimme testen
-            </button>
           </div>
 
           <div class="navigation-action">
@@ -277,17 +272,30 @@ import { TtsService } from '../../services/tts.service';
       transform: translateY(-2px);
     }
     .voice-tile.active {
-      background: #e7f3ff;
-      border-color: #007bff;
+      background: #f0fdf4;
+      border-color: #10b981;
+      transform: scale(1.05);
+      box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.2);
     }
-    .silhouette {
-      width: 50px;
-      height: 50px;
-      color: #ccc;
-      margin-bottom: 8px;
+    .avatar-container {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 12px;
+      background: white;
+      border-radius: 50%;
+      padding: 5px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+      border: 2px solid #f1f5f9;
+      transition: all 0.2s;
     }
-    .active .silhouette {
-      color: #007bff;
+    .active .avatar-container {
+      border-color: #10b981;
+      transform: rotate(5deg);
+    }
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
     .voice-name {
       font-weight: bold;
@@ -352,6 +360,8 @@ export class TtsConsentComponent implements OnInit {
     // Falls TTS bereits aktiv ist (z.B. Rückkehr aus dem Wizard), direkt Einstellungen zeigen
     if (this.ttsService.isTtsActive()) {
       this.showStartButton = true;
+      // Kurze Verzögerung, damit die Stimmen geladen sind
+      setTimeout(() => this.greet(), 500);
     }
     
     // Merken, zu welchem Schritt wir zurückkehren müssen
@@ -364,6 +374,12 @@ export class TtsConsentComponent implements OnInit {
 
   getSelectedVoiceName(): string {
     return this.ttsService.getSelectedVoice()?.name || '';
+  }
+
+  getAvatarUrl(voiceName: string): string {
+    // Wir nutzen freundliche Emojis als Avatare, basierend auf dem Namen der Stimme
+    const seed = encodeURIComponent(voiceName);
+    return `https://api.dicebear.com/7.x/fun-emoji/svg?seed=${seed}`;
   }
 
   getFriendlyName(fullName: string): string {
@@ -381,7 +397,7 @@ export class TtsConsentComponent implements OnInit {
 
     // Falls nach dem Filtern nichts übrig bleibt oder nur "Deutsch", nutze einen Standardnamen
     if (!name || name.toLowerCase() === 'deutsch' || name.toLowerCase() === 'german') {
-      return 'Standard';
+      return 'Robin'; // Ein neutraler, freundlicher Name als Fallback
     }
 
     return name;
@@ -389,6 +405,13 @@ export class TtsConsentComponent implements OnInit {
 
   selectVoice(voice: SpeechSynthesisVoice) {
     this.ttsService.setVoice(voice);
+    this.greet();
+  }
+
+  private greet() {
+    if (this.ttsService.isTtsActive()) {
+      this.ttsService.speak("Hallo! Ich bin dein Begleiter und helfe dir bei deiner Karte. Gefällt dir meine Stimme?");
+    }
   }
 
   toggleConfirmSelection() {
@@ -400,17 +423,11 @@ export class TtsConsentComponent implements OnInit {
     }
   }
 
-  testVoice() {
-    // Temporarily enable to test, then disable if it was disabled
-    const wasActive = this.ttsService.isTtsActive();
-    if (!wasActive) this.ttsService.enableTts();
-    this.ttsService.speak("Dies ist ein Test der gewählten Stimme.");
-  }
-
   enableTts() {
     this.ttsService.enableTts();
-    this.ttsService.speak("Die Vorlesefunktion wurde eingeschaltet. Du kannst jetzt noch Einstellungen vornehmen oder direkt starten.");
     this.showStartButton = true;
+    // Begrüßung erfolgt automatisch
+    setTimeout(() => this.greet(), 100);
   }
 
   resetTts() {

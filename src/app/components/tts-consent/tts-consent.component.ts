@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TtsService } from '../../services/tts.service';
+import { TEXTS, ProfileType } from '../../app.config.data';
 
 @Component({
   selector: 'app-tts-consent',
@@ -30,15 +31,15 @@ import { TtsService } from '../../services/tts.service';
         <div *ngIf="showStartButton" class="settings-active animate-fade-in">
           <button (click)="resetTts()" class="status-badge-btn" title="Vorlesefunktion wieder ausschalten">
              <span class="icon">✅</span> 
-             <span class="text">Vorlesefunktion ist AN</span>
-             <span class="change-label">(hier klicken zum Ändern)</span>
+             <span class="text">{{ t().ui.ttsEnabledFeedback }}</span>
+             <span class="change-label">{{ t().ui.changeLabel }}</span>
           </button>
 
           <div class="confirm-selection-toggle">
             <label class="switch-container">
               <div class="switch-text">
-                <span class="switch-title">Soll ich dir sagen, was du angeklickt hast?</span>
-                <p class="switch-desc">Ich sage dir dann zum Beispiel: "Du hast die Farbkarte ausgewählt".</p>
+                <span class="switch-title">{{ t().ui.confirmSelectionLabel }}</span>
+                <p class="switch-desc">{{ t().ui.confirmSelectionDesc }}</p>
               </div>
               <div class="switch-action">
                 <button (click)="toggleConfirmSelection()" class="relative inline-flex h-10 w-16 items-center rounded-full transition-colors focus:outline-none" [style.background-color]="ttsService.isConfirmSelectionActive() ? '#10b981' : '#cbd5e1'">
@@ -49,14 +50,14 @@ import { TtsService } from '../../services/tts.service';
           </div>
 
           <div class="voice-selection-container" *ngIf="getGermanVoices().length > 0">
-            <p class="subtitle">Wähle deinen Begleiter:</p>
+            <p class="subtitle">{{ t().ui.companionLabel }}</p>
             <div class="voice-grid">
               <button 
                 *ngFor="let voice of getGermanVoices()" 
                 (click)="selectVoice(voice)"
                 class="voice-tile"
                 [class.active]="getSelectedVoiceName() === voice.name"
-                [attr.aria-label]="'Begleiter ' + getFriendlyName(voice.name) + ' auswählen'"
+                [attr.aria-label]="t().ui.companionLabel + ' ' + getFriendlyName(voice.name)"
               >
                 <div class="avatar-container">
                   <img [src]="getAvatarUrl(voice.name)" [alt]="getFriendlyName(voice.name)" class="avatar-img">
@@ -73,7 +74,7 @@ import { TtsService } from '../../services/tts.service';
 
           <div class="navigation-action">
             <button (click)="startApp()" class="btn btn-start-app">
-               Alles fertig. Los geht's!
+               {{ t().ui.startAppBtn }}
             </button>
           </div>
         </div>
@@ -349,6 +350,8 @@ import { TtsService } from '../../services/tts.service';
 export class TtsConsentComponent implements OnInit {
   showStartButton = false;
   returnStep: string | null = null;
+  profile = signal<ProfileType>('simple');
+  t = computed(() => TEXTS[this.profile()]);
 
   constructor(
     public ttsService: TtsService,
@@ -410,7 +413,7 @@ export class TtsConsentComponent implements OnInit {
 
   private greet() {
     if (this.ttsService.isTtsActive()) {
-      this.ttsService.speak("Hallo! Ich bin dein Begleiter und helfe dir bei deiner Karte. Gefällt dir meine Stimme?");
+      this.ttsService.speak(this.t().ui.ttsGreeting);
     }
   }
 
@@ -419,7 +422,7 @@ export class TtsConsentComponent implements OnInit {
       this.ttsService.disableConfirmSelection();
     } else {
       this.ttsService.enableConfirmSelection();
-      this.ttsService.speak("Ich werde dir jetzt Bescheid sagen, wenn du etwas anklickst.");
+      this.ttsService.speak(this.t().ui.confirmSelectionLabel + " " + this.t().ui.audioConfirmOn);
     }
   }
 

@@ -65,8 +65,8 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
         <!-- Step Header -->
         <div class="mb-6 text-center">
           <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 mb-1 block">
-            {{ t().ui.stepIndicator }} {{ currentStep() + 1 }} / {{ steps.length }}
-            <app-tts-icon [text]="t().ui.stepIndicator + ' ' + (currentStep() + 1) + ' von ' + steps.length"></app-tts-icon>
+            {{ t().ui.stepIndicator }} {{ currentStep() + 1 }} {{ t().ui.stepIndicatorSeparator }} {{ steps.length }}
+            <app-tts-icon [text]="t().ui.stepIndicator + ' ' + (currentStep() + 1) + ' ' + t().ui.stepIndicatorSeparator + ' ' + steps.length"></app-tts-icon>
           </span>
           <h2 class="text-2xl font-bold mb-2 text-slate-900 leading-tight">
             {{ t().steps[currentStep()].title }}
@@ -141,12 +141,12 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
                 </div>
                 <div *ngIf="detectedLocation" class="animate-scale-in">
                   <h3 class="text-xl font-bold text-emerald-800 mb-1">
-                    Standort gefunden!
-                    <app-tts-icon text="Standort gefunden!"></app-tts-icon>
+                    {{ t().ui.locationFound }}
+                    <app-tts-icon [text]="t().ui.locationFound"></app-tts-icon>
                   </h3>
                   <p class="text-blue-900/70 mb-4 text-sm font-medium">
                     {{ detectedLocation.address || (detectedLocation.coords.latitude.toFixed(4) + ', ' + detectedLocation.coords.longitude.toFixed(4)) }}
-                    <app-tts-icon [text]="detectedLocation.address || 'Koordinaten gefunden'"></app-tts-icon>
+                    <app-tts-icon [text]="detectedLocation.address || t().ui.coordinatesFound"></app-tts-icon>
                   </p>
                   <button (click)="useLocation()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-xl shadow-md transition-transform active:scale-95 flex items-center justify-center gap-2 mb-4">
                     <span>{{ t().areas.locationBtnConfirm }}</span>
@@ -329,7 +329,7 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
                    <div>
                      <span class="font-bold text-lg text-slate-900 block flex items-center gap-2">
                        {{ t().viewModes[mode].name }}
-                       <span *ngIf="t().viewModes[mode].disabled" class="text-xs bg-slate-500 text-white px-2 py-0.5 rounded-full uppercase">Nicht möglich</span>
+                       <span *ngIf="t().viewModes[mode].disabled" class="text-xs bg-slate-500 text-white px-2 py-0.5 rounded-full uppercase">{{ t().ui.notAvailableBadge }}</span>
                      </span>
                      <span *ngIf="t().viewModes[mode].description" class="text-sm text-slate-500">{{ t().viewModes[mode].description }}</span>
                      <span *ngIf="t().viewModes[mode].disabled && t().viewModes[mode].disabledText" class="text-sm text-red-600 font-bold block mt-1">{{ t().viewModes[mode].disabledText }}</span>
@@ -631,7 +631,7 @@ export class WizardComponent implements OnInit {
       }
     }
     if (!name || name.toLowerCase() === 'deutsch' || name.toLowerCase() === 'german') {
-      return 'Standard';
+      return 'Robin'; // Default friendly name if we can't extract a better one
     }
     return name;
   }
@@ -641,6 +641,7 @@ export class WizardComponent implements OnInit {
     const voice = this.getGermanVoices().find(v => v.name === select.value);
     if (voice) {
       this.ttsService.setVoice(voice);
+      this.ttsService.speak(this.t().ui.voiceTestLabel);
     }
   }
 
@@ -653,7 +654,7 @@ export class WizardComponent implements OnInit {
       this.ttsService.disableTts();
     } else {
       this.ttsService.enableTts();
-      this.ttsService.speak('Die Vorlesefunktion ist jetzt eingeschaltet.');
+      this.ttsService.speak(this.t().ui.ttsEnabledFeedback);
     }
   }
 
@@ -662,7 +663,7 @@ export class WizardComponent implements OnInit {
       this.ttsService.disableConfirmSelection();
     } else {
       this.ttsService.enableConfirmSelection();
-      this.ttsService.speak(this.t().ui.confirmSelectionLabel + ' eingeschaltet.');
+      this.ttsService.speak(this.t().ui.confirmSelectionLabel + ' ' + this.t().ui.audioConfirmOn);
     }
   }
 
@@ -696,7 +697,7 @@ export class WizardComponent implements OnInit {
     const viewMode = this.t().viewModes[mode];
     if (viewMode.disabled) {
       if (this.ttsService.isTtsActive()) {
-        this.ttsService.speak(viewMode.disabledText || 'Diese Option ist nicht verfügbar.');
+        this.ttsService.speak(viewMode.disabledText || this.t().ui.notAvailableError);
       }
       return;
     }
@@ -882,7 +883,7 @@ export class WizardComponent implements OnInit {
       
       if (this.ttsService.isTtsActive()) {
         const nextTitle = this.t().steps[this.currentStep()].title;
-        this.ttsService.speak("Nächster Schritt: " + nextTitle);
+        this.ttsService.speak(this.t().ui.nextStepLabel + " " + nextTitle);
       }
     }
   }
@@ -894,7 +895,7 @@ export class WizardComponent implements OnInit {
       
       if (this.ttsService.isTtsActive()) {
         const prevTitle = this.t().steps[this.currentStep()].title;
-        this.ttsService.speak("Zurück zu: " + prevTitle);
+        this.ttsService.speak(this.t().ui.prevStepLabel + " " + prevTitle);
       }
     }
   }

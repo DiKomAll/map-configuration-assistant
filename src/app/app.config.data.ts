@@ -15,6 +15,20 @@ export interface TranslationResource {
     confirmSelectionDesc: string;
     selectionAdded: string;
     selectionRemoved: string;
+    notAvailableBadge: string;
+    notAvailableError: string;
+    stepIndicatorSeparator: string;
+    locationFound: string;
+    coordinatesFound: string;
+    ttsEnabledFeedback: string;
+    ttsGreeting: string;
+    companionLabel: string;
+    voiceTestLabel: string;
+    changeLabel: string;
+    startAppBtn: string;
+    audioConfirmOn: string;
+    nextStepLabel: string;
+    prevStepLabel: string;
   };
   steps: {
     title: string;
@@ -201,6 +215,20 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       confirmSelectionDesc: 'Die App sagt dir, was du angeklickt hast.',
       selectionAdded: 'Du hast ausgewählt:',
       selectionRemoved: 'Du hast abgewählt:',
+      notAvailableBadge: 'Nicht möglich',
+      notAvailableError: 'Diese Option ist nicht verfügbar.',
+      stepIndicatorSeparator: 'von',
+      locationFound: 'Standort gefunden!',
+      coordinatesFound: 'Koordinaten gefunden',
+      ttsEnabledFeedback: 'Die Vorlesefunktion ist jetzt eingeschaltet.',
+      ttsGreeting: 'Hallo! Ich bin dein Begleiter und helfe dir bei deiner Karte. Gefällt dir meine Stimme?',
+      companionLabel: 'Wähle deinen Begleiter:',
+      voiceTestLabel: 'Stimme wurde gewechselt.',
+      changeLabel: '(hier klicken zum Ändern)',
+      startAppBtn: "Alles fertig. Los geht's!",
+      audioConfirmOn: 'eingeschaltet.',
+      nextStepLabel: 'Nächster Schritt:',
+      prevStepLabel: 'Zurück zu:',
     },
     steps: [
       { title: 'Welchen Ort möchtest du sehen?', description: 'Wähle einen Ort aus der Liste oder suche nach einem bestimmten Ort.' },
@@ -283,6 +311,20 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       confirmSelectionDesc: 'Gibt eine kurze Rückmeldung bei Auswahl eines Elements.',
       selectionAdded: 'Auswahl bestätigt:',
       selectionRemoved: 'Abgewählt:',
+      notAvailableBadge: 'Nicht verfügbar',
+      notAvailableError: 'Diese Option wird derzeit nicht unterstützt.',
+      stepIndicatorSeparator: '/',
+      locationFound: 'Standort ermittelt!',
+      coordinatesFound: 'Koordinaten extrahiert',
+      ttsEnabledFeedback: 'Vorlesefunktion aktiviert.',
+      ttsGreeting: 'Guten Tag. Ich begleite Sie bei der Konfiguration der Anwendung. Ist diese Stimme für Sie angenehm?',
+      companionLabel: 'Begleiter-Profil wählen:',
+      voiceTestLabel: 'Stimme angepasst.',
+      changeLabel: '(Klicken zum Ändern)',
+      startAppBtn: 'Konfiguration abschließen',
+      audioConfirmOn: 'aktiviert.',
+      nextStepLabel: 'Nächster Schritt:',
+      prevStepLabel: 'Vorheriger Schritt:',
     },
     steps: [
       { title: 'Basiskarte', description: 'Wählen Sie die Datengrundlage.' },

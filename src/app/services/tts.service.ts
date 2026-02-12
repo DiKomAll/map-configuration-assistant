@@ -7,9 +7,11 @@ export class TtsService {
   private speechSynthesis: SpeechSynthesis;
   private utterance: SpeechSynthesisUtterance;
   private isTtsEnabled: boolean = false;
+  private isConfirmSelectionEnabled: boolean = true; // Default to true if TTS is enabled
 
   // Signal for voices to ensure reactivity
   voices = signal<SpeechSynthesisVoice[]>([]);
+  confirmSelection = signal<boolean>(true);
 
   constructor() {
     this.speechSynthesis = window.speechSynthesis;
@@ -65,6 +67,18 @@ export class TtsService {
 
   isTtsActive(): boolean {
     return this.isTtsEnabled;
+  }
+
+  isConfirmSelectionActive(): boolean {
+    return this.confirmSelection();
+  }
+
+  enableConfirmSelection(): void {
+    this.confirmSelection.set(true);
+  }
+
+  disableConfirmSelection(): void {
+    this.confirmSelection.set(false);
   }
 
   speak(text: string): void {

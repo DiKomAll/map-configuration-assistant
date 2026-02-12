@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { TtsService } from '../../services/tts.service';
 
 @Component({
@@ -15,7 +15,7 @@ import { TtsService } from '../../services/tts.service';
           Möchten Sie, dass Ihnen die Texte in dieser App vorgelesen werden?
         </p>
         
-        <div class="options">
+        <div class="options" *ngIf="!showStartButton">
           <button (click)="enableTts()" class="btn btn-primary" aria-label="Ja, Vorlesefunktion einschalten">
             <span class="icon">🔊</span>
             <span class="text">Ja, bitte vorlesen</span>
@@ -27,36 +27,64 @@ import { TtsService } from '../../services/tts.service';
           </button>
         </div>
 
-        <div class="voice-selection-container" *ngIf="getGermanVoices().length > 0">
-          <p class="subtitle">Wählen Sie Ihre bevorzugte Stimme:</p>
-          <div class="voice-grid">
-            <button 
-              *ngFor="let voice of getGermanVoices()" 
-              (click)="selectVoice(voice)"
-              class="voice-tile"
-              [class.active]="getSelectedVoiceName() === voice.name"
-              [attr.aria-label]="'Stimme ' + getFriendlyName(voice.name) + ' auswählen'"
-            >
-              <div class="silhouette">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C9.24 2 7 4.24 7 7s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 12c-4.42 0-8 2.58-8 6v2h16v-2c0-3.42-3.58-6-8-6z"/>
-                </svg>
+        <div *ngIf="showStartButton" class="settings-active animate-fade-in">
+          <button (click)="resetTts()" class="status-badge-btn" title="Vorlesefunktion wieder ausschalten">
+             <span class="icon">✅</span> 
+             <span class="text">Vorlesefunktion ist AN</span>
+             <span class="change-label">(hier klicken zum Ändern)</span>
+          </button>
+
+          <div class="confirm-selection-toggle">
+            <label class="switch-container">
+              <div class="switch-text">
+                <span class="switch-title">Soll ich dir sagen, was du angeklickt hast?</span>
+                <p class="switch-desc">Ich sage dir dann zum Beispiel: "Du hast die Farbkarte ausgewählt".</p>
               </div>
-              <span class="voice-name">{{ getFriendlyName(voice.name) }}</span>
-              <div class="check-icon" *ngIf="getSelectedVoiceName() === voice.name">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
+              <div class="switch-action">
+                <button (click)="toggleConfirmSelection()" class="relative inline-flex h-10 w-16 items-center rounded-full transition-colors focus:outline-none" [style.background-color]="ttsService.isConfirmSelectionActive() ? '#10b981' : '#cbd5e1'">
+                  <span class="inline-block h-8 w-8 transform rounded-full bg-white shadow-md transition-transform" [style.transform]="ttsService.isConfirmSelectionActive() ? 'translateX(28px)' : 'translateX(4px)'"></span>
+                </button>
               </div>
+            </label>
+          </div>
+
+          <div class="voice-selection-container" *ngIf="getGermanVoices().length > 0">
+            <p class="subtitle">Wähle deine Lieblings-Stimme:</p>
+            <div class="voice-grid">
+              <button 
+                *ngFor="let voice of getGermanVoices()" 
+                (click)="selectVoice(voice)"
+                class="voice-tile"
+                [class.active]="getSelectedVoiceName() === voice.name"
+                [attr.aria-label]="'Stimme ' + getFriendlyName(voice.name) + ' auswählen'"
+              >
+                <div class="silhouette">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C9.24 2 7 4.24 7 7s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 12c-4.42 0-8 2.58-8 6v2h16v-2c0-3.42-3.58-6-8-6z"/>
+                  </svg>
+                </div>
+                <span class="voice-name">{{ getFriendlyName(voice.name) }}</span>
+                <div class="check-icon" *ngIf="getSelectedVoiceName() === voice.name">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </div>
+              </button>
+            </div>
+            <button (click)="testVoice()" class="btn-test-large">
+              <span>🔊</span> Stimme testen
             </button>
           </div>
-          <button (click)="testVoice()" class="btn-test-large" [disabled]="!getSelectedVoiceName()">
-            <span>🔊</span> Stimme testen
-          </button>
+
+          <div class="navigation-action">
+            <button (click)="startApp()" class="btn btn-start-app">
+               Alles fertig. Los geht's!
+            </button>
+          </div>
         </div>
 
-        <p class="accessibility-note">
-          Diese Einstellung können Sie später jederzeit ändern.
+        <p class="accessibility-note" *ngIf="!showStartButton">
+          Diese Einstellung kannst du später jederzeit ändern.
         </p>
       </div>
     </div>
@@ -128,6 +156,88 @@ import { TtsService } from '../../services/tts.service';
     }
     .btn-secondary:hover {
       background-color: #5a6268;
+    }
+    .status-badge-btn {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 12px 20px;
+      background: #ecfdf5;
+      color: #065f46;
+      border: 2px solid #10b981;
+      border-radius: 16px;
+      font-weight: bold;
+      font-size: 1rem;
+      margin-bottom: 24px;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+    }
+    .status-badge-btn:hover {
+      background: #d1fae5;
+      transform: scale(1.02);
+    }
+    .status-badge-btn .text {
+      font-size: 1.1rem;
+    }
+    .change-label {
+      font-size: 0.8rem;
+      color: #047857;
+      font-weight: normal;
+      text-decoration: underline;
+    }
+    .btn-start-app {
+      background-color: #059669;
+      color: white;
+      width: 100%;
+      margin-top: 30px;
+      padding: 25px !important;
+      font-size: 1.5rem !important;
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+    }
+    .btn-start-app:hover {
+      background-color: #047857;
+    }
+    .navigation-action {
+      margin-top: 20px;
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.4s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .confirm-selection-toggle {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f0fdf4;
+      border: 1px solid #dcfce7;
+      border-radius: 12px;
+      text-align: left;
+    }
+    .switch-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      cursor: pointer;
+    }
+    .switch-title {
+      display: block;
+      font-weight: bold;
+      color: #065f46;
+      font-size: 1.1rem;
+    }
+    .switch-desc {
+      margin: 4px 0 0 0;
+      font-size: 0.9rem;
+      color: #047857;
+      line-height: 1.3;
+    }
+    .switch-action {
+      flex-shrink: 0;
     }
     .icon {
       font-size: 2rem;
@@ -228,11 +338,25 @@ import { TtsService } from '../../services/tts.service';
     }
   `]
 })
-export class TtsConsentComponent {
+export class TtsConsentComponent implements OnInit {
+  showStartButton = false;
+  returnStep: string | null = null;
+
   constructor(
-    private ttsService: TtsService,
-    private router: Router
+    public ttsService: TtsService,
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
+
+  ngOnInit() {
+    // Falls TTS bereits aktiv ist (z.B. Rückkehr aus dem Wizard), direkt Einstellungen zeigen
+    if (this.ttsService.isTtsActive()) {
+      this.showStartButton = true;
+    }
+    
+    // Merken, zu welchem Schritt wir zurückkehren müssen
+    this.returnStep = this.route.snapshot.queryParamMap.get('returnStep');
+  }
 
   getGermanVoices(): SpeechSynthesisVoice[] {
     return this.ttsService.getVoices().filter(v => v.lang.startsWith('de'));
@@ -267,22 +391,31 @@ export class TtsConsentComponent {
     this.ttsService.setVoice(voice);
   }
 
+  toggleConfirmSelection() {
+    if (this.ttsService.isConfirmSelectionActive()) {
+      this.ttsService.disableConfirmSelection();
+    } else {
+      this.ttsService.enableConfirmSelection();
+      this.ttsService.speak("Ich werde dir jetzt Bescheid sagen, wenn du etwas anklickst.");
+    }
+  }
+
   testVoice() {
     // Temporarily enable to test, then disable if it was disabled
     const wasActive = this.ttsService.isTtsActive();
     if (!wasActive) this.ttsService.enableTts();
     this.ttsService.speak("Dies ist ein Test der gewählten Stimme.");
-    if (!wasActive) {
-      // We don't want to leave it active if they haven't clicked "Yes" yet.
-      // But speak is async, so we might need a timeout or just accept it's active for a moment.
-      // For simplicity, let's just keep it enabled if they test it.
-    }
   }
 
   enableTts() {
     this.ttsService.enableTts();
-    this.ttsService.speak("Die Vorlesefunktion wurde eingeschaltet.");
-    this.navigateToApp();
+    this.ttsService.speak("Die Vorlesefunktion wurde eingeschaltet. Du kannst jetzt noch Einstellungen vornehmen oder direkt starten.");
+    this.showStartButton = true;
+  }
+
+  resetTts() {
+    this.ttsService.disableTts();
+    this.showStartButton = false;
   }
 
   disableTts() {
@@ -290,9 +423,12 @@ export class TtsConsentComponent {
     this.navigateToApp();
   }
 
+  startApp() {
+    this.navigateToApp();
+  }
+
   private navigateToApp() {
-    // We will define the route for the main app logic later.
-    // Assuming 'wizard' or just '/' if we change the routes.
-    this.router.navigate(['/wizard']);
+    const queryParams = this.returnStep ? { step: this.returnStep } : {};
+    this.router.navigate(['/wizard'], { queryParams });
   }
 }

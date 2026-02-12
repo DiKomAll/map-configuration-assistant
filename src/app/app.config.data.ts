@@ -11,6 +11,10 @@ export interface TranslationResource {
     prevBtn: string;
     finishBtn: string;
     profileLabel: string;
+    confirmSelectionLabel: string;
+    confirmSelectionDesc: string;
+    selectionAdded: string;
+    selectionRemoved: string;
   };
   steps: {
     title: string;
@@ -35,7 +39,7 @@ export interface TranslationResource {
     spatialLevelLabel?: string;
     orLabel?: string; 
   };
-  viewModes: Record<string, { name: string; description: string }>;
+  viewModes: Record<string, { name: string; description: string; disabled?: boolean; disabledText?: string }>;
   landmarks: {
     title: string;
     expertTitle?: string;
@@ -193,6 +197,10 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       prevBtn: 'Zurück',
       finishBtn: 'zu deiner Karte',
       profileLabel: 'Modus: Einfach',
+      confirmSelectionLabel: 'Auswahl bestätigen',
+      confirmSelectionDesc: 'Die App sagt dir, was du angeklickt hast.',
+      selectionAdded: 'Du hast ausgewählt:',
+      selectionRemoved: 'Du hast abgewählt:',
     },
     steps: [
       { title: 'Welchen Ort möchtest du sehen?', description: 'Wähle einen Ort aus der Liste oder suche nach einem bestimmten Ort.' },
@@ -224,9 +232,9 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       manualSelectionTitle: 'Beliebte Orte',
     },
     viewModes: {
-      'twodimensional': { name: 'Von oben ohne Gebäude', description: '' },
-      'twoandhalfdimensional': { name: 'Von oben mit Gebäuden', description: '' },
-      'threedimensional': { name: 'Schrägansicht mit Gebäuden ()', description: '' },
+      'twodimensional': { name: 'Von oben ohne Gebäude', description: '', disabled: false },
+      'twoandhalfdimensional': { name: 'Von oben mit Gebäuden', description: '', disabled: false },
+      'threedimensional': { name: 'Schrägansicht mit Gebäuden', description: '', disabled: true, disabledText: 'Das geht leider gerade nicht.' },
     },
     landmarks: {
       title: 'Wonach suchst du in der Karte?',
@@ -271,6 +279,10 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       prevBtn: 'Zurück',
       finishBtn: 'Anwendung starten',
       profileLabel: 'Modus: Experte',
+      confirmSelectionLabel: 'Selektion akustisch bestätigen',
+      confirmSelectionDesc: 'Gibt eine kurze Rückmeldung bei Auswahl eines Elements.',
+      selectionAdded: 'Auswahl bestätigt:',
+      selectionRemoved: 'Abgewählt:',
     },
     steps: [
       { title: 'Basiskarte', description: 'Wählen Sie die Datengrundlage.' },
@@ -303,9 +315,9 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       spatialLevelLabel: 'Raumebene wählen:',
     },
     viewModes: {
-      'twodimensional': { name: '2D Karte', description: 'Klassische Draufsicht.' },
-      'twoandhalfdimensional': { name: '2.5D Gebäude', description: 'Extrudierte Gebäudekörper.' },
-      'threedimensional': { name: '3D Umgebung', description: 'Freie 3D-Navigation.' },
+      'twodimensional': { name: '2D Karte', description: 'Klassische Draufsicht.', disabled: false },
+      'twoandhalfdimensional': { name: '2.5D Gebäude', description: 'Extrudierte Gebäudekörper.', disabled: false },
+      'threedimensional': { name: '3D Umgebung', description: 'Freie 3D-Navigation.', disabled: true, disabledText: 'Diese Option wird von der Zielanwendung derzeit nicht unterstützt.' },
     },
     landmarks: {
       title: 'Kategorien',

@@ -1,6 +1,7 @@
 import { Component, signal, computed, effect, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
 import { TtsIconComponent } from '../tts-icon/tts-icon.component';
 import { TtsService } from '../../services/tts.service';
 
@@ -25,7 +26,7 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
             <!-- TTS Settings Toggle -->
             <div class="relative">
               <button 
-                (click)="toggleTtsMenu()" 
+                (click)="goToTtsSettings()" 
                 class="p-2 rounded-full border transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 [class.bg-emerald-500]="ttsService.isTtsActive()"
                 [class.text-white]="ttsService.isTtsActive()"
@@ -37,26 +38,6 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
                   <path d="M560-131v-82q90-26 145-100t55-167q0-93-55-167T560-747v-82q123 28 201.5 125.5T840-480q0 127-78.5 224.5T560-131ZM120-360v-240h160l200-200v640L280-360H120Zm440 40v-320q47 15 73.5 56.5T660-480q0 47-26.5 88.5T560-320ZM400-606l-86 86H200v80h114l86 86v-252ZM300-480Z"/>
                 </svg>
               </button>
-
-              <!-- TTS Dropdown Menu (Mobile friendly) -->
-              <div *ngIf="showTtsMenu" class="absolute right-0 mt-2 w-64 bg-white border border-slate-200 rounded-xl shadow-xl z-50 p-4 animate-scale-in">
-                <div class="flex items-center justify-between mb-4">
-                  <span class="font-bold text-sm">Vorlesen</span>
-                  <button (click)="toggleTts()" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none" [class.bg-emerald-500]="ttsService.isTtsActive()" [class.bg-slate-300]="!ttsService.isTtsActive()">
-                    <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform" [class.translate-x-6]="ttsService.isTtsActive()" [class.translate-x-1]="!ttsService.isTtsActive()"></span>
-                  </button>
-                </div>
-
-                <div *ngIf="ttsService.isTtsActive() && getGermanVoices().length > 1" class="space-y-2">
-                  <label class="text-xs font-semibold text-slate-500 uppercase">Stimme</label>
-                  <select (change)="onVoiceChange($event)" [value]="getSelectedVoiceName()" class="w-full p-2 text-sm rounded border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                    <option *ngFor="let voice of getGermanVoices()" [value]="voice.name">{{ getFriendlyName(voice.name) }}</option>
-                  </select>
-                  <button (click)="ttsService.speak('Test')" class="w-full py-1 text-xs bg-slate-100 rounded hover:bg-slate-200 transition-colors">Stimme testen</button>
-                </div>
-                
-                <button (click)="showTtsMenu = false" class="w-full mt-4 py-2 text-sm font-bold text-emerald-600 hover:bg-emerald-50 rounded transition-colors border border-emerald-100">Schließen</button>
-              </div>
             </div>
 
             <button 
@@ -333,14 +314,32 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
           <!-- STEP 2: Ansicht -->
           <fieldset *ngSwitchCase="2" class="space-y-6 border-0 p-0 m-0">
              <legend class="sr-only">{{ t().steps[2].title }}</legend>
-             <div *ngFor="let mode of viewModeKeys" class="rounded-xl border-2 overflow-hidden transition-all bg-white hover:border-slate-400" [class.border-emerald-500]="config.viewMode === mode" [class.ring-2]="config.viewMode === mode" [class.ring-emerald-100]="config.viewMode === mode" [class.border-slate-200]="config.viewMode !== mode">
-               <div class="relative w-full p-4 text-left flex items-center justify-between bg-slate-50 border-b border-slate-100">
-                 <button type="button" (click)="config.viewMode = mode" class="flex-1 text-left focus:outline-none">
-                   <div><span class="font-bold text-lg text-slate-900 block">{{ t().viewModes[mode].name }}</span><span *ngIf="t().viewModes[mode].description" class="text-sm text-slate-500">{{ t().viewModes[mode].description }}</span></div>
+             <div *ngFor="let mode of viewModeKeys" 
+                  class="rounded-xl border-2 overflow-hidden transition-all bg-white" 
+                  [class.border-emerald-500]="config.viewMode === mode" 
+                  [class.ring-2]="config.viewMode === mode" 
+                  [class.ring-emerald-100]="config.viewMode === mode" 
+                  [class.border-slate-200]="config.viewMode !== mode"
+                  [class.opacity-60]="t().viewModes[mode].disabled"
+                  [class.grayscale]="t().viewModes[mode].disabled">
+               
+               <div class="relative w-full p-4 text-left flex items-center justify-between bg-slate-50 border-b border-slate-100"
+                    [class.bg-slate-200]="t().viewModes[mode].disabled">
+                 <button type="button" (click)="onViewModeClick(mode)" class="flex-1 text-left focus:outline-none" [attr.aria-disabled]="t().viewModes[mode].disabled">
+                   <div>
+                     <span class="font-bold text-lg text-slate-900 block flex items-center gap-2">
+                       {{ t().viewModes[mode].name }}
+                       <span *ngIf="t().viewModes[mode].disabled" class="text-xs bg-slate-500 text-white px-2 py-0.5 rounded-full uppercase">Nicht möglich</span>
+                     </span>
+                     <span *ngIf="t().viewModes[mode].description" class="text-sm text-slate-500">{{ t().viewModes[mode].description }}</span>
+                     <span *ngIf="t().viewModes[mode].disabled && t().viewModes[mode].disabledText" class="text-sm text-red-600 font-bold block mt-1">{{ t().viewModes[mode].disabledText }}</span>
+                   </div>
                  </button>
                  <div class="flex items-center gap-4">
-                   <app-tts-icon [text]="t().viewModes[mode].name + (t().viewModes[mode].description ? '. ' + t().viewModes[mode].description : '')"></app-tts-icon>
-                   <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center bg-white border-slate-300" [class.border-emerald-500]="config.viewMode === mode"><div class="w-3 h-3 rounded-full bg-emerald-500" *ngIf="config.viewMode === mode"></div></div>
+                   <app-tts-icon [text]="t().viewModes[mode].name + (t().viewModes[mode].description ? '. ' + t().viewModes[mode].description : '') + (t().viewModes[mode].disabled ? '. ' + t().viewModes[mode].disabledText : '')"></app-tts-icon>
+                   <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center bg-white border-slate-300" [class.border-emerald-500]="config.viewMode === mode && !t().viewModes[mode].disabled">
+                     <div class="w-3 h-3 rounded-full bg-emerald-500" *ngIf="config.viewMode === mode && !t().viewModes[mode].disabled"></div>
+                   </div>
                  </div>
                </div>
                <div class="h-32 md:h-48 w-full bg-slate-100 relative"><img [src]="data.viewModeImages[mode]" class="w-full h-full object-cover" alt="" aria-hidden="true"></div>
@@ -405,7 +404,7 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
               </legend>
               <div *ngIf="profile() === 'simple'" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div *ngFor="let opt of ['symbols', 'symbols_labels', 'photos']" class="relative group">
-                  <button type="button" (click)="config.symbolStyle = opt" [attr.aria-pressed]="config.symbolStyle === opt" class="w-full relative h-48 rounded-2xl border-2 overflow-hidden text-left transition-all focus:outline-none focus:ring-4 focus:ring-emerald-500/50 flex flex-col" [class.border-emerald-500]="config.symbolStyle === opt" [class.border-slate-200]="config.symbolStyle !== opt">
+                  <button type="button" (click)="selectSymbolStyle(opt)" [attr.aria-pressed]="config.symbolStyle === opt" class="w-full relative h-48 rounded-2xl border-2 overflow-hidden text-left transition-all focus:outline-none focus:ring-4 focus:ring-emerald-500/50 flex flex-col" [class.border-emerald-500]="config.symbolStyle === opt" [class.border-slate-200]="config.symbolStyle !== opt">
                     <div class="flex-1 bg-slate-100 relative overflow-hidden">
                       <div class="absolute inset-0 opacity-30" style="background-image: radial-gradient(#94a3b8 1px, transparent 1px); background-size: 10px 10px;"></div>
                       
@@ -432,7 +431,7 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
               </div>
               <div *ngIf="profile() === 'expert'" class="space-y-3">
                 <div *ngFor="let opt of ['symbols', 'symbols_labels', 'photos']" class="flex items-center gap-2">
-                  <button type="button" (click)="config.symbolStyle = opt" class="flex-1 p-4 rounded-xl border-2 flex items-center gap-4 text-left transition-all bg-white hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/50" [class.border-emerald-500]="config.symbolStyle === opt" [class.border-slate-200]="config.symbolStyle !== opt">
+                  <button type="button" (click)="selectSymbolStyle(opt)" class="flex-1 p-4 rounded-xl border-2 flex items-center gap-4 text-left transition-all bg-white hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/50" [class.border-emerald-500]="config.symbolStyle === opt" [class.border-slate-200]="config.symbolStyle !== opt">
                     <div class="w-16 h-12 bg-white rounded border border-slate-200 flex items-center justify-center shadow-sm relative overflow-hidden shrink-0">
                        <ng-container *ngIf="opt === 'photos'"><img [src]="data.assets.visualPreviewPhoto" class="w-full h-full object-cover opacity-80" alt=""></ng-container>
                        <ng-container *ngIf="opt !== 'photos'"><div class="bg-slate-100 absolute inset-0"></div><div class="w-3 h-3 rounded-full bg-blue-500 border border-white relative z-10 shadow-sm"></div><div *ngIf="opt === 'symbols_labels'" class="ml-1 h-2 w-6 bg-white border border-slate-300 rounded shadow-sm relative z-10"></div></ng-container>
@@ -559,7 +558,6 @@ export class WizardComponent implements OnInit {
   isSearching = false;
   searchResults: any[] = [];
   searchTimeout: any;
-  showTtsMenu = false;
 
   config: {
     mapStyle: string;
@@ -591,10 +589,23 @@ export class WizardComponent implements OnInit {
     return ((this.currentStep() + 1) / this.steps.length) * 100;
   });
 
-  constructor(public ttsService: TtsService) {}
+  constructor(
+    public ttsService: TtsService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit() {
     this.checkGeolocation();
+    
+    // Aktuellen Schritt aus der URL laden, falls vorhanden (nach Rückkehr von Einstellungen)
+    const stepParam = this.route.snapshot.queryParamMap.get('step');
+    if (stepParam) {
+      const stepIdx = parseInt(stepParam, 10);
+      if (!isNaN(stepIdx) && stepIdx >= 0 && stepIdx < this.steps.length) {
+        this.currentStep.set(stepIdx);
+      }
+    }
   }
 
   getGermanVoices(): SpeechSynthesisVoice[] {
@@ -627,8 +638,8 @@ export class WizardComponent implements OnInit {
     }
   }
 
-  toggleTtsMenu() {
-    this.showTtsMenu = !this.showTtsMenu;
+  goToTtsSettings() {
+    this.router.navigate(['/'], { queryParams: { returnStep: this.currentStep().toString() } });
   }
 
   toggleTts() {
@@ -637,6 +648,22 @@ export class WizardComponent implements OnInit {
     } else {
       this.ttsService.enableTts();
       this.ttsService.speak('Die Vorlesefunktion ist jetzt eingeschaltet.');
+    }
+  }
+
+  toggleConfirmSelection() {
+    if (this.ttsService.isConfirmSelectionActive()) {
+      this.ttsService.disableConfirmSelection();
+    } else {
+      this.ttsService.enableConfirmSelection();
+      this.ttsService.speak(this.t().ui.confirmSelectionLabel + ' eingeschaltet.');
+    }
+  }
+
+  private speakSelectionChange(name: string, isAdded: boolean) {
+    if (this.ttsService.isTtsActive() && this.ttsService.isConfirmSelectionActive()) {
+      const prefix = isAdded ? this.t().ui.selectionAdded : this.t().ui.selectionRemoved;
+      this.ttsService.speak(`${prefix} ${name}`);
     }
   }
 
@@ -651,6 +678,19 @@ export class WizardComponent implements OnInit {
 
   selectMapStyle(id: string) {
     this.config.mapStyle = id;
+    this.speakSelectionChange(this.t().mapStyles[id].name, true);
+  }
+
+  onViewModeClick(mode: string) {
+    const viewMode = this.t().viewModes[mode];
+    if (viewMode.disabled) {
+      if (this.ttsService.isTtsActive()) {
+        this.ttsService.speak(viewMode.disabledText || 'Diese Option ist nicht verfügbar.');
+      }
+      return;
+    }
+    this.config.viewMode = mode;
+    this.speakSelectionChange(viewMode.name, true);
   }
 
   // --- AREA SELECTION LOGIC ---
@@ -752,8 +792,10 @@ export class WizardComponent implements OnInit {
   toggleArea(area: string) {
     if (this.config.area === area) {
       this.config.area = ''; 
+      this.speakSelectionChange(area, false);
     } else {
       this.config.area = area;
+      this.speakSelectionChange(area, true);
     }
 
     // set coordinates in config object from selected place
@@ -771,15 +813,34 @@ export class WizardComponent implements OnInit {
 
   toggleLandmark(id: string) {
     const index = this.config.landmarks.indexOf(id);
+    let name = this.t().landmarks.items[id] || id;
+    
+    // In expert mode, the id might be from catalog resources
+    if (this.profile() === 'expert' && !this.t().landmarks.items[id]) {
+       for (const cat of this.data.expertLandmarkResources) {
+         const res = cat.resources.find(r => r.id === id);
+         if (res) { name = res.name; break; }
+       }
+    }
+
     if (index > -1) {
       this.config.landmarks.splice(index, 1);
+      this.speakSelectionChange(name, false);
     } else {
       this.config.landmarks.push(id);
+      this.speakSelectionChange(name, true);
     }
   }
 
   toggleSpeech() {
     this.config.speechOutput = !this.config.speechOutput;
+    const stateName = this.config.speechOutput ? this.t().summary.values.active : this.t().summary.values.inactive;
+    this.speakSelectionChange(this.t().audio.btnTitle + ' ' + stateName, true);
+  }
+
+  selectSymbolStyle(style: string) {
+    this.config.symbolStyle = style;
+    this.speakSelectionChange(this.t().visuals.options[style].name, true);
   }
 
   toggleProfile() {

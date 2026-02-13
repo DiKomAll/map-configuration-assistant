@@ -597,21 +597,22 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
             <div class="h-px w-full bg-slate-200 mb-8"></div>
 
             <div class="mb-8 space-y-6">
-              <div class="bg-blue-50 border border-blue-100 rounded-2xl p-4 flex gap-4 items-center animate-fade-in shadow-sm">
-                <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                </div>
-                <div class="text-left">
-                  <p class="text-blue-900 font-bold leading-tight">
-                      {{ t().ui.mapInstructions }}
-                      <app-tts-icon [text]="t().ui.mapInstructions"></app-tts-icon>
-                  </p>
-                </div>
+              <div class="text-left">
+                <h3 class="text-lg font-bold text-slate-900 mb-1 flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                  {{ t().ui.previewLabel }}
+                  <app-tts-icon [text]="t().ui.previewLabel"></app-tts-icon>
+                </h3>
+                <p class="text-sm text-slate-500 mb-4">{{ t().ui.mapInstructions }}
+                  <app-tts-icon [text]="t().ui.mapInstructions"></app-tts-icon>
+                  
+                </p>
               </div>
 
               <app-map-preview [config]="config" [profile]="profile()" [animationEnabled]="data.mapAnimationEnabled"></app-map-preview>
 
-              <div class="flex items-center justify-center gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+              <!-- map animation control switch -->
+              <!-- <div class="flex items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                 <label class="font-bold text-slate-700 cursor-pointer flex items-center gap-2" (click)="data.mapAnimationEnabled = !data.mapAnimationEnabled">
                   <div class="w-12 h-7 rounded-full p-1 transition-colors duration-200 ease-in-out" [class.bg-emerald-500]="data.mapAnimationEnabled" [class.bg-slate-300]="!data.mapAnimationEnabled">
                     <div class="bg-white w-5 h-5 rounded-full shadow-sm transform transition-transform duration-200 ease-in-out" [class.translate-x-5]="data.mapAnimationEnabled" [class.translate-x-0]="!data.mapAnimationEnabled"></div>
@@ -619,14 +620,21 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
                   <span>{{ t().ui.mapAnimationLabel }}</span>
                 </label>
                 <app-tts-icon [text]="t().ui.mapAnimationLabel"></app-tts-icon>
-              </div>
+              </div> -->
             </div>
 
-            <div class="flex items-center gap-2">
-              <button (click)="openExternalApp()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 focus:ring-4 focus:ring-emerald-500/50 text-white font-bold py-4 px-6 rounded-xl shadow-lg shadow-emerald-200 transform transition hover:scale-105 focus:scale-105 outline-none">
-                {{ t().ui.finishBtn }}
-              </button>
-              <app-tts-icon [text]="t().ui.finishBtn"></app-tts-icon>
+            <div class="bg-emerald-50 border-2 border-emerald-100 rounded-2xl p-6 mb-8 animate-pulse">
+               <p class="text-emerald-900 font-black text-lg mb-4">
+                 {{ t().ui.startAppHint }}
+                 <app-tts-icon [text]="t().ui.startAppHint"></app-tts-icon>
+               </p>
+               <div class="flex items-center gap-2">
+                 <button (click)="openExternalApp()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 focus:ring-4 focus:ring-emerald-500/50 text-white font-black text-xl py-5 px-8 rounded-2xl shadow-xl shadow-emerald-200 transform transition hover:scale-105 active:scale-95 outline-none flex items-center justify-center gap-3">
+                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 5l7 7-7 7M5 5l7 7-7 7" /></svg>
+                   {{ t().ui.finishBtn }}
+                 </button>
+                 <app-tts-icon [text]="t().ui.finishBtn"></app-tts-icon>
+               </div>
             </div>
           </div>
 

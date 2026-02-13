@@ -50,6 +50,7 @@ export class MapPreviewComponent implements OnInit, OnChanges, AfterViewInit, On
   private marker?: L.Marker;
   private osmb?: any;
   private animationTimeout?: any;
+  private userInteracted = false;
   
   showInterationHint = false;
   // animationEnabled = DATA_CONFIG.mapAnimationEnabled; // Removed local state
@@ -91,18 +92,19 @@ export class MapPreviewComponent implements OnInit, OnChanges, AfterViewInit, On
   private initMap() {
     const startLat = this.config.lat || 51.538957;
     const startLon = this.config.lon || 7.221126;
+    const isMobile = L.Browser.mobile;
 
     this.map = L.map(this.mapContainer.nativeElement, {
       center: [startLat, startLon],
       zoom: 17,
-      scrollWheelZoom: false, // Disables scroll zoom for one-finger scrolling
-      dragging: !L.Browser.mobile, // Disable dragging on mobile for one-finger scroll
+      scrollWheelZoom: !isMobile,
+      dragging: !isMobile,
       zoomDelta: 1,
       zoomSnap: 1,
     });
 
-    // Handle two-finger interaction on mobile
-    if (L.Browser.mobile) {
+    // Handle two-finger interaction ONLY on mobile
+    if (isMobile) {
       this.map.on('touchstart', (e: L.LeafletEvent) => {
         const originalEvent = (e as any).originalEvent;
         const touches = originalEvent ? originalEvent.touches : null;
@@ -120,6 +122,11 @@ export class MapPreviewComponent implements OnInit, OnChanges, AfterViewInit, On
         this.showInterationHint = false;
       });
     }
+
+    // Stop animation on any user interaction
+    this.map.on('dragstart', () => this.handleUserInteraction());
+    this.map.on('zoomstart', () => this.handleUserInteraction());
+    this.map.on('mousedown', () => this.handleUserInteraction());
 
     this.updateMap();
     
@@ -234,12 +241,14 @@ export class MapPreviewComponent implements OnInit, OnChanges, AfterViewInit, On
         });
     } else {
         // Default / Symbol only
+        // Icon + Label
+        const sym = place ? place.image : 'assets/emma_the_muh.png'; // Fallback
         icon = L.divIcon({
             className: 'custom-div-icon',
             html: `
-              <div class="marker-pin" style="background: #10b981;">
+              <div class="marker-pin" style="background: #3b82f6;">
                 <div class="marker-pin-inner">
-                   <svg viewBox="0 0 24 24" fill="#10b981" width="24" height="24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                   <img src="${sym}" style="padding: 5px;">
                 </div>
               </div>
             `,
@@ -295,45 +304,36 @@ export class MapPreviewComponent implements OnInit, OnChanges, AfterViewInit, On
     }
   }
 
+  private handleUserInteraction() {
+    if (!this.userInteracted) {
+      this.userInteracted = true;
+      this.stopAnimation();
+    }
+  }
+
   private startGentleAnimation() {
-    if (!this.map || !this.animationEnabled) return;
+    if (!this.map || !this.animationEnabled || this.userInteracted) return;
 
     const center = this.map.getCenter();
-    const zoom = this.map.getZoom();
 
     const animate = () => {
-      if (!this.animationEnabled || !this.map) return;
+      if (!this.animationEnabled || !this.map || this.userInteracted) return;
 
-      // a) leichtes Verschieben
-      this.map.panBy([50, 30], { duration: 2 });
+      // a) leichtes Verschieben nach schräg links (oben-links)
+      this.map.panBy([-50, -30], { animate: true, duration: 3 });
       
       this.animationTimeout = setTimeout(() => {
-        if (!this.animationEnabled || !this.map) return;
-        // b) leichtes rauszoomen
-        this.map.setZoom(zoom - 1, { animate: true });
+        if (!this.animationEnabled || !this.map || this.userInteracted) return;
+        
+        // b) Verschieben zurück zur Startposition
+        this.map.panTo(center, { animate: true, duration: 3 });
 
         this.animationTimeout = setTimeout(() => {
-          if (!this.animationEnabled || !this.map) return;
-          // c) erneutes Reinzoomen
-          this.map.setZoom(zoom, { animate: true });
-
-          this.animationTimeout = setTimeout(() => {
-            if (!this.animationEnabled || !this.map) return;
-            // d) Verschieben zur Startposition
-            this.map.panTo(center, { animate: true, duration: 2 });
-
-            this.animationTimeout = setTimeout(() => {
-              if (this.animationEnabled) startCycle();
-            }, 5000);
-          }, 3000);
-        }, 3000);
-      }, 3000);
+          if (this.animationEnabled && !this.userInteracted) animate();
+        }, 4000);
+      }, 4000);
     };
 
-    const startCycle = () => {
-       if (this.animationEnabled) animate();
-    };
-
-    startCycle();
+    animate();
   }
 }

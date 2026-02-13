@@ -44,6 +44,8 @@ export interface TranslationResource {
     prevStepLabel: string;
     mapInstructions: string;
     mapAnimationLabel: string;
+    previewLabel: string;
+    startAppHint: string;
   };
   steps: {
     title: string;
@@ -325,6 +327,8 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       prevStepLabel: 'Zurück zu:',
       mapInstructions: 'Du kannst die Karte mit zwei Fingern bewegen und vergrößern.',
       mapAnimationLabel: 'Soll die Karte sich automatisch bewegen?',
+      previewLabel: 'Vorschau: So sieht deine Karte aus',
+      startAppHint: 'Klicke auf den grünen Knopf unten, um deine richtige Karte zu öffnen.',
     },
     steps: [
       { title: 'Welchen Ort möchtest du sehen?', description: 'Wähle einen Ort aus der Liste oder suche nach einem bestimmten Ort.' },
@@ -433,6 +437,8 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       prevStepLabel: 'Vorheriger Schritt:',
       mapInstructions: 'Nutzen Sie zwei Finger zur Navigation in der Karte.',
       mapAnimationLabel: 'Automatische Karten-Animation aktivieren',
+      previewLabel: 'Interaktive Vorschau Ihrer Konfiguration',
+      startAppHint: 'Nutzen Sie die Schaltfläche unten, um die Anwendung mit diesen Parametern zu starten.',
     },
     steps: [
       { title: 'Basiskarte', description: 'Wählen Sie die Datengrundlage.' },

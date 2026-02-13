@@ -26,6 +26,10 @@
             ],
             "styles": [
               "src/styles.css"
+            ],
+            "scripts": [
+              "node_modules/leaflet/dist/leaflet.js",
+              "src/lib/OSMBuildings-Leaflet.js"
             ]
           },
           "configurations": {

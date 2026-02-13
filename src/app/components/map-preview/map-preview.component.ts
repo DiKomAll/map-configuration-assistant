@@ -1,6 +1,9 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges, OnDestroy, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as L from 'leaflet';
+// OSMBuildings is loaded via script tag, we declare it here for TypeScript to recognize it. Make sure to include the OSMBuildings script in your index.html or angular.json scripts array.
+// import {OSMBuildings} from '../../../lib/OSMBuildings-Leaflet.js'; // This is just to satisfy TypeScript, the actual library is loaded globally.
+
 import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
 
 declare var OSMBuildings: any;
@@ -94,6 +97,8 @@ export class MapPreviewComponent implements OnInit, OnChanges, AfterViewInit, On
       zoom: 17,
       scrollWheelZoom: false, // Disables scroll zoom for one-finger scrolling
       dragging: !L.Browser.mobile, // Disable dragging on mobile for one-finger scroll
+      zoomDelta: 1,
+      zoomSnap: 1,
     });
 
     // Handle two-finger interaction on mobile
@@ -118,6 +123,18 @@ export class MapPreviewComponent implements OnInit, OnChanges, AfterViewInit, On
 
     this.updateMap();
     
+    // Fix for "gray tiles" / shifted map on first render
+    // We wait a bit to ensure the container dimensions are fully stable
+    setTimeout(() => {
+      if (this.map) {
+        this.map.invalidateSize();
+        // If we are at the target location, make sure it's centered again
+        const lat = this.config.lat || 51.538957;
+        const lon = this.config.lon || 7.221126;
+        this.map.setView([lat, lon], this.map.getZoom());
+      }
+    }, 300);
+
     if (this.animationEnabled) {
       this.startGentleAnimation();
     }
@@ -250,9 +267,12 @@ export class MapPreviewComponent implements OnInit, OnChanges, AfterViewInit, On
 
     if (showBuildings) {
       if (!this.osmb) {
-        this.osmb = new OSMBuildings(this.map);
-        this.osmb.date(new Date());
-        this.osmb.load('https://{s}.data.osmbuildings.org/0.2/59f8ba24/tile/{z}/{x}/{y}.json');
+        // this.osmb = new OSMBuildings(this.map);
+        // this.osmb.date(new Date());
+        // this.osmb.load('https://{s}.data.osmbuildings.org/0.2/59f8ba24/tile/{z}/{x}/{y}.json');
+
+        this.osmb = new OSMBuildings(this.map).load('https://{s}.data.osmbuildings.org/0.2/59fcc2e8/tile/{z}/{x}/{y}.json');
+          this.osmb.date(new Date(2026, 2, 15, 10, 0)); // YYYY, MM-1, DD, hh, mm
       }
     } else {
       if (this.osmb) {

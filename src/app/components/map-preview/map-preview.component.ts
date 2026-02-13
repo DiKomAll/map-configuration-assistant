@@ -245,7 +245,7 @@ export class MapPreviewComponent implements OnInit, OnChanges, AfterViewInit, On
         icon = L.divIcon({
             className: 'custom-div-icon',
             html: `
-              <div class="marker-pin" style="background: #10b981;">
+              <div class="marker-pin" style="background: #3b82f6;">
                 <div class="marker-pin-inner">
                    <img src="${sym}" style="padding: 5px;">
                 </div>

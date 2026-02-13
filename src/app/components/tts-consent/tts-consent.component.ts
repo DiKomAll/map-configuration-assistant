@@ -386,24 +386,32 @@ export class TtsConsentComponent implements OnInit {
   }
 
   getFriendlyName(fullName: string): string {
-    // Extrahiert den Vornamen aus komplexen Bezeichnungen wie "Microsoft Hedda - German"
-    // 1. Entfernt alles in Klammern oder nach Bindestrichen
-    let name = fullName.split('(')[0].split('-')[0].trim();
+    // 1. Remove everything in brackets or after dash/comma
+    let name = fullName.split('(')[0].split('-')[0].split(',')[0].trim();
     
-    // 2. Entfernt bekannte Präfixe wie "Microsoft", "Google", "Apple"
-    const prefixes = ['Microsoft', 'Google', 'Apple', 'Android'];
-    for (const prefix of prefixes) {
-      if (name.startsWith(prefix)) {
-        name = name.replace(prefix, '').trim();
-      }
+    // 2. Remove common technical prefixes and language names
+    const toRemove = [
+      'Microsoft', 'Google', 'Apple', 'Android', 'Samsung', 
+      'German', 'Deutsch', 'Germany', 'Deutschland',
+      'Desktop', 'Natural', 'Online', 'Speech', 'Synthesis'
+    ];
+    
+    // Iterate and remove (case-insensitive)
+    for (const term of toRemove) {
+      const regex = new RegExp(term, 'gi');
+      name = name.replace(regex, '').trim();
     }
 
-    // Falls nach dem Filtern nichts übrig bleibt oder nur "Deutsch", nutze einen Standardnamen
-    if (!name || name.toLowerCase() === 'deutsch' || name.toLowerCase() === 'german') {
-      return 'Robin'; // Ein neutraler, freundlicher Name als Fallback
+    // 3. Clean up potential leftover special characters
+    name = name.replace(/[^a-zA-Z\u00C0-\u017F]/g, ' ').trim();
+
+    // 4. Fallback if the name is empty or too generic
+    if (!name || name.length < 2 || name.toLowerCase() === 'female' || name.toLowerCase() === 'male') {
+      return 'Robin';
     }
 
-    return name;
+    // Return the first word (usually the actual name)
+    return name.split(' ')[0];
   }
 
   selectVoice(voice: SpeechSynthesisVoice) {

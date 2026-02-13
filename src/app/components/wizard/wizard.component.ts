@@ -495,19 +495,29 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
                     <div class="flex-1 bg-slate-100 relative overflow-hidden">
                       <div class="absolute inset-0 opacity-30" style="background-image: radial-gradient(#94a3b8 1px, transparent 1px); background-size: 10px 10px;"></div>
                       
-                      <!-- Preview logic simplified for brevity -->
-                      <div *ngIf="opt === 'symbols'" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                        <div class="w-12 h-12 rounded-full bg-blue-600/60 border-2 border-white shadow-lg flex items-center justify-center text-white">
-                           <img [src]="getPreviewImage()" class="w-8 h-8" alt="Symbol">
+                      <!-- Preview logic matching Step 6 -->
+                      <div *ngIf="opt === 'symbols'" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-75">
+                        <div class="marker-pin !static" style="background: #3b82f6;">
+                          <div class="marker-pin-inner">
+                             <img [src]="getPreviewImage()" style="padding: 5px;">
+                          </div>
                         </div>
                       </div>
-                      <div *ngIf="opt === 'symbols_labels'" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                        <div class="w-12 h-12 rounded-full bg-blue-600/60 border-2 border-white shadow-lg flex items-center justify-center text-white relative z-10">
-                          <img [src]="getPreviewImage()" class="w-8 h-8" alt="Symbol">
+                      <div *ngIf="opt === 'symbols_labels'" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-75">
+                        <div class="marker-pin !static" style="background: #3b82f6;">
+                          <div class="marker-pin-inner">
+                             <img [src]="getPreviewImage()" style="padding: 5px;">
+                          </div>
+                          <div class="marker-label">{{ t().landmarks.items[data.previewExampleLandmarkId] }}</div>
                         </div>
-                        <div class="mt-1 bg-white border-2 border-slate-200 rounded-lg shadow-sm px-2 py-0.5 text-xs font-bold text-slate-800 whitespace-nowrap z-0 -translate-y-2 pt-2">{{ t().landmarks.items[data.previewExampleLandmarkId] }}</div>
                       </div>
-                      <div *ngIf="opt === 'photos'" class="w-full h-full"><img [src]="data.assets.visualPreviewPhoto" class="w-full h-full object-cover" alt=""></div>
+                      <div *ngIf="opt === 'photos'" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-75">
+                        <div class="marker-pin !static">
+                          <div class="marker-pin-inner">
+                             <img [src]="data.assets.visualPreviewPhoto" class="w-full h-full object-cover">
+                          </div>
+                        </div>
+                      </div>
                     </div>
                     <div class="p-3 bg-white border-t border-slate-100 flex justify-between items-center"><span class="font-bold text-slate-900 text-sm">{{ t().visuals.options[opt].name }}</span><div *ngIf="config.symbolStyle === opt" class="bg-emerald-500 text-white rounded-full p-1"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg></div></div>
                   </button>
@@ -565,10 +575,8 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
                     [class.border-slate-200]="getSelectedVoiceName() !== voice.name"
                     [class.bg-white]="getSelectedVoiceName() !== voice.name"
                   >
-                    <div class="w-10 h-10 mb-2" [class.text-emerald-600]="getSelectedVoiceName() === voice.name" [class.text-slate-400]="getSelectedVoiceName() !== voice.name">
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2C9.24 2 7 4.24 7 7s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 12c-4.42 0-8 2.58-8 6v2h16v-2c0-3.42-3.58-6-8-6z"/>
-                      </svg>
+                    <div class="w-12 h-12 mb-2 bg-white rounded-full p-1 border shadow-sm" [class.border-emerald-500]="getSelectedVoiceName() === voice.name" [class.border-slate-200]="getSelectedVoiceName() !== voice.name">
+                      <img [src]="getAvatarUrl(voice.name)" [alt]="getFriendlyName(voice.name)" class="w-full h-full object-contain">
                     </div>
                     <span class="text-xs font-bold truncate w-full text-center">{{ getFriendlyName(voice.name) }}</span>
                   </button>
@@ -693,7 +701,7 @@ export class WizardComponent implements OnInit {
     area: DATA_CONFIG.simplePlaces && DATA_CONFIG.simplePlaces[0] ? DATA_CONFIG.simplePlaces[0].name : '', // Start with first simple place
     viewMode: 'twodimensional',
     landmarks: [] as string[],
-    symbolStyle: 'symbols', 
+    symbolStyle: 'symbols_labels', 
     speechOutput: false,
     lat: DATA_CONFIG.simplePlaces && DATA_CONFIG.simplePlaces[0] ? DATA_CONFIG.simplePlaces[0].lat : Number.NaN,
     lon: DATA_CONFIG.simplePlaces && DATA_CONFIG.simplePlaces[0] ? DATA_CONFIG.simplePlaces[0].lon : Number.NaN,
@@ -742,18 +750,38 @@ export class WizardComponent implements OnInit {
     return this.ttsService.getSelectedVoice()?.name || '';
   }
 
+  getAvatarUrl(voiceName: string): string {
+    const seed = encodeURIComponent(voiceName);
+    return `https://api.dicebear.com/7.x/fun-emoji/svg?seed=${seed}`;
+  }
+
   getFriendlyName(fullName: string): string {
-    let name = fullName.split('(')[0].split('-')[0].trim();
-    const prefixes = ['Microsoft', 'Google', 'Apple', 'Android'];
-    for (const prefix of prefixes) {
-      if (name.startsWith(prefix)) {
-        name = name.replace(prefix, '').trim();
-      }
+    // 1. Remove everything in brackets or after dash/comma
+    let name = fullName.split('(')[0].split('-')[0].split(',')[0].trim();
+    
+    // 2. Remove common technical prefixes and language names
+    const toRemove = [
+      'Microsoft', 'Google', 'Apple', 'Android', 'Samsung', 
+      'German', 'Deutsch', 'Germany', 'Deutschland',
+      'Desktop', 'Natural', 'Online', 'Speech', 'Synthesis'
+    ];
+    
+    // Iterate and remove (case-insensitive)
+    for (const term of toRemove) {
+      const regex = new RegExp(term, 'gi');
+      name = name.replace(regex, '').trim();
     }
-    if (!name || name.toLowerCase() === 'deutsch' || name.toLowerCase() === 'german') {
-      return 'Robin'; // Default friendly name if we can't extract a better one
+
+    // 3. Clean up potential leftover special characters
+    name = name.replace(/[^a-zA-Z\u00C0-\u017F]/g, ' ').trim();
+
+    // 4. Fallback if the name is empty or too generic
+    if (!name || name.length < 2 || name.toLowerCase() === 'female' || name.toLowerCase() === 'male') {
+      return 'Robin';
     }
-    return name;
+
+    // Return the first word (usually the actual name)
+    return name.split(' ')[0];
   }
 
   onVoiceChange(event: Event) {

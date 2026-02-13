@@ -141,20 +141,38 @@ export const DATA_CONFIG = {
       image: 'assets/farbkarte.png', 
       ttsText: 'Farbige Hintergrundkarte',
       map: {
-        type: 'xyz',
-        url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        attribution: '&copy; OpenStreetMap contributors'
+        type: 'wms',
+        url: 'https://sgx.geodatenzentrum.de/wms_basemapde',
+        layers: 'de_basemapde_web_raster_farbe',
+        format: 'image/png',
+        transparent: true,
+        version: '1.3.0',
+        attribution: 'Basemap.de'
       }
+      // map: {
+      //   type: 'xyz',
+      //   url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      //   attribution: '&copy; OpenStreetMap contributors'
+      // }
     },
     { 
       id: 'grey', 
       image: 'assets/graukarte.png', 
       ttsText: 'Graue Hintergrundkarte',
       map: {
-        type: 'xyz',
-        url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-        attribution: '&copy; OpenStreetMap &copy; CARTO'
+        type: 'wms',
+        url: 'https://sgx.geodatenzentrum.de/wms_basemapde',
+        layers: 'de_basemapde_web_raster_grau',
+        format: 'image/png',
+        transparent: true,
+        version: '1.3.0',
+        attribution: 'Basemap.de'
       }
+      // map: {
+      //   type: 'xyz',
+      //   url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+      //   attribution: '&copy; OpenStreetMap &copy; CARTO'
+      // }
     },
     { 
       id: 'ortho', 

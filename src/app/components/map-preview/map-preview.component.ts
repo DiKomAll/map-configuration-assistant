@@ -220,8 +220,8 @@ export class MapPreviewComponent implements OnInit, OnChanges, AfterViewInit, On
                 </div>
               </div>
             `,
-            iconSize: [50, 50],
-            iconAnchor: [25, 50]
+            iconSize: [80, 80],
+            iconAnchor: [40, 80]
         });
     } else if (this.config.symbolStyle === 'symbols_labels') {
         // Icon + Label
@@ -236,24 +236,23 @@ export class MapPreviewComponent implements OnInit, OnChanges, AfterViewInit, On
                 <div class="marker-label">${this.config.area || 'Hier'}</div>
               </div>
             `,
-            iconSize: [50, 50],
-            iconAnchor: [25, 50]
+            iconSize: [80, 80],
+            iconAnchor: [40, 80]
         });
     } else {
         // Default / Symbol only
-        // Icon + Label
         const sym = place ? place.image : 'assets/emma_the_muh.png'; // Fallback
         icon = L.divIcon({
             className: 'custom-div-icon',
             html: `
-              <div class="marker-pin" style="background: #3b82f6;">
+              <div class="marker-pin" style="background: #10b981;">
                 <div class="marker-pin-inner">
                    <img src="${sym}" style="padding: 5px;">
                 </div>
               </div>
             `,
-            iconSize: [50, 50],
-            iconAnchor: [25, 50]
+            iconSize: [80, 80],
+            iconAnchor: [40, 80]
         });
     }
 

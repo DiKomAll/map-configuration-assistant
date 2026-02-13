@@ -221,7 +221,7 @@ export const DATA_CONFIG = {
       ttsText: 'Bank oder Geldautomat'
     },
     pharmacy: { 
-      image: 'assets/metacom/apotheke.jpg', 
+      image: 'assets/metacom/apotheke.png', 
       icon: 'M12 2v20M2 12h20M9 9h6v6H9z',
       ttsText: 'Apotheke'
     },
@@ -241,21 +241,15 @@ export const DATA_CONFIG = {
       ttsText: 'Restaurant oder Gaststätte'
     },
     icecream: { 
-      image: 'https://images.unsplash.com/photo-1563227812-0ea4c22e6cc8?auto=format&fit=crop&q=80&w=400', 
+      image: 'assets/metacom/eiscafe.png', 
       icon: 'M12 22l-6-9.5c0-3.5 2.5-6.5 6-6.5s6 3 6 6.5L12 22z M12 6a3 3 0 100-6 3 3 0 000 6z',
       ttsText: 'Eisdiele'
     },
-    meeting: { 
-      image: 'https://images.unsplash.com/photo-1563227812-0ea4c22e6cc8?auto=format&fit=crop&q=80&w=400', 
-      icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z',
-      ttsText: 'Treffpunkt'
-    },
-    bakery: { image: 'assets/metacom/schule_inklusion2.jpeg', icon: 'M12 2L2 7l10 5 10-5-10-5z', ttsText: 'Bäckerei' },
-    supermarket: { image: 'assets/metacom/bank2.jpeg', icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z', ttsText: 'Supermarkt' },
+    bar: { image: 'assets/metacom/kneipe3.jpeg', icon: 'M12 2L2 7l10 5 10-5-10-5z', ttsText: 'Bar oder Kneipe' },    
+    bakery: { image: 'assets/metacom/baeckerei.png', icon: 'M12 2L2 7l10 5 10-5-10-5z', ttsText: 'Bäckerei' },
+    supermarket: { image: 'assets/metacom/markt.png', icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z', ttsText: 'Supermarkt' },
     cinema: { image: 'assets/metacom/kino.jpeg', icon: 'M7 4v16M17 4v16M3 8h4m10 0h4M3 12h4m10 0h4M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z', ttsText: 'Kino' },
-    library: { image: 'assets/metacom/schule_inklusion2.jpeg', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253', ttsText: 'Bücherei' },
-    cafe: { image: 'assets/metacom/restaurant2orange.jpeg', icon: 'M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z', ttsText: 'Café' },
-    pool: { image: 'https://images.unsplash.com/photo-1563227812-0ea4c22e6cc8?auto=format&fit=crop&q=80&w=400', icon: 'M2 6c.667-.333 1.333-.5 2-.5 1 0 2 .5 3 1.5s2 1.5 3 1.5 2-.5 3-1.5 2-1.5 3-1.5 1.333.167 2 .5', ttsText: 'Schwimmbad' },
+    cafe: { image: 'assets/metacom/cafe.png', icon: 'M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z', ttsText: 'Café' },
     subway: { image: 'assets/metacom/bahnhof.jpeg', icon: 'M12 2v20M2 12h20M9 9h6v6H9z', ttsText: 'U-Bahn' },
     parking: { image: 'assets/metacom/parkplatz2.jpeg', icon: 'M12 2L2 7l10 5 10-5-10-5z', ttsText: 'Parkplatz' }
   },
@@ -296,7 +290,7 @@ export const DATA_CONFIG = {
       id: 'cat_leisure',
       name: 'Freizeit',
       icon: 'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
-      items: ['cinema', 'restaurant', 'library', 'cafe', 'icecream', 'pool'],
+      items: ['cinema', 'restaurant', 'cafe', 'icecream','bar'],
       ttsText: 'Dinge für die Freizeit'
     },
     {
@@ -310,7 +304,7 @@ export const DATA_CONFIG = {
       id: 'cat_culture',
       name: 'Kultur & Soziales',
       icon: 'M12 21v-82q90-26 145-100t55-167q0-93-55-167T560-747v-82q123 28 201.5 125.5T840-480q0 127-78.5 224.5T560-131ZM120-360v-240h160l200-200v640L280-360H120Zm440 40v-320q47 15 73.5 56.5T660-480q0 47-26.5 88.5T560-320ZM400-606l-86 86H200v80h114l86 86v-252ZM300-480Z',
-      items: ['church', 'meeting'],
+      items: ['church'],
       ttsText: 'Dinge für Kultur und Soziales'
     }
   ]
@@ -390,9 +384,9 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       subTabCatalog: 'Liste',
       items: {
         bank: 'Bank', pharmacy: 'Apotheke', stops: 'Bus & Bahn',
-        church: 'Kirche', restaurant: 'Restaurant', icecream: 'Eis', meeting: 'Treffpunkt',
-        bakery: 'Bäckerei', supermarket: 'Supermarkt', cinema: 'Kino', library: 'Bücherei',
-        cafe: 'Café', pool: 'Schwimmbad', subway: 'U-Bahn', parking: 'Parkplatz'
+        church: 'Kirche', restaurant: 'Restaurant', icecream: 'Eis', 
+        bakery: 'Bäckerei', supermarket: 'Supermarkt', cinema: 'Kino',
+        cafe: 'Café',  bar: 'Bar', subway: 'U-Bahn', parking: 'Parkplatz',
       },
       selectAll: 'Alle auswählen',
       deselectAll: 'Alle abwählen',
@@ -501,9 +495,9 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       subTabCatalog: 'KomMonitor Datenkatalog',
       items: {
         bank: 'Finanzwesen', pharmacy: 'Gesundheit', stops: 'Mobilität',
-        church: 'Kultur', restaurant: 'Restaurant', icecream: 'Gastronomie', meeting: 'Soziales',
-        bakery: 'Bäckereien', supermarket: 'Einzelhandel', cinema: 'Kultur & Freizeit', library: 'Bildung',
-        cafe: 'Gastronomie', pool: 'Sport', subway: 'Schienenverkehr', parking: 'Parken'
+        church: 'Kultur', restaurant: 'Restaurant', icecream: 'Gastronomie', 
+        bakery: 'Bäckereien', supermarket: 'Einzelhandel', cinema: 'Kultur & Freizeit', 
+        cafe: 'Gastronomie',  bar: 'Bar', subway: 'Schienenverkehr', parking: 'Parken'
       },
       selectAll: 'Alle Layer aktivieren',
       deselectAll: 'Alle Layer deaktivieren',

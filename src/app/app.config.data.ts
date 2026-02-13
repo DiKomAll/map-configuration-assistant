@@ -251,7 +251,13 @@ export const DATA_CONFIG = {
     cinema: { image: 'assets/metacom/kino.jpeg', icon: 'M7 4v16M17 4v16M3 8h4m10 0h4M3 12h4m10 0h4M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z', ttsText: 'Kino' },
     cafe: { image: 'assets/metacom/cafe.png', icon: 'M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z', ttsText: 'Café' },
     subway: { image: 'assets/metacom/bahnhof.jpeg', icon: 'M12 2v20M2 12h20M9 9h6v6H9z', ttsText: 'U-Bahn' },
-    parking: { image: 'assets/metacom/parkplatz2.jpeg', icon: 'M12 2L2 7l10 5 10-5-10-5z', ttsText: 'Parkplatz' }
+    parking: { image: 'assets/metacom/parkplatz2.jpeg', icon: 'M12 2L2 7l10 5 10-5-10-5z', ttsText: 'Parkplatz' },
+    rewe: { image: 'assets/logographeme/Rewe_Logo.png', icon: '', ttsText: 'Rewe Supermarkt' },
+    aldinord: { image: 'assets/logographeme/ALDI_Nord_Logo_2015.png', icon: '', ttsText: 'ALDI Nord Supermarkt' },
+    aldisued: { image: 'assets/logographeme/Aldi_Sued_2017_logo.svg.png', icon: '', ttsText: 'ALDI Süd Supermarkt' },
+    penny: { image: 'assets/logographeme/Penny-Logo.svg.png', icon: '', ttsText: 'Penny Supermarkt' },
+    edeka: { image: 'assets/logographeme/Logo_Edeka.svg.png', icon: '', ttsText: 'Edeka Supermarkt' },
+    
   },
 
   expertLandmarkResources: [
@@ -283,7 +289,7 @@ export const DATA_CONFIG = {
       id: 'cat_shopping',
       name: 'Einkaufen',
       icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z',
-      items: ['pharmacy', 'bakery', 'supermarket'],
+      items: ['pharmacy', 'bakery', 'supermarket', 'rewe', 'aldinord', 'aldisued', 'penny', 'edeka'],
       ttsText: 'Dinge zum Einkaufen'
     },
     {
@@ -387,6 +393,7 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
         church: 'Kirche', restaurant: 'Restaurant', icecream: 'Eis', 
         bakery: 'Bäckerei', supermarket: 'Supermarkt', cinema: 'Kino',
         cafe: 'Café',  bar: 'Bar', subway: 'U-Bahn', parking: 'Parkplatz',
+        rewe: 'Rewe', aldinord: 'ALDI Nord', aldisued: 'ALDI Süd', penny: 'Penny', edeka: 'Edeka',
       },
       selectAll: 'Alle auswählen',
       deselectAll: 'Alle abwählen',
@@ -497,7 +504,8 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
         bank: 'Finanzwesen', pharmacy: 'Gesundheit', stops: 'Mobilität',
         church: 'Kultur', restaurant: 'Restaurant', icecream: 'Gastronomie', 
         bakery: 'Bäckereien', supermarket: 'Einzelhandel', cinema: 'Kultur & Freizeit', 
-        cafe: 'Gastronomie',  bar: 'Bar', subway: 'Schienenverkehr', parking: 'Parken'
+        cafe: 'Gastronomie',  bar: 'Bar', subway: 'Schienenverkehr', parking: 'Parken',
+        rewe: 'Rewe', aldinord: 'ALDI Nord', aldisued: 'ALDI Süd', penny: 'Penny', edeka: 'Edeka'
       },
       selectAll: 'Alle Layer aktivieren',
       deselectAll: 'Alle Layer deaktivieren',

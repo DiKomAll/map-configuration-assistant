@@ -711,7 +711,7 @@ export class WizardComponent implements OnInit {
   expertSelectedLevel = 'bezirke';
   viewModeKeys = ['twodimensional', 'twoandhalfdimensional', 'threedimensional'] as const;
 
-  landmarkKeys = ['restaurant', 'church', 'stops', 'pharmacy', 'bank', 'icecream', 'meeting'] as const;
+  landmarkKeys = ['restaurant', 'church', 'stops', 'pharmacy', 'bank', 'icecream', 'rewe', 'aldinord', 'aldisued', 'penny', 'edeka'] as const;
 
   progressPercentage = computed(() => {
     return ((this.currentStep() + 1) / this.steps.length) * 100;

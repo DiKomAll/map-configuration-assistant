@@ -86,7 +86,7 @@ export interface TranslationResource {
   };
   visuals: {
     title: string;
-    options: Record<string, { name: string; description: string }>;
+    options: Record<string, { name: string; description: string, disabled?: boolean; disabledText?: string }>;
     photoWarning: string;
   };
   audio: {
@@ -312,7 +312,7 @@ export const DATA_CONFIG = {
     {
       id: 'cat_culture',
       name: 'Öffentliche Orte',
-      icon: 'M12 21v-82q90-26 145-100t55-167q0-93-55-167T560-747v-82q123 28 201.5 125.5T840-480q0 127-78.5 224.5T560-131ZM120-360v-240h160l200-200v640L280-360H120Zm440 40v-320q47 15 73.5 56.5T660-480q0 47-26.5 88.5T560-320ZM400-606l-86 86H200v80h114l86 86v-252ZM300-480Z',
+      icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',
       items: ['krankenhaus', 'polizeistation', 'schule'],
       ttsText: 'öffentliche Orte wie Schulen, Krankenhäuser und Polizeiwachen'
     }
@@ -410,7 +410,7 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       options: {
         symbols: { name: 'Nur Bild', description: 'Ein einfaches Symbol auf der Karte.' },
         symbols_labels: { name: 'Bild & Text', description: 'Das Symbol und der Name stehen dabei.' },
-        photos: { name: 'Echte Fotos', description: 'Wie es in Wirklichkeit aussieht.' },
+        photos: { name: 'Echte Fotos', description: 'Wie es in Wirklichkeit aussieht.', disabled: true, disabledText: 'Das geht leider gerade nicht.' },
       },
       photoWarning: 'Achtung: Nicht überall gibt es Fotos.',
     },
@@ -522,7 +522,7 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       options: {
         symbols: { name: 'Piktogramme', description: 'Symbolhafte Darstellung.' },
         symbols_labels: { name: 'Piktogramme + Label', description: 'Symbol mit Beschriftung.' },
-        photos: { name: 'Fotorealistisch', description: 'Objektfotos (falls vorhanden).' },
+        photos: { name: 'Fotorealistisch', description: 'Objektfotos (falls vorhanden).', disabled: true, disabledText: 'Das geht leider gerade nicht.' },
       },
       photoWarning: 'Fallback auf Symbole bei fehlenden Bilddaten.',
     },

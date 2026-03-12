@@ -490,8 +490,14 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
                 <app-tts-icon [text]="t().visuals.title"></app-tts-icon>
               </legend>
               <div *ngIf="profile() === 'simple'" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div *ngFor="let opt of ['symbols', 'symbols_labels', 'photos']" class="relative group">
-                  <button type="button" (click)="selectSymbolStyle(opt)" [attr.aria-pressed]="config.symbolStyle === opt" class="w-full relative h-48 rounded-2xl border-2 overflow-hidden text-left transition-all focus:outline-none focus:ring-4 focus:ring-emerald-500/50 flex flex-col" [class.border-emerald-500]="config.symbolStyle === opt" [class.border-slate-200]="config.symbolStyle !== opt">
+                <div *ngFor="let opt of ['symbols', 'symbols_labels', 'photos']" class="relative group"
+                     [class.opacity-60]="t().visuals.options[opt].disabled"
+                     [class.grayscale]="t().visuals.options[opt].disabled">
+                  <button type="button" (click)="selectSymbolStyle(opt)" [attr.aria-pressed]="config.symbolStyle === opt" 
+                    class="w-full relative h-48 rounded-2xl border-2 overflow-hidden text-left transition-all focus:outline-none focus:ring-4 focus:ring-emerald-500/50 flex flex-col" 
+                    [class.border-emerald-500]="config.symbolStyle === opt" 
+                    [class.border-slate-200]="config.symbolStyle !== opt"
+                    [class.cursor-not-allowed]="t().visuals.options[opt].disabled">
                     <div class="flex-1 bg-slate-100 relative overflow-hidden">
                       <div class="absolute inset-0 opacity-30" style="background-image: radial-gradient(#94a3b8 1px, transparent 1px); background-size: 10px 10px;"></div>
                       
@@ -519,24 +525,45 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
                         </div>
                       </div>
                     </div>
-                    <div class="p-3 bg-white border-t border-slate-100 flex justify-between items-center"><span class="font-bold text-slate-900 text-sm">{{ t().visuals.options[opt].name }}</span><div *ngIf="config.symbolStyle === opt" class="bg-emerald-500 text-white rounded-full p-1"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg></div></div>
+                    <div class="p-3 bg-white border-t border-slate-100 flex justify-between items-center">
+                      <div>
+                        <span class="font-bold text-slate-900 text-sm block">{{ t().visuals.options[opt].name }}</span>
+                        <span *ngIf="t().visuals.options[opt].disabled" class="text-[10px] bg-slate-500 text-white px-1.5 py-0.5 rounded uppercase mt-1 inline-block">{{ t().ui.notAvailableBadge }}</span>
+                      </div>
+                      <div *ngIf="config.symbolStyle === opt" class="bg-emerald-500 text-white rounded-full p-1"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg></div>
+                    </div>
                   </button>
                   <div class="absolute top-2 right-2 z-20 bg-white/80 rounded-full">
-                    <app-tts-icon [text]="t().visuals.options[opt].name"></app-tts-icon>
+                    <app-tts-icon [text]="t().visuals.options[opt].name + (t().visuals.options[opt].disabled ? '. ' + t().visuals.options[opt].disabledText : '')"></app-tts-icon>
                   </div>
                 </div>
               </div>
               <div *ngIf="profile() === 'expert'" class="space-y-3">
-                <div *ngFor="let opt of ['symbols', 'symbols_labels', 'photos']" class="flex items-center gap-2">
-                  <button type="button" (click)="selectSymbolStyle(opt)" class="flex-1 p-4 rounded-xl border-2 flex items-center gap-4 text-left transition-all bg-white hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/50" [class.border-emerald-500]="config.symbolStyle === opt" [class.border-slate-200]="config.symbolStyle !== opt">
+                <div *ngFor="let opt of ['symbols', 'symbols_labels', 'photos']" class="flex items-center gap-2"
+                     [class.opacity-60]="t().visuals.options[opt].disabled"
+                     [class.grayscale]="t().visuals.options[opt].disabled">
+                  <button type="button" (click)="selectSymbolStyle(opt)" 
+                    class="flex-1 p-4 rounded-xl border-2 flex items-center gap-4 text-left transition-all bg-white hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/50" 
+                    [class.border-emerald-500]="config.symbolStyle === opt" 
+                    [class.border-slate-200]="config.symbolStyle !== opt"
+                    [class.cursor-not-allowed]="t().visuals.options[opt].disabled">
                     <div class="w-16 h-12 bg-white rounded border border-slate-200 flex items-center justify-center shadow-sm relative overflow-hidden shrink-0">
                        <ng-container *ngIf="opt === 'photos'"><img [src]="data.assets.visualPreviewPhoto" class="w-full h-full object-cover opacity-80" alt=""></ng-container>
                        <ng-container *ngIf="opt !== 'photos'"><div class="bg-slate-100 absolute inset-0"></div><div class="w-3 h-3 rounded-full bg-blue-500 border border-white relative z-10 shadow-sm"></div><div *ngIf="opt === 'symbols_labels'" class="ml-1 h-2 w-6 bg-white border border-slate-300 rounded shadow-sm relative z-10"></div></ng-container>
                     </div>
-                    <div class="flex-1"><span class="font-bold text-slate-900 block">{{ t().visuals.options[opt].name }}</span><span *ngIf="t().visuals.options[opt].description" class="text-sm text-slate-500">{{ t().visuals.options[opt].description }}</span></div>
-                    <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 border-slate-300" [class.border-emerald-500]="config.symbolStyle === opt"><div class="w-3 h-3 rounded-full bg-emerald-500" *ngIf="config.symbolStyle === opt"></div></div>
+                    <div class="flex-1">
+                      <span class="font-bold text-slate-900 block flex items-center gap-2">
+                        {{ t().visuals.options[opt].name }}
+                        <span *ngIf="t().visuals.options[opt].disabled" class="text-[10px] bg-slate-500 text-white px-2 py-0.5 rounded-full uppercase">{{ t().ui.notAvailableBadge }}</span>
+                      </span>
+                      <span *ngIf="t().visuals.options[opt].description" class="text-sm text-slate-500">{{ t().visuals.options[opt].description }}</span>
+                      <span *ngIf="t().visuals.options[opt].disabled && t().visuals.options[opt].disabledText" class="text-xs text-red-600 font-bold block mt-1">{{ t().visuals.options[opt].disabledText }}</span>
+                    </div>
+                    <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 border-slate-300" [class.border-emerald-500]="config.symbolStyle === opt && !t().visuals.options[opt].disabled">
+                      <div class="w-3 h-3 rounded-full bg-emerald-500" *ngIf="config.symbolStyle === opt && !t().visuals.options[opt].disabled"></div>
+                    </div>
                   </button>
-                  <app-tts-icon [text]="t().visuals.options[opt].name + (t().visuals.options[opt].description ? '. ' + t().visuals.options[opt].description : '')"></app-tts-icon>
+                  <app-tts-icon [text]="t().visuals.options[opt].name + (t().visuals.options[opt].description ? '. ' + t().visuals.options[opt].description : '') + (t().visuals.options[opt].disabled ? '. ' + t().visuals.options[opt].disabledText : '')"></app-tts-icon>
                 </div>
               </div>
               <div *ngIf="config.symbolStyle === 'photos'" class="mt-4 p-3 bg-amber-50 border border-amber-100 rounded-lg flex gap-3 animate-fade-in" role="alert">
@@ -1044,8 +1071,14 @@ export class WizardComponent implements OnInit {
   }
 
   selectSymbolStyle(style: string) {
-    this.config.symbolStyle = style;
     const opt = this.t().visuals.options[style];
+    if (opt.disabled) {
+      if (this.ttsService.isTtsActive()) {
+        this.ttsService.speak(opt.disabledText || this.t().ui.notAvailableError);
+      }
+      return;
+    }
+    this.config.symbolStyle = style;
     this.speakSelectionChange(opt.name, true, opt.description);
   }
 

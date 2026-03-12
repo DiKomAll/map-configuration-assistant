@@ -110,7 +110,7 @@ export const DATA_CONFIG = {
   externalAppUrl: "https://kommonitor.fbg-hsbo.de/#!/",
   // externalAppUrl: "http://localhost:8000/#!/",
   defaultAreaTab: 'selection',
-  previewExampleLandmarkId: 'church', 
+  previewExampleLandmarkId: 'kirche', 
   celebrateAnimation: true,
   mapAnimationEnabled: true,
 
@@ -220,17 +220,17 @@ export const DATA_CONFIG = {
       icon: 'M3 21h18M5 21v-8M9 21v-8M13 21v-8M17 21v-8M3 10h18M5 6l7-3 7 3M4 10h16v11H4V10z',
       ttsText: 'Bank oder Geldautomat'
     },
-    pharmacy: { 
+    apotheke: { 
       image: 'assets/metacom/apotheke.jpg', 
       icon: 'M12 2v20M2 12h20M9 9h6v6H9z',
       ttsText: 'Apotheke'
     },
-    stops: { 
+    haltestelle: { 
       image: 'assets/metacom/haltestelle.jpeg', 
       icon: 'M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4',
       ttsText: 'Haltestelle für Bus und Bahn'
     },
-    church: { 
+    kirche: { 
       image: 'assets/metacom/kirche2.png', 
       icon: 'M12 3v18M8 8h8M12 3l-4 4h8l-4-4',
       ttsText: 'Kirche'
@@ -240,18 +240,18 @@ export const DATA_CONFIG = {
       icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z',
       ttsText: 'Restaurant oder Gaststätte'
     },
-    icecream: { 
+    eis: { 
       image: 'assets/metacom/eiscafe.png', 
       icon: 'M12 22l-6-9.5c0-3.5 2.5-6.5 6-6.5s6 3 6 6.5L12 22z M12 6a3 3 0 100-6 3 3 0 000 6z',
       ttsText: 'Eisdiele'
     },
     bar: { image: 'assets/metacom/kneipe3.jpeg', icon: 'M12 2L2 7l10 5 10-5-10-5z', ttsText: 'Bar oder Kneipe' },    
     bakery: { image: 'assets/metacom/baeckerei.png', icon: 'M12 2L2 7l10 5 10-5-10-5z', ttsText: 'Bäckerei' },
-    supermarket: { image: 'assets/metacom/markt.png', icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z', ttsText: 'Supermarkt' },
-    cinema: { image: 'assets/metacom/kino.jpeg', icon: 'M7 4v16M17 4v16M3 8h4m10 0h4M3 12h4m10 0h4M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z', ttsText: 'Kino' },
+    supermarkt: { image: 'assets/metacom/markt.png', icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z', ttsText: 'Supermarkt' },
+    kino: { image: 'assets/metacom/kino.jpeg', icon: 'M7 4v16M17 4v16M3 8h4m10 0h4M3 12h4m10 0h4M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z', ttsText: 'Kino' },
     cafe: { image: 'assets/metacom/cafe.png', icon: 'M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z', ttsText: 'Café' },
-    subway: { image: 'assets/metacom/bahnhof.jpeg', icon: 'M12 2v20M2 12h20M9 9h6v6H9z', ttsText: 'U-Bahn' },
-    parking: { image: 'assets/metacom/parkplatz2.jpeg', icon: 'M12 2L2 7l10 5 10-5-10-5z', ttsText: 'Parkplatz' },
+    bahn: { image: 'assets/metacom/bahnhof.jpeg', icon: 'M12 2v20M2 12h20M9 9h6v6H9z', ttsText: 'U-Bahn' },
+    parkplatz: { image: 'assets/metacom/parkplatz2.jpeg', icon: 'M12 2L2 7l10 5 10-5-10-5z', ttsText: 'Parkplatz' },
     rewe: { image: 'assets/logographeme/Rewe_Logo.png', icon: '', ttsText: 'Rewe Supermarkt' },
     aldinord: { image: 'assets/logographeme/ALDI_Nord_Logo_2015.png', icon: '', ttsText: 'ALDI Nord Supermarkt' },
     aldisued: { image: 'assets/logographeme/Aldi_Sued_2017_logo.svg.png', icon: '', ttsText: 'ALDI Süd Supermarkt' },
@@ -275,14 +275,14 @@ export const DATA_CONFIG = {
     { 
       category: 'Gesundheit', 
       resources: [
-         { id: 'pharmacy', name: 'Apotheken', description: 'Standorte im Stadtgebiet' },
+         { id: 'apotheke', name: 'Apotheken', description: 'Standorte im Stadtgebiet' },
          { id: 'doctors', name: 'Ärzte', description: 'Niedergelassene Ärzte' }
       ]
     },
     {
       category: 'Verkehr',
       resources: [
-         { id: 'parking', name: 'Ladesäulen', description: 'E-Mobilität' }
+         { id: 'parkplatz', name: 'Ladesäulen', description: 'E-Mobilität' }
       ]
     }
   ],
@@ -292,21 +292,21 @@ export const DATA_CONFIG = {
       id: 'cat_shopping',
       name: 'Einkaufen',
       icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z',
-      items: ['pharmacy', 'bakery', 'supermarket', 'rewe', 'aldinord', 'penny', 'edeka'],
+      items: ['apotheke', 'bakery', 'supermarkt', 'rewe', 'aldinord', 'penny', 'edeka'],
       ttsText: 'Dinge zum Einkaufen'
     },
     {
       id: 'cat_leisure',
       name: 'Freizeit',
       icon: 'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
-      items: ['cinema', 'restaurant', 'cafe', 'icecream','bar'],
+      items: ['kino', 'restaurant', 'cafe', 'eis','bar'],
       ttsText: 'Dinge für die Freizeit'
     },
     {
       id: 'cat_traffic',
       name: 'Verkehr',
       icon: 'M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4',
-      items: ['stops', 'subway', 'tankstelle'],
+      items: ['haltestelle', 'bahn', 'tankstelle'],
       ttsText: 'Dinge für den Verkehr'
     },
     {
@@ -392,10 +392,10 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       subTabVisual: 'Bilder',
       subTabCatalog: 'Liste',
       items: {
-        bank: 'Bank', pharmacy: 'Apotheke', stops: 'Bus & Bahn',
-        church: 'Kirche', restaurant: 'Restaurant', icecream: 'Eis', 
-        bakery: 'Bäckerei', supermarket: 'Supermarkt', cinema: 'Kino',
-        cafe: 'Café',  bar: 'Bar', subway: 'U-Bahn', parking: 'Parkplatz',
+        bank: 'Bank', apotheke: 'Apotheke', haltestelle: 'Bus & Bahn',
+        kirche: 'Kirche', restaurant: 'Restaurant', eis: 'Eis', 
+        bakery: 'Bäckerei', supermarkt: 'Supermarkt', kino: 'Kino',
+        cafe: 'Café',  bar: 'Bar', bahn: 'U-Bahn', parkplatz: 'Parkplatz',
         rewe: 'Rewe', aldinord: 'ALDI Nord', aldisued: 'ALDI Süd', penny: 'Penny', edeka: 'Edeka', 
         tankstelle: 'Tankstelle', polizeistation: 'Polizeistation', krankenhaus: 'Krankenhaus', schule: 'Schule',
       },
@@ -505,10 +505,10 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       subTabVisual: 'Visuelle Auswahl',
       subTabCatalog: 'KomMonitor Datenkatalog',
       items: {
-        bank: 'Finanzwesen', pharmacy: 'Gesundheit', stops: 'Mobilität',
-        church: 'Kultur', restaurant: 'Restaurant', icecream: 'Gastronomie', 
-        bakery: 'Bäckereien', supermarket: 'Einzelhandel', cinema: 'Kultur & Freizeit', 
-        cafe: 'Gastronomie',  bar: 'Bar', subway: 'Schienenverkehr', parking: 'Parken',
+        bank: 'Finanzwesen', apotheke: 'Gesundheit', haltestelle: 'Mobilität',
+        kirche: 'Kultur', restaurant: 'Restaurant', eis: 'Gastronomie', 
+        bakery: 'Bäckereien', supermarkt: 'Einzelhandel', kino: 'Kultur & Freizeit', 
+        cafe: 'Gastronomie',  bar: 'Bar', bahn: 'Schienenverkehr', parkplatz: 'Parken',
         rewe: 'Rewe', aldinord: 'ALDI Nord', aldisued: 'ALDI Süd', penny: 'Penny', edeka: 'Edeka'
       },
       selectAll: 'Alle Layer aktivieren',

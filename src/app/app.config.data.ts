@@ -221,7 +221,7 @@ export const DATA_CONFIG = {
       ttsText: 'Bank oder Geldautomat'
     },
     pharmacy: { 
-      image: 'assets/metacom/apotheke.png', 
+      image: 'assets/metacom/apotheke.jpg', 
       icon: 'M12 2v20M2 12h20M9 9h6v6H9z',
       ttsText: 'Apotheke'
     },
@@ -257,7 +257,10 @@ export const DATA_CONFIG = {
     aldisued: { image: 'assets/logographeme/Aldi_Sued_2017_logo.svg.png', icon: '', ttsText: 'ALDI Süd Supermarkt' },
     penny: { image: 'assets/logographeme/Penny-Logo.svg.png', icon: '', ttsText: 'Penny Supermarkt' },
     edeka: { image: 'assets/logographeme/Logo_Edeka.svg.png', icon: '', ttsText: 'Edeka Supermarkt' },
-    
+    tankstelle: { image: 'assets/metacom/tankstelle.jpeg', icon: '', ttsText: 'Tankstelle' },
+    polizeistation: { image: 'assets/metacom/polizeiwache.jpeg', icon: '', ttsText: 'Polizeiwachen' },
+    krankenhaus: { image: 'assets/metacom/krankenhaus.jpeg', icon: '', ttsText: 'Krankenhaus' },
+    schule: { image: 'assets/metacom/schule_inklusion2.jpeg', icon: '', ttsText: 'Schule' }
   },
 
   expertLandmarkResources: [
@@ -289,7 +292,7 @@ export const DATA_CONFIG = {
       id: 'cat_shopping',
       name: 'Einkaufen',
       icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z',
-      items: ['pharmacy', 'bakery', 'supermarket', 'rewe', 'aldinord', 'aldisued', 'penny', 'edeka'],
+      items: ['pharmacy', 'bakery', 'supermarket', 'rewe', 'aldinord', 'penny', 'edeka'],
       ttsText: 'Dinge zum Einkaufen'
     },
     {
@@ -303,15 +306,15 @@ export const DATA_CONFIG = {
       id: 'cat_traffic',
       name: 'Verkehr',
       icon: 'M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4',
-      items: ['stops', 'subway', 'parking'],
+      items: ['stops', 'subway', 'tankstelle'],
       ttsText: 'Dinge für den Verkehr'
     },
     {
       id: 'cat_culture',
-      name: 'Kultur & Soziales',
+      name: 'Öffentliche Orte',
       icon: 'M12 21v-82q90-26 145-100t55-167q0-93-55-167T560-747v-82q123 28 201.5 125.5T840-480q0 127-78.5 224.5T560-131ZM120-360v-240h160l200-200v640L280-360H120Zm440 40v-320q47 15 73.5 56.5T660-480q0 47-26.5 88.5T560-320ZM400-606l-86 86H200v80h114l86 86v-252ZM300-480Z',
-      items: ['church'],
-      ttsText: 'Dinge für Kultur und Soziales'
+      items: ['krankenhaus', 'polizeistation', 'schule'],
+      ttsText: 'öffentliche Orte wie Schulen, Krankenhäuser und Polizeiwachen'
     }
   ]
 };
@@ -393,7 +396,8 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
         church: 'Kirche', restaurant: 'Restaurant', icecream: 'Eis', 
         bakery: 'Bäckerei', supermarket: 'Supermarkt', cinema: 'Kino',
         cafe: 'Café',  bar: 'Bar', subway: 'U-Bahn', parking: 'Parkplatz',
-        rewe: 'Rewe', aldinord: 'ALDI Nord', aldisued: 'ALDI Süd', penny: 'Penny', edeka: 'Edeka',
+        rewe: 'Rewe', aldinord: 'ALDI Nord', aldisued: 'ALDI Süd', penny: 'Penny', edeka: 'Edeka', 
+        tankstelle: 'Tankstelle', polizeistation: 'Polizeistation', krankenhaus: 'Krankenhaus', schule: 'Schule',
       },
       selectAll: 'Alle auswählen',
       deselectAll: 'Alle abwählen',

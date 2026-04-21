@@ -315,35 +315,43 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
           <!-- STEP 2: Ansicht -->
           <fieldset *ngSwitchCase="2" class="space-y-6 border-0 p-0 m-0">
              <legend class="sr-only">{{ t().steps[2].title }}</legend>
-             <div *ngFor="let mode of viewModeKeys" 
-                  class="rounded-xl border-2 overflow-hidden transition-all bg-white" 
+             <div *ngFor="let mode of viewModeKeys" class="relative group">
+               <button 
+                  type="button" 
+                  (click)="onViewModeClick(mode)" 
+                  [disabled]="t().viewModes[mode].disabled"
+                  class="w-full rounded-xl border-2 overflow-hidden transition-all bg-white text-left focus:outline-none focus:ring-4 focus:ring-emerald-500/50" 
                   [class.border-emerald-500]="config.viewMode === mode" 
                   [class.ring-2]="config.viewMode === mode" 
                   [class.ring-emerald-100]="config.viewMode === mode" 
                   [class.border-slate-200]="config.viewMode !== mode"
                   [class.opacity-60]="t().viewModes[mode].disabled"
-                  [class.grayscale]="t().viewModes[mode].disabled">
-               
-               <div class="relative w-full p-4 text-left flex items-center justify-between bg-slate-50 border-b border-slate-100"
-                    [class.bg-slate-200]="t().viewModes[mode].disabled">
-                 <button type="button" (click)="onViewModeClick(mode)" class="flex-1 text-left focus:outline-none" [attr.aria-disabled]="t().viewModes[mode].disabled">
-                   <div>
+                  [class.grayscale]="t().viewModes[mode].disabled"
+                  [attr.aria-pressed]="config.viewMode === mode"
+               >
+                 <div class="relative w-full p-4 flex items-center justify-between bg-slate-50 border-b border-slate-100"
+                      [class.bg-slate-200]="t().viewModes[mode].disabled">
+                   <div class="flex-1">
                      <span class="font-bold text-lg text-slate-900 block flex items-center gap-2">
                        {{ t().viewModes[mode].name }}
                        <span *ngIf="t().viewModes[mode].disabled" class="text-xs bg-slate-500 text-white px-2 py-0.5 rounded-full uppercase">{{ t().ui.notAvailableBadge }}</span>
                      </span>
-                     <span *ngIf="t().viewModes[mode].description" class="text-sm text-slate-500">{{ t().viewModes[mode].description }}</span>
+                     <span *ngIf="t().viewModes[mode].description" class="text-sm text-slate-500 block">{{ t().viewModes[mode].description }}</span>
                      <span *ngIf="t().viewModes[mode].disabled && t().viewModes[mode].disabledText" class="text-sm text-red-600 font-bold block mt-1">{{ t().viewModes[mode].disabledText }}</span>
                    </div>
-                 </button>
-                 <div class="flex items-center gap-4">
-                   <app-tts-icon [text]="t().viewModes[mode].name + (t().viewModes[mode].description ? '. ' + t().viewModes[mode].description : '') + (t().viewModes[mode].disabled ? '. ' + t().viewModes[mode].disabledText : '')"></app-tts-icon>
-                   <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center bg-white border-slate-300" [class.border-emerald-500]="config.viewMode === mode && !t().viewModes[mode].disabled">
-                     <div class="w-3 h-3 rounded-full bg-emerald-500" *ngIf="config.viewMode === mode && !t().viewModes[mode].disabled"></div>
+                   <div class="flex items-center gap-4 ml-4">
+                     <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center bg-white border-slate-300" [class.border-emerald-500]="config.viewMode === mode && !t().viewModes[mode].disabled">
+                       <div class="w-3 h-3 rounded-full bg-emerald-500" *ngIf="config.viewMode === mode && !t().viewModes[mode].disabled"></div>
+                     </div>
                    </div>
                  </div>
+                 <div class="h-32 md:h-48 w-full bg-slate-100 relative">
+                   <img [src]="data.viewModeImages[mode]" class="w-full h-full object-cover" alt="" aria-hidden="true">
+                 </div>
+               </button>
+               <div class="absolute top-4 right-14 z-20">
+                 <app-tts-icon [text]="t().viewModes[mode].name + (t().viewModes[mode].description ? '. ' + t().viewModes[mode].description : '') + (t().viewModes[mode].disabled ? '. ' + t().viewModes[mode].disabledText : '')"></app-tts-icon>
                </div>
-               <div class="h-32 md:h-48 w-full bg-slate-100 relative"><img [src]="data.viewModeImages[mode]" class="w-full h-full object-cover" alt="" aria-hidden="true"></div>
              </div>
           </fieldset>
 

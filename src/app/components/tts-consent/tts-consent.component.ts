@@ -22,11 +22,16 @@ import { TEXTS, ProfileType, DATA_CONFIG } from '../../app.config.data';
             <span class="icon">🔊</span>
             <span class="text">Ja, bitte vorlesen</span>
           </button>
-          
+
           <button (click)="disableTts()" class="btn btn-secondary" aria-label="Nein, ohne Vorlesefunktion fortfahren">
             <span class="icon">🔇</span>
             <span class="text">Nein, danke</span>
           </button>
+        </div>
+
+        <!-- TTS Status Indicator (visible after clicking "Nein, danke") -->
+        <div *ngIf="ttsChoiceMade && !ttsService.isTtsActive()" class="tts-status-indicator" style="margin-top: 20px; padding: 15px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px;">
+          <span class="switch-title" style="color: #dc2626;">🔇 Vorlesefunktion ist deaktiviert</span>
         </div>
 
         <div *ngIf="showStartButton" class="settings-active animate-fade-in">
@@ -110,42 +115,36 @@ import { TEXTS, ProfileType, DATA_CONFIG } from '../../app.config.data';
               </button>
             </div>
           </div>
+        </div>
 
-          <!-- Accessibility Settings -->
-          <div class="accessibility-container">
-            <p class="subtitle">Barrierefreiheit</p>
+        <!-- Separator -->
+        <hr class="border-slate-200 my-6" />
 
-            <div class="accessibility-section">
-              <span class="accessibility-label">Farben</span>
-              <div class="accessibility-options">
-                <button (click)="setColorMode('default')" [class.active]="getColorMode() === 'default'" class="accessibility-btn">Standard</button>
-                <button (click)="setColorMode('deuteranopia')" [class.active]="getColorMode() === 'deuteranopia'" class="accessibility-btn">Rot-Grün</button>
-                <button (click)="setColorMode('protanopia')" [class.active]="getColorMode() === 'protanopia'" class="accessibility-btn">Rot-Grün 2</button>
-                <button (click)="setColorMode('high-contrast')" [class.active]="getColorMode() === 'high-contrast'" class="accessibility-btn">Hoch</button>
-              </div>
+        <!-- Font Size Settings (always visible) -->
+        <div class="accessibility-container" style="margin-top: 20px; padding-top: 20px;">
+          <p class="subtitle">Barrierefreiheit</p>
+
+          <div class="accessibility-section">
+            <span class="accessibility-label">Schriftgröße</span>
+            <div class="accessibility-options">
+              <button (click)="setFontSize('small')" [class.active]="getFontSize() === 'small'" class="accessibility-btn">A</button>
+              <button (click)="setFontSize('normal')" [class.active]="getFontSize() === 'normal'" class="accessibility-btn">A</button>
+              <button (click)="setFontSize('large')" [class.active]="getFontSize() === 'large'" class="accessibility-btn">A</button>
+              <button (click)="setFontSize('x-large')" [class.active]="getFontSize() === 'x-large'" class="accessibility-btn">A</button>
             </div>
-
-            <div class="accessibility-section">
-              <span class="accessibility-label">Schriftgröße</span>
-              <div class="accessibility-options">
-                <button (click)="setFontSize('small')" [class.active]="getFontSize() === 'small'" class="accessibility-btn">A</button>
-                <button (click)="setFontSize('normal')" [class.active]="getFontSize() === 'normal'" class="accessibility-btn">A</button>
-                <button (click)="setFontSize('large')" [class.active]="getFontSize() === 'large'" class="accessibility-btn">A</button>
-                <button (click)="setFontSize('x-large')" [class.active]="getFontSize() === 'x-large'" class="accessibility-btn">A</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="navigation-action">
-            <button (click)="startApp()" class="btn btn-start-app">
-               {{ t().ui.startAppBtn }}
-            </button>
           </div>
         </div>
 
-        <p class="accessibility-note" *ngIf="!showStartButton">
+        <p class="accessibility-note">
           Diese Einstellung kannst du später jederzeit ändern.
         </p>
+
+        <!-- Start App Button (always visible) -->
+        <div class="navigation-action" style="margin-top: 20px;">
+          <button (click)="startApp()" class="btn btn-start-app">
+            {{ t().ui.startAppBtn }}
+          </button>
+        </div>
       </div>
     </div>
   `,
@@ -517,14 +516,11 @@ import { TEXTS, ProfileType, DATA_CONFIG } from '../../app.config.data';
       color: white;
       border-color: #059669;
     }
-    .accessibility-btn:nth-child(1) { font-size: 0.9rem; }
-    .accessibility-btn:nth-child(2) { font-size: 1rem; }
-    .accessibility-btn:nth-child(3) { font-size: 1.1rem; }
-    .accessibility-btn:nth-child(4) { font-size: 1.2rem; }
   `]
 })
 export class TtsConsentComponent implements OnInit {
   showStartButton = false;
+  ttsChoiceMade = false; // Track if user made a TTS choice (yes/no)
   returnStep: string | null = null;
   profile = signal<ProfileType>('simple');
   t = computed(() => TEXTS[this.profile()]);
@@ -688,16 +684,8 @@ export class TtsConsentComponent implements OnInit {
   }
 
   // Accessibility settings (using AccessibilityService)
-  setColorMode(mode: any) {
-    this.accessibilityService.setColorMode(mode);
-  }
-
   setFontSize(size: any) {
     this.accessibilityService.setFontSize(size);
-  }
-
-  getColorMode(): string {
-    return this.accessibilityService.getColorMode();
   }
 
   getFontSize(): string {
@@ -707,6 +695,7 @@ export class TtsConsentComponent implements OnInit {
   enableTts() {
     this.ttsService.enableTts();
     this.showStartButton = true;
+    this.ttsChoiceMade = true;
     // Begrüßung erfolgt automatisch
     setTimeout(() => this.greet(), 100);
   }
@@ -717,8 +706,10 @@ export class TtsConsentComponent implements OnInit {
   }
 
   disableTts() {
+    // Disable TTS but stay on page to let user adjust font settings
     this.ttsService.disableTts();
-    this.navigateToApp();
+    this.ttsChoiceMade = true;
+    this.showStartButton = false;
   }
 
   startApp() {

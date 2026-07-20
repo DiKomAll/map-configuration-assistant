@@ -1,50 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 @import 'leaflet/dist/leaflet.css';
 
-/* CSS Custom Properties for Color Modes */
-:root {
-  --color-primary: #10b981;
-  --color-primary-dark: #059669;
-  --color-primary-light: #d1fae5;
-  --color-text: #1e293b;
-  --color-text-secondary: #64748b;
-  --color-background: #f8fafc;
-  --color-surface: #ffffff;
-  --color-error: #ef4444;
-  --color-warning: #f59e0b;
-  --color-info: #3b82f6;
-}
-
-/* Deuteranopia (Red-Green weakness) - Blue/Yellow friendly colors */
-[data-color-mode='deuteranopia'] {
-  --color-primary: #3b82f6;
-  --color-primary-dark: #2563eb;
-  --color-primary-light: #dbeafe;
-}
-
-/* Protanopia (Red-Green weakness type 2) - Blue/Green colors */
-[data-color-mode='protanopia'] {
-  --color-primary: #0891b2;
-  --color-primary-dark: #0e7490;
-  --color-primary-light: #cffafe;
-}
-
-/* Tritanopia (Blue-Yellow weakness) - Red/Green colors */
-[data-color-mode='tritanopia'] {
-  --color-primary: #dc2626;
-  --color-primary-dark: #b91c1c;
-  --color-primary-light: #fee2e2;
-}
-
-/* High Contrast Mode */
-[data-color-mode='high-contrast'] {
-  --color-primary: #000000;
-  --color-primary-dark: #000000;
-  --color-primary-light: #ffffff;
-  --color-text: #000000;
-  --color-text-secondary: #333333;
-}
-
 /* Font Sizes */
 :root {
   --font-size-base: 16px;

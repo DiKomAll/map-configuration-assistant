@@ -107,6 +107,43 @@ export interface TranslationResource {
 // --- DATEN-KONFIGURATION (Integriert) ---
 
 export const DATA_CONFIG = {
+  // TTS Preset Settings (configurable)
+  ttsPresets: {
+    volume: {
+      quiet: 0.33,
+      medium: 0.66,
+      loud: 1
+    },
+    rate: {
+      slow: 0.7,
+      normal: 1,
+      fast: 1.5
+    }
+  },
+  // TTS Preset Labels (configurable)
+  ttsLabels: {
+    volume: {
+      quiet: 'Leise',
+      medium: 'Mittel',
+      loud: 'Laut'
+    },
+    rate: {
+      slow: 'Langsam',
+      normal: 'Normal',
+      fast: 'Schnell'
+    }
+  },
+  // TTS Preset Threshold values for active state detection
+  ttsThresholds: {
+    volume: {
+      quiet: 0.33,
+      medium: 0.66
+    },
+    rate: {
+      slow: 0.9,
+      normalUpper: 1.1
+    }
+  },
   externalAppUrl: "https://kommonitor.fbg-hsbo.de/#!/",
   // externalAppUrl: "http://localhost:8000/#!/",
   defaultAreaTab: 'selection',

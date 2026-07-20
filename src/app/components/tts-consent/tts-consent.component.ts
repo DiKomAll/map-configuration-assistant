@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TtsService } from '../../services/tts.service';
 import { AccessibilityService } from '../../services/accessibility.service';
-import { TEXTS, ProfileType } from '../../app.config.data';
+import { TEXTS, ProfileType, DATA_CONFIG } from '../../app.config.data';
 
 @Component({
   selector: 'app-tts-consent',
@@ -53,18 +53,20 @@ import { TEXTS, ProfileType } from '../../app.config.data';
           <!-- Volume and Rate Controls -->
           <div class="tts-controls-container" *ngIf="getGermanVoices().length > 0">
             <div class="tts-control">
-              <label class="tts-control-label">
-                <span class="switch-title">🔊 Lautstärke</span>
-                <span class="tts-value">{{ getVolume() * 100 }}%</span>
-              </label>
-              <input type="range" min="0" max="1" step="0.1" [value]="getVolume()" (input)="setVolume($event)" class="tts-slider">
+              <span class="switch-title">🔊 {{ data.ttsLabels.volume.quiet }} / {{ data.ttsLabels.volume.medium }} / {{ data.ttsLabels.volume.loud }}</span>
+              <div class="tts-preset-buttons">
+                <button (click)="setVolumePreset('quiet')" [class.active]="isVolumeActive('quiet')" class="tts-preset-btn">{{ data.ttsLabels.volume.quiet }}</button>
+                <button (click)="setVolumePreset('medium')" [class.active]="isVolumeActive('medium')" class="tts-preset-btn">{{ data.ttsLabels.volume.medium }}</button>
+                <button (click)="setVolumePreset('loud')" [class.active]="isVolumeActive('loud')" class="tts-preset-btn">{{ data.ttsLabels.volume.loud }}</button>
+              </div>
             </div>
             <div class="tts-control">
-              <label class="tts-control-label">
-                <span class="switch-title">⚡ Geschwindigkeit</span>
-                <span class="tts-value">{{ getRate() }}x</span>
-              </label>
-              <input type="range" min="0.1" max="2" step="0.1" [value]="getRate()" (input)="setRate($event)" class="tts-slider">
+              <span class="switch-title">⚡ {{ data.ttsLabels.rate.slow }} / {{ data.ttsLabels.rate.normal }} / {{ data.ttsLabels.rate.fast }}</span>
+              <div class="tts-preset-buttons">
+                <button (click)="setRatePreset('slow')" [class.active]="isRateActive('slow')" class="tts-preset-btn">{{ data.ttsLabels.rate.slow }}</button>
+                <button (click)="setRatePreset('normal')" [class.active]="isRateActive('normal')" class="tts-preset-btn">{{ data.ttsLabels.rate.normal }}</button>
+                <button (click)="setRatePreset('fast')" [class.active]="isRateActive('fast')" class="tts-preset-btn">{{ data.ttsLabels.rate.fast }}</button>
+              </div>
             </div>
           </div>
 
@@ -432,6 +434,32 @@ import { TEXTS, ProfileType } from '../../app.config.data';
       font-weight: bold;
     }
 
+    /* TTS Preset Buttons */
+    .tts-preset-buttons {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .tts-preset-btn {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 2px solid #ddd;
+      background: white;
+      font-weight: bold;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tts-preset-btn:hover {
+      background: #f0f0f0;
+    }
+    .tts-preset-btn.active {
+      background: #10b981;
+      color: white;
+      border-color: #059669;
+    }
+
     /* Accessibility Settings */
     .accessibility-container {
       margin-top: 30px;
@@ -482,6 +510,7 @@ export class TtsConsentComponent implements OnInit {
   returnStep: string | null = null;
   profile = signal<ProfileType>('simple');
   t = computed(() => TEXTS[this.profile()]);
+  data = DATA_CONFIG;
 
   // Accessibility settings (using AccessibilityService)
   private accessibilityService = inject(AccessibilityService);
@@ -570,7 +599,7 @@ export class TtsConsentComponent implements OnInit {
     }
   }
 
-  // Volume and rate controls
+  // Volume and rate controls with presets
   setVolume(event: Event) {
     const input = event.target as HTMLInputElement;
     const volume = parseFloat(input.value);
@@ -581,6 +610,41 @@ export class TtsConsentComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     const rate = parseFloat(input.value);
     this.ttsService.setRate(rate);
+  }
+
+  setVolumePreset(preset: 'quiet' | 'medium' | 'loud') {
+    const volume = this.data.ttsPresets.volume[preset];
+    this.ttsService.setVolume(volume);
+  }
+
+  setRatePreset(preset: 'slow' | 'normal' | 'fast') {
+    const rate = this.data.ttsPresets.rate[preset];
+    this.ttsService.setRate(rate);
+  }
+
+  // Helper methods for determining active state and labels
+  isVolumeActive(preset: 'quiet' | 'medium' | 'loud'): boolean {
+    const vol = this.ttsService.getVolume();
+    const thresholds = this.data.ttsThresholds.volume;
+    if (preset === 'quiet') return vol <= thresholds.quiet;
+    if (preset === 'medium') return vol > thresholds.quiet && vol <= thresholds.medium;
+    return vol > thresholds.medium;
+  }
+
+  isRateActive(preset: 'slow' | 'normal' | 'fast'): boolean {
+    const rate = this.ttsService.getRate();
+    const thresholds = this.data.ttsThresholds.rate;
+    if (preset === 'slow') return rate < thresholds.slow;
+    if (preset === 'normal') return rate >= thresholds.slow && rate <= thresholds.normalUpper;
+    return rate > thresholds.normalUpper;
+  }
+
+  getVolumeLabel(preset: 'quiet' | 'medium' | 'loud'): string {
+    return this.data.ttsLabels.volume[preset];
+  }
+
+  getRateLabel(preset: 'slow' | 'normal' | 'fast'): string {
+    return this.data.ttsLabels.rate[preset];
   }
 
   getVolume(): number {

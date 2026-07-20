@@ -614,16 +614,20 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
                 <h4 class="text-sm font-bold text-slate-600 mb-3">Vorlesefunktion Einstellungen</h4>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   <div>
-                    <label class="flex justify-between items-center mb-1">
-                      <span class="text-xs font-semibold">🔊 Lautstärke: {{ ttsService.getVolume() * 100 }}%</span>
-                    </label>
-                    <input type="range" min="0" max="1" step="0.1" [value]="ttsService.getVolume()" (input)="setVolume($event)" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                    <span class="text-xs font-semibold block mb-2">🔊 Lautstärke</span>
+                    <div class="flex gap-2">
+                      <button (click)="setVolumePreset('quiet')" [class.bg-emerald-600]="isVolumeActive('quiet')" [class.text-white]="isVolumeActive('quiet')" [class.bg-slate-200]="!isVolumeActive('quiet')" [class.text-slate-700]="!isVolumeActive('quiet')" class="flex-1 py-2 px-3 rounded-lg font-bold text-sm transition-colors">{{ data.ttsLabels.volume.quiet }}</button>
+                      <button (click)="setVolumePreset('medium')" [class.bg-emerald-600]="isVolumeActive('medium')" [class.text-white]="isVolumeActive('medium')" [class.bg-slate-200]="!isVolumeActive('medium')" [class.text-slate-700]="!isVolumeActive('medium')" class="flex-1 py-2 px-3 rounded-lg font-bold text-sm transition-colors">{{ data.ttsLabels.volume.medium }}</button>
+                      <button (click)="setVolumePreset('loud')" [class.bg-emerald-600]="isVolumeActive('loud')" [class.text-white]="isVolumeActive('loud')" [class.bg-slate-200]="!isVolumeActive('loud')" [class.text-slate-700]="!isVolumeActive('loud')" class="flex-1 py-2 px-3 rounded-lg font-bold text-sm transition-colors">{{ data.ttsLabels.volume.loud }}</button>
+                    </div>
                   </div>
                   <div>
-                    <label class="flex justify-between items-center mb-1">
-                      <span class="text-xs font-semibold">⚡ Geschwindigkeit: {{ ttsService.getRate() }}x</span>
-                    </label>
-                    <input type="range" min="0.1" max="2" step="0.1" [value]="ttsService.getRate()" (input)="setRate($event)" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                    <span class="text-xs font-semibold block mb-2">⚡ Geschwindigkeit</span>
+                    <div class="flex gap-2">
+                      <button (click)="setRatePreset('slow')" [class.bg-emerald-600]="isRateActive('slow')" [class.text-white]="isRateActive('slow')" [class.bg-slate-200]="!isRateActive('slow')" [class.text-slate-700]="!isRateActive('slow')" class="flex-1 py-2 px-3 rounded-lg font-bold text-sm transition-colors">{{ data.ttsLabels.rate.slow }}</button>
+                      <button (click)="setRatePreset('normal')" [class.bg-emerald-600]="isRateActive('normal')" [class.text-white]="isRateActive('normal')" [class.bg-slate-200]="!isRateActive('normal')" [class.text-slate-700]="!isRateActive('normal')" class="flex-1 py-2 px-3 rounded-lg font-bold text-sm transition-colors">{{ data.ttsLabels.rate.normal }}</button>
+                      <button (click)="setRatePreset('fast')" [class.bg-emerald-600]="isRateActive('fast')" [class.text-white]="isRateActive('fast')" [class.bg-slate-200]="!isRateActive('fast')" [class.text-slate-700]="!isRateActive('fast')" class="flex-1 py-2 px-3 rounded-lg font-bold text-sm transition-colors">{{ data.ttsLabels.rate.fast }}</button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -813,7 +817,7 @@ export class WizardComponent implements OnInit {
     private route: ActivatedRoute
   ) {}
 
-  // Volume and Rate controls for step 4
+  // Volume and Rate controls for step 4 with presets
   setVolume(event: Event) {
     const input = event.target as HTMLInputElement;
     const volume = parseFloat(input.value);
@@ -826,12 +830,39 @@ export class WizardComponent implements OnInit {
     this.ttsService.setRate(rate);
   }
 
+  setVolumePreset(preset: 'quiet' | 'medium' | 'loud') {
+    const volume = this.data.ttsPresets.volume[preset];
+    this.ttsService.setVolume(volume);
+  }
+
+  setRatePreset(preset: 'slow' | 'normal' | 'fast') {
+    const rate = this.data.ttsPresets.rate[preset];
+    this.ttsService.setRate(rate);
+  }
+
   getVolume(): number {
     return this.ttsService.getVolume();
   }
 
   getRate(): number {
     return this.ttsService.getRate();
+  }
+
+  // Helper methods for determining active state
+  isVolumeActive(preset: 'quiet' | 'medium' | 'loud'): boolean {
+    const vol = this.ttsService.getVolume();
+    const thresholds = this.data.ttsThresholds.volume;
+    if (preset === 'quiet') return vol <= thresholds.quiet;
+    if (preset === 'medium') return vol > thresholds.quiet && vol <= thresholds.medium;
+    return vol > thresholds.medium;
+  }
+
+  isRateActive(preset: 'slow' | 'normal' | 'fast'): boolean {
+    const rate = this.ttsService.getRate();
+    const thresholds = this.data.ttsThresholds.rate;
+    if (preset === 'slow') return rate < thresholds.slow;
+    if (preset === 'normal') return rate >= thresholds.slow && rate <= thresholds.normalUpper;
+    return rate > thresholds.normalUpper;
   }
 
   // Navigator methods

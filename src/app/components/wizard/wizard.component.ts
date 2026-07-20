@@ -8,7 +8,7 @@ import { TtsService } from '../../services/tts.service';
 import { AccessibilityService } from '../../services/accessibility.service';
 
 // Import der Konfigurationsdaten und Typen
-import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
+import { DATA_CONFIG, TEXTS, ProfileType, STEP_INDICATOR_SIZES } from '../../app.config.data';
 
 @Component({
   selector: 'app-wizard',
@@ -65,22 +65,34 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
             <button
               *ngFor="let stepInfo of stepsInfo; let i = index"
               (click)="goToStep(i)"
-              class="flex items-center justify-center px-3 py-1.5 rounded-lg text-xs font-bold transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              class="flex items-center justify-center px-2.5 py-2 rounded-lg text-xs font-bold transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500"
               [class.bg-emerald-600]="currentStep() === i"
               [class.text-white]="currentStep() === i"
               [class.bg-slate-200]="currentStep() !== i && isStepCompleted(i)"
               [class.text-slate-700]="currentStep() !== i && isStepCompleted(i)"
               [class.bg-slate-100]="currentStep() !== i && !isStepCompleted(i)"
               [class.text-slate-500]="currentStep() !== i && !isStepCompleted(i)"
-              [attr.aria-label]="stepInfo.title || 'Schritt ' + (i + 1)"
+              [attr.aria-label]="getStepAriaLabel(i)"
             >
-              <span class="w-5 h-5 flex items-center justify-center rounded-full mr-1 text-[10px]"
+              <!-- Step number (always visible) -->
+              <span class="flex items-center justify-center rounded-full mr-1.5 shrink-0 transition-all duration-200"
+                [class]="numberSizeClass"
                 [class.bg-white]="currentStep() === i"
                 [class.bg-emerald-100]="currentStep() !== i && isStepCompleted(i)"
-                [class.bg-slate-200]="currentStep() !== i && !isStepCompleted(i)">
+                [class.bg-slate-200]="currentStep() !== i && !isStepCompleted(i)"
+              >
                 {{ i + 1 }}
               </span>
-              <span class="hidden sm:inline truncate max-w-[120px]">{{ stepInfo.title || 'Schritt ' + (i + 1) }}</span>
+              <!-- Icon or short label on medium screens and up -->
+              <span class="hidden sm:inline-flex items-center justify-center shrink-0 transition-all duration-200"
+                [class]="iconSizeClass">
+                <svg *ngIf="data.stepIndicators[i]?.icon" xmlns="http://www.w3.org/2000/svg" class="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="data.stepIndicators[i]?.icon" />
+                </svg>
+                <span *ngIf="!data.stepIndicators[i]?.icon && data.stepIndicators[i]?.shortLabel" class="text-[10px] font-normal sm:text-xs md:text-sm">
+                  {{ data.stepIndicators[i]?.shortLabel }}
+                </span>
+              </span>
             </button>
           </div>
         </nav>
@@ -818,6 +830,25 @@ export class WizardComponent implements OnInit {
   // Step info for navigator - computed from steps
   get stepsInfo() {
     return this.t().steps.map(s => ({ title: s.title }));
+  }
+
+  // Get step indicator sizes from config
+  get numberSizeClass() {
+    return DATA_CONFIG.stepIndicatorSizes?.number || STEP_INDICATOR_SIZES.number;
+  }
+
+  get iconSizeClass() {
+    return DATA_CONFIG.stepIndicatorSizes?.icon || STEP_INDICATOR_SIZES.icon;
+  }
+
+  // Accessibility label for step navigation buttons
+  getStepAriaLabel(stepIndex: number): string {
+    const stepNum = stepIndex + 1;
+    const title = this.t().steps[stepIndex]?.title;
+    if (title) {
+      return `${this.t().ui.stepIndicator} ${stepNum}: ${title}`;
+    }
+    return `Schritt ${stepNum}`;
   }
 
   // Accessibility service

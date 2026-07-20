@@ -106,7 +106,37 @@ export interface TranslationResource {
 
 // --- DATEN-KONFIGURATION (Integriert) ---
 
+// Step indicator configuration for responsive display
+export interface StepIndicatorConfig {
+  icon?: string;       // SVG path for step icon
+  shortLabel?: string; // Short label shown on medium screens when icon not available
+}
+
+// Default sizes for step indicators - edit these values to change sizes globally
+// To customize sizes, modify the class values below (Tailwind CSS classes)
+export const STEP_INDICATOR_SIZES = {
+  number: 'w-5 h-5 text-[10px] sm:w-6 sm:h-6 sm:text-xs sm:font-bold md:w-7 md:h-7 md:text-sm',
+  icon: 'w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5'
+};
+
 export const DATA_CONFIG = {
+  // Step indicator icons/short labels for responsive navigation
+  // Each step can have an icon (SVG path) and/or a short label
+  // On screens >= sm: shows number + icon (or short label if no icon)
+  // On screens < sm: shows only the number
+  stepIndicators: [
+    { icon: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z', shortLabel: 'Ort' },
+    { icon: 'M4 6h16M4 12h16M4 18h16', shortLabel: 'Karte' },
+    { icon: 'M12 2L2 7l10 5 10-5-10-5z', shortLabel: 'Ansicht' },
+    { icon: 'M15 12a3 3 0 11-6 0 3 3 0 016 0z', shortLabel: 'Orte' },
+    { icon: 'M12 22l-6-9.5c0-3.5 2.5-6.5 6-6.5s6 3 6 6.5L12 22z', shortLabel: 'Optik' },
+    { icon: 'M5 13l4 4L19 7', shortLabel: 'Fertig' }
+  ] as StepIndicatorConfig[],
+
+  // Responsive step indicator sizing (configurable)
+  // Override these values to change sizes globally
+  stepIndicatorSizes: STEP_INDICATOR_SIZES,
+
   // TTS Preset Settings (configurable)
   ttsPresets: {
     volume: {

@@ -53,19 +53,37 @@ import { TEXTS, ProfileType, DATA_CONFIG } from '../../app.config.data';
           <!-- Volume and Rate Controls -->
           <div class="tts-controls-container" *ngIf="getGermanVoices().length > 0">
             <div class="tts-control">
-              <span class="switch-title">🔊 {{ data.ttsLabels.volume.quiet }} / {{ data.ttsLabels.volume.medium }} / {{ data.ttsLabels.volume.loud }}</span>
+              <span class="switch-title">🔊 Lautstärke</span>
               <div class="tts-preset-buttons">
-                <button (click)="setVolumePreset('quiet')" [class.active]="isVolumeActive('quiet')" class="tts-preset-btn">{{ data.ttsLabels.volume.quiet }}</button>
-                <button (click)="setVolumePreset('medium')" [class.active]="isVolumeActive('medium')" class="tts-preset-btn">{{ data.ttsLabels.volume.medium }}</button>
-                <button (click)="setVolumePreset('loud')" [class.active]="isVolumeActive('loud')" class="tts-preset-btn">{{ data.ttsLabels.volume.loud }}</button>
+                <button (click)="setVolumePresetAndTest('quiet')" [class.active]="isVolumeActive('quiet')" class="tts-preset-btn">
+                  <span class="text-lg mb-1 block">🔈</span>
+                  {{ data.ttsLabels.volume.quiet }}
+                </button>
+                <button (click)="setVolumePresetAndTest('medium')" [class.active]="isVolumeActive('medium')" class="tts-preset-btn">
+                  <span class="text-lg mb-1 block">🔉</span>
+                  {{ data.ttsLabels.volume.medium }}
+                </button>
+                <button (click)="setVolumePresetAndTest('loud')" [class.active]="isVolumeActive('loud')" class="tts-preset-btn">
+                  <span class="text-lg mb-1 block">🔊</span>
+                  {{ data.ttsLabels.volume.loud }}
+                </button>
               </div>
             </div>
             <div class="tts-control">
-              <span class="switch-title">⚡ {{ data.ttsLabels.rate.slow }} / {{ data.ttsLabels.rate.normal }} / {{ data.ttsLabels.rate.fast }}</span>
+              <span class="switch-title">⚡ Geschwindigkeit</span>
               <div class="tts-preset-buttons">
-                <button (click)="setRatePreset('slow')" [class.active]="isRateActive('slow')" class="tts-preset-btn">{{ data.ttsLabels.rate.slow }}</button>
-                <button (click)="setRatePreset('normal')" [class.active]="isRateActive('normal')" class="tts-preset-btn">{{ data.ttsLabels.rate.normal }}</button>
-                <button (click)="setRatePreset('fast')" [class.active]="isRateActive('fast')" class="tts-preset-btn">{{ data.ttsLabels.rate.fast }}</button>
+                <button (click)="setRatePresetAndTest('slow')" [class.active]="isRateActive('slow')" class="tts-preset-btn">
+                  <span class="text-lg mb-1 block">🐢</span>
+                  {{ data.ttsLabels.rate.slow }}
+                </button>
+                <button (click)="setRatePresetAndTest('normal')" [class.active]="isRateActive('normal')" class="tts-preset-btn">
+                  <span class="text-lg mb-1 block">⚡</span>
+                  {{ data.ttsLabels.rate.normal }}
+                </button>
+                <button (click)="setRatePresetAndTest('fast')" [class.active]="isRateActive('fast')" class="tts-preset-btn">
+                  <span class="text-lg mb-1 block">🐇</span>
+                  {{ data.ttsLabels.rate.fast }}
+                </button>
               </div>
             </div>
           </div>
@@ -620,6 +638,20 @@ export class TtsConsentComponent implements OnInit {
   setRatePreset(preset: 'slow' | 'normal' | 'fast') {
     const rate = this.data.ttsPresets.rate[preset];
     this.ttsService.setRate(rate);
+  }
+
+  setVolumePresetAndTest(preset: 'quiet' | 'medium' | 'loud') {
+    this.setVolumePreset(preset);
+    if (this.ttsService.isTtsActive()) {
+      this.ttsService.speak(this.data.ttsTestMessage);
+    }
+  }
+
+  setRatePresetAndTest(preset: 'slow' | 'normal' | 'fast') {
+    this.setRatePreset(preset);
+    if (this.ttsService.isTtsActive()) {
+      this.ttsService.speak(this.data.ttsTestMessage);
+    }
   }
 
   // Helper methods for determining active state and labels

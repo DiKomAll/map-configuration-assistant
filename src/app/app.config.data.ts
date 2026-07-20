@@ -133,6 +133,8 @@ export const DATA_CONFIG = {
       fast: 'Schnell'
     }
   },
+  // TTS Test message when changing presets
+  ttsTestMessage: 'Du hast meine Stimmeneinstellung geändert. Gefällt es dir?',
   // TTS Preset Threshold values for active state detection
   ttsThresholds: {
     volume: {

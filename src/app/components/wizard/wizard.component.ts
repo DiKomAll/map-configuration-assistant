@@ -616,17 +616,29 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
                   <div>
                     <span class="text-xs font-semibold block mb-2">🔊 Lautstärke</span>
                     <div class="flex gap-2">
-                      <button (click)="setVolumePreset('quiet')" [class.bg-emerald-600]="isVolumeActive('quiet')" [class.text-white]="isVolumeActive('quiet')" [class.bg-slate-200]="!isVolumeActive('quiet')" [class.text-slate-700]="!isVolumeActive('quiet')" class="flex-1 py-2 px-3 rounded-lg font-bold text-sm transition-colors">{{ data.ttsLabels.volume.quiet }}</button>
-                      <button (click)="setVolumePreset('medium')" [class.bg-emerald-600]="isVolumeActive('medium')" [class.text-white]="isVolumeActive('medium')" [class.bg-slate-200]="!isVolumeActive('medium')" [class.text-slate-700]="!isVolumeActive('medium')" class="flex-1 py-2 px-3 rounded-lg font-bold text-sm transition-colors">{{ data.ttsLabels.volume.medium }}</button>
-                      <button (click)="setVolumePreset('loud')" [class.bg-emerald-600]="isVolumeActive('loud')" [class.text-white]="isVolumeActive('loud')" [class.bg-slate-200]="!isVolumeActive('loud')" [class.text-slate-700]="!isVolumeActive('loud')" class="flex-1 py-2 px-3 rounded-lg font-bold text-sm transition-colors">{{ data.ttsLabels.volume.loud }}</button>
+                      <button (click)="setVolumePresetAndTest('quiet')" [class.bg-emerald-600]="isVolumeActive('quiet')" [class.text-white]="isVolumeActive('quiet')" [class.bg-slate-200]="!isVolumeActive('quiet')" [class.text-slate-700]="!isVolumeActive('quiet')" class="flex-1 py-2 px-3 rounded-lg font-bold text-sm transition-colors">
+                        <span class="block text-lg mb-1">🔈</span>{{ data.ttsLabels.volume.quiet }}
+                      </button>
+                      <button (click)="setVolumePresetAndTest('medium')" [class.bg-emerald-600]="isVolumeActive('medium')" [class.text-white]="isVolumeActive('medium')" [class.bg-slate-200]="!isVolumeActive('medium')" [class.text-slate-700]="!isVolumeActive('medium')" class="flex-1 py-2 px-3 rounded-lg font-bold text-sm transition-colors">
+                        <span class="block text-lg mb-1">🔉</span>{{ data.ttsLabels.volume.medium }}
+                      </button>
+                      <button (click)="setVolumePresetAndTest('loud')" [class.bg-emerald-600]="isVolumeActive('loud')" [class.text-white]="isVolumeActive('loud')" [class.bg-slate-200]="!isVolumeActive('loud')" [class.text-slate-700]="!isVolumeActive('loud')" class="flex-1 py-2 px-3 rounded-lg font-bold text-sm transition-colors">
+                        <span class="block text-lg mb-1">🔊</span>{{ data.ttsLabels.volume.loud }}
+                      </button>
                     </div>
                   </div>
                   <div>
                     <span class="text-xs font-semibold block mb-2">⚡ Geschwindigkeit</span>
                     <div class="flex gap-2">
-                      <button (click)="setRatePreset('slow')" [class.bg-emerald-600]="isRateActive('slow')" [class.text-white]="isRateActive('slow')" [class.bg-slate-200]="!isRateActive('slow')" [class.text-slate-700]="!isRateActive('slow')" class="flex-1 py-2 px-3 rounded-lg font-bold text-sm transition-colors">{{ data.ttsLabels.rate.slow }}</button>
-                      <button (click)="setRatePreset('normal')" [class.bg-emerald-600]="isRateActive('normal')" [class.text-white]="isRateActive('normal')" [class.bg-slate-200]="!isRateActive('normal')" [class.text-slate-700]="!isRateActive('normal')" class="flex-1 py-2 px-3 rounded-lg font-bold text-sm transition-colors">{{ data.ttsLabels.rate.normal }}</button>
-                      <button (click)="setRatePreset('fast')" [class.bg-emerald-600]="isRateActive('fast')" [class.text-white]="isRateActive('fast')" [class.bg-slate-200]="!isRateActive('fast')" [class.text-slate-700]="!isRateActive('fast')" class="flex-1 py-2 px-3 rounded-lg font-bold text-sm transition-colors">{{ data.ttsLabels.rate.fast }}</button>
+                      <button (click)="setRatePresetAndTest('slow')" [class.bg-emerald-600]="isRateActive('slow')" [class.text-white]="isRateActive('slow')" [class.bg-slate-200]="!isRateActive('slow')" [class.text-slate-700]="!isRateActive('slow')" class="flex-1 py-2 px-3 rounded-lg font-bold text-sm transition-colors">
+                        <span class="block text-lg mb-1">🐢</span>{{ data.ttsLabels.rate.slow }}
+                      </button>
+                      <button (click)="setRatePresetAndTest('normal')" [class.bg-emerald-600]="isRateActive('normal')" [class.text-white]="isRateActive('normal')" [class.bg-slate-200]="!isRateActive('normal')" [class.text-slate-700]="!isRateActive('normal')" class="flex-1 py-2 px-3 rounded-lg font-bold text-sm transition-colors">
+                        <span class="block text-lg mb-1">⚡</span>{{ data.ttsLabels.rate.normal }}
+                      </button>
+                      <button (click)="setRatePresetAndTest('fast')" [class.bg-emerald-600]="isRateActive('fast')" [class.text-white]="isRateActive('fast')" [class.bg-slate-200]="!isRateActive('fast')" [class.text-slate-700]="!isRateActive('fast')" class="flex-1 py-2 px-3 rounded-lg font-bold text-sm transition-colors">
+                        <span class="block text-lg mb-1">🐇</span>{{ data.ttsLabels.rate.fast }}
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -838,6 +850,20 @@ export class WizardComponent implements OnInit {
   setRatePreset(preset: 'slow' | 'normal' | 'fast') {
     const rate = this.data.ttsPresets.rate[preset];
     this.ttsService.setRate(rate);
+  }
+
+  setVolumePresetAndTest(preset: 'quiet' | 'medium' | 'loud') {
+    this.setVolumePreset(preset);
+    if (this.ttsService.isTtsActive()) {
+      this.ttsService.speak(this.data.ttsTestMessage);
+    }
+  }
+
+  setRatePresetAndTest(preset: 'slow' | 'normal' | 'fast') {
+    this.setRatePreset(preset);
+    if (this.ttsService.isTtsActive()) {
+      this.ttsService.speak(this.data.ttsTestMessage);
+    }
   }
 
   getVolume(): number {

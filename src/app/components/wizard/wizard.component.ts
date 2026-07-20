@@ -15,7 +15,7 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
   standalone: true,
   imports: [CommonModule, FormsModule, TtsIconComponent, MapPreviewComponent],
   template: `
-    <div class="min-h-screen bg-slate-50 font-sans text-slate-800 pb-28 relative overflow-hidden flex flex-col">
+    <div class="min-h-screen bg-slate-50 text-slate-800 pb-28 relative overflow-hidden flex flex-col" style="font-family: var(--font-family-body);">
       
       <!-- Top Bar -->
       <header class="bg-white sticky top-0 z-40 shadow-sm safe-area-top" role="banner">

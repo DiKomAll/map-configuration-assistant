@@ -260,7 +260,7 @@ export class MapPreviewComponent implements OnInit, OnChanges, AfterViewInit, On
     
     // Popup in simple language
     const popupContent = `
-      <div class="p-2 font-sans">
+      <div class="p-2" style="font-family: var(--font-family-body);">
         <strong class="text-lg block mb-1">${this.config.area || 'Dein Ort'}</strong>
         <p class="text-slate-600">Das ist der Ort, den du ausgesucht hast.</p>
       </div>

@@ -120,9 +120,17 @@ import { TEXTS, ProfileType, DATA_CONFIG } from '../../app.config.data';
         <!-- Separator -->
         <hr class="border-slate-200 my-6" />
 
-        <!-- Font Size Settings (always visible) -->
+        <!-- Font Settings (always visible) -->
         <div class="accessibility-container" style="margin-top: 20px; padding-top: 20px;">
           <p class="subtitle">Barrierefreiheit</p>
+
+          <div class="accessibility-section">
+            <span class="accessibility-label">Schriftart</span>
+            <div class="accessibility-options">
+              <button (click)="setFontFamily('open-dyslexic')" [class.active]="getFontFamily() === 'open-dyslexic'" class="accessibility-btn">OpenDyslexic</button>
+              <button (click)="setFontFamily('default')" [class.active]="getFontFamily() === 'default'" class="accessibility-btn">Standard</button>
+            </div>
+          </div>
 
           <div class="accessibility-section">
             <span class="accessibility-label">Schriftgröße</span>
@@ -156,7 +164,7 @@ import { TEXTS, ProfileType, DATA_CONFIG } from '../../app.config.data';
       min-height: 100vh;
       background-color: #f5f5f5;
       padding: 20px;
-      font-family: sans-serif;
+      font-family: var(--font-family-body);
     }
     .card {
       background: white;
@@ -166,6 +174,7 @@ import { TEXTS, ProfileType, DATA_CONFIG } from '../../app.config.data';
       max-width: 600px;
       width: 100%;
       text-align: center;
+      font-family: var(--font-family-body);
     }
     h1 {
       color: #333;
@@ -688,8 +697,16 @@ export class TtsConsentComponent implements OnInit {
     this.accessibilityService.setFontSize(size);
   }
 
+  setFontFamily(family: any) {
+    this.accessibilityService.setFontFamily(family);
+  }
+
   getFontSize(): string {
     return this.accessibilityService.getFontSize();
+  }
+
+  getFontFamily(): string {
+    return this.accessibilityService.getFontFamily();
   }
 
   enableTts() {

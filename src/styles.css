@@ -4,6 +4,8 @@
 /* Font Sizes */
 :root {
   --font-size-base: 16px;
+  /* Default font family - OpenDyslexic as the default */
+  --font-family-body: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 [data-font-size='small'] {
@@ -43,24 +45,46 @@ body {
   font-size: var(--font-size-base);
 }
 
-/* OpenDyslexic Font Support */
+/* Font Family Support */
+/* Default font */
+[data-font-family='default'] {
+  --font-family-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* OpenDyslexic font for dyslexia-friendly reading */
+[data-font-family='open-dyslexic'] {
+  --font-family-body: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Apply font family to body */
+body {
+  font-family: var(--font-family-body);
+}
+
+/* -----------------------------------------------------------------
+   OpenDyslexic – regular weight (default)                     */
 @font-face {
   font-family: 'OpenDyslexic';
-  src: url('assets/fonts/OpenDyslexic-Regular.woff2') format('woff2'),
-       url('assets/fonts/OpenDyslexic-Regular.woff') format('woff');
-  font-weight: normal;
+  src: url('./assets/fonts/OpenDyslexic-Regular.otf') format('opentype');
+  font-weight: 400;          /* regular */
+  font-style: normal;
+  font-display: swap;         /* avoid FOIT */
+}
+
+/* -------------------------------------------------
+   Optional – Bold weight (if you want a separate bold face)
+   ------------------------------------------------- */
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('./assets/fonts/OpenDyslexic-Bold.otf') format('opentype');
+  font-weight: 700;          /* bold */
   font-style: normal;
   font-display: swap;
 }
 
-@font-face {
-  font-family: 'OpenDyslexic';
-  src: url('assets/fonts/OpenDyslexic-Bold.woff2') format('woff2'),
-       url('assets/fonts/OpenDyslexic-Bold.woff') format('woff');
-  font-weight: bold;
-  font-style: normal;
-  font-display: swap;
-}
+/* Helper classes – nothing else to modify */
+body.open-dyslexic   { --font-family-body: 'OpenDyslexic', Arial, Helvetica, sans-serif; }
+body.default-font    { --font-family-body: Arial, Helvetica, sans-serif; }
 
 .dyslexic-font {
   font-family: 'OpenDyslexic', sans-serif;

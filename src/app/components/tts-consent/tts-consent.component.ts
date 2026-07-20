@@ -1,7 +1,8 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TtsService } from '../../services/tts.service';
+import { AccessibilityService } from '../../services/accessibility.service';
 import { TEXTS, ProfileType } from '../../app.config.data';
 
 @Component({
@@ -30,7 +31,7 @@ import { TEXTS, ProfileType } from '../../app.config.data';
 
         <div *ngIf="showStartButton" class="settings-active animate-fade-in">
           <button (click)="resetTts()" class="status-badge-btn" title="Vorlesefunktion wieder ausschalten">
-             <span class="icon">✅</span> 
+             <span class="icon">✅</span>
              <span class="text">{{ t().ui.ttsEnabledFeedback }}</span>
              <span class="change-label">{{ t().ui.changeLabel }}</span>
           </button>
@@ -49,11 +50,29 @@ import { TEXTS, ProfileType } from '../../app.config.data';
             </label>
           </div>
 
+          <!-- Volume and Rate Controls -->
+          <div class="tts-controls-container" *ngIf="getGermanVoices().length > 0">
+            <div class="tts-control">
+              <label class="tts-control-label">
+                <span class="switch-title">🔊 Lautstärke</span>
+                <span class="tts-value">{{ getVolume() * 100 }}%</span>
+              </label>
+              <input type="range" min="0" max="1" step="0.1" [value]="getVolume()" (input)="setVolume($event)" class="tts-slider">
+            </div>
+            <div class="tts-control">
+              <label class="tts-control-label">
+                <span class="switch-title">⚡ Geschwindigkeit</span>
+                <span class="tts-value">{{ getRate() }}x</span>
+              </label>
+              <input type="range" min="0.1" max="2" step="0.1" [value]="getRate()" (input)="setRate($event)" class="tts-slider">
+            </div>
+          </div>
+
           <div class="voice-selection-container" *ngIf="getGermanVoices().length > 0">
             <p class="subtitle">{{ t().ui.companionLabel }}</p>
             <div class="voice-grid">
-              <button 
-                *ngFor="let voice of getGermanVoices()" 
+              <button
+                *ngFor="let voice of getGermanVoices()"
                 (click)="selectVoice(voice)"
                 class="voice-tile"
                 [class.active]="getSelectedVoiceName() === voice.name"
@@ -69,6 +88,31 @@ import { TEXTS, ProfileType } from '../../app.config.data';
                   </svg>
                 </div>
               </button>
+            </div>
+          </div>
+
+          <!-- Accessibility Settings -->
+          <div class="accessibility-container">
+            <p class="subtitle">Barrierefreiheit</p>
+
+            <div class="accessibility-section">
+              <span class="accessibility-label">Farben</span>
+              <div class="accessibility-options">
+                <button (click)="setColorMode('default')" [class.active]="getColorMode() === 'default'" class="accessibility-btn">Standard</button>
+                <button (click)="setColorMode('deuteranopia')" [class.active]="getColorMode() === 'deuteranopia'" class="accessibility-btn">Rot-Grün</button>
+                <button (click)="setColorMode('protanopia')" [class.active]="getColorMode() === 'protanopia'" class="accessibility-btn">Rot-Grün 2</button>
+                <button (click)="setColorMode('high-contrast')" [class.active]="getColorMode() === 'high-contrast'" class="accessibility-btn">Hoch</button>
+              </div>
+            </div>
+
+            <div class="accessibility-section">
+              <span class="accessibility-label">Schriftgröße</span>
+              <div class="accessibility-options">
+                <button (click)="setFontSize('small')" [class.active]="getFontSize() === 'small'" class="accessibility-btn">A</button>
+                <button (click)="setFontSize('normal')" [class.active]="getFontSize() === 'normal'" class="accessibility-btn">A</button>
+                <button (click)="setFontSize('large')" [class.active]="getFontSize() === 'large'" class="accessibility-btn">A</button>
+                <button (click)="setFontSize('x-large')" [class.active]="getFontSize() === 'x-large'" class="accessibility-btn">A</button>
+              </div>
             </div>
           </div>
 
@@ -345,6 +389,92 @@ import { TEXTS, ProfileType } from '../../app.config.data';
         flex: 1;
       }
     }
+
+    /* TTS Controls */
+    .tts-controls-container {
+      margin-top: 20px;
+      padding: 15px;
+      background: #fefefe;
+      border: 1px solid #e0e0e0;
+      border-radius: 12px;
+    }
+    .tts-control {
+      margin-bottom: 15px;
+    }
+    .tts-control:last-child {
+      margin-bottom: 0;
+    }
+    .tts-control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .tts-slider {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: #e0e0e0;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    .tts-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #10b981;
+      cursor: pointer;
+    }
+    .tts-value {
+      font-size: 0.85rem;
+      color: #666;
+      font-weight: bold;
+    }
+
+    /* Accessibility Settings */
+    .accessibility-container {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 2px solid #f0f0f0;
+    }
+    .accessibility-section {
+      margin-bottom: 20px;
+    }
+    .accessibility-label {
+      display: block;
+      font-weight: bold;
+      color: #666;
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+    }
+    .accessibility-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .accessibility-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 2px solid #ddd;
+      background: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-width: 60px;
+    }
+    .accessibility-btn:hover {
+      background: #f5f5f5;
+    }
+    .accessibility-btn.active {
+      background: #10b981;
+      color: white;
+      border-color: #059669;
+    }
+    .accessibility-btn:nth-child(1) { font-size: 0.9rem; }
+    .accessibility-btn:nth-child(2) { font-size: 1rem; }
+    .accessibility-btn:nth-child(3) { font-size: 1.1rem; }
+    .accessibility-btn:nth-child(4) { font-size: 1.2rem; }
   `]
 })
 export class TtsConsentComponent implements OnInit {
@@ -352,6 +482,11 @@ export class TtsConsentComponent implements OnInit {
   returnStep: string | null = null;
   profile = signal<ProfileType>('simple');
   t = computed(() => TEXTS[this.profile()]);
+
+  // Accessibility settings (using AccessibilityService)
+  private accessibilityService = inject(AccessibilityService);
+
+  // Local signals removed - now using AccessibilityService
 
   constructor(
     public ttsService: TtsService,
@@ -366,11 +501,12 @@ export class TtsConsentComponent implements OnInit {
       // Kurze Verzögerung, damit die Stimmen geladen sind
       setTimeout(() => this.greet(), 500);
     }
-    
+
     // Merken, zu welchem Schritt wir zurückkehren müssen
     this.returnStep = this.route.snapshot.queryParamMap.get('returnStep');
   }
 
+  // Methods moved to use AccessibilityService
   getGermanVoices(): SpeechSynthesisVoice[] {
     return this.ttsService.getVoices().filter(v => v.lang.startsWith('de'));
   }
@@ -432,6 +568,44 @@ export class TtsConsentComponent implements OnInit {
       this.ttsService.enableConfirmSelection();
       this.ttsService.speak(this.t().ui.confirmSelectionLabel + " " + this.t().ui.audioConfirmOn);
     }
+  }
+
+  // Volume and rate controls
+  setVolume(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const volume = parseFloat(input.value);
+    this.ttsService.setVolume(volume);
+  }
+
+  setRate(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const rate = parseFloat(input.value);
+    this.ttsService.setRate(rate);
+  }
+
+  getVolume(): number {
+    return this.ttsService.getVolume();
+  }
+
+  getRate(): number {
+    return this.ttsService.getRate();
+  }
+
+  // Accessibility settings (using AccessibilityService)
+  setColorMode(mode: any) {
+    this.accessibilityService.setColorMode(mode);
+  }
+
+  setFontSize(size: any) {
+    this.accessibilityService.setFontSize(size);
+  }
+
+  getColorMode(): string {
+    return this.accessibilityService.getColorMode();
+  }
+
+  getFontSize(): string {
+    return this.accessibilityService.getFontSize();
   }
 
   enableTts() {

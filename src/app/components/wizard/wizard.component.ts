@@ -1,10 +1,11 @@
-import { Component, signal, computed, effect, OnInit } from '@angular/core';
+import { Component, signal, computed, effect, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TtsIconComponent } from '../tts-icon/tts-icon.component';
 import { MapPreviewComponent } from '../map-preview/map-preview.component';
 import { TtsService } from '../../services/tts.service';
+import { AccessibilityService } from '../../services/accessibility.service';
 
 // Import der Konfigurationsdaten und Typen
 import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
@@ -17,7 +18,7 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
     <div class="min-h-screen bg-slate-50 font-sans text-slate-800 pb-28 relative overflow-hidden flex flex-col">
       
       <!-- Top Bar -->
-      <header class="bg-white sticky top-0 z-30 shadow-sm safe-area-top" role="banner">
+      <header class="bg-white sticky top-0 z-40 shadow-sm safe-area-top" role="banner">
         <div class="px-4 py-3 flex items-center justify-between">
           <h1 class="text-lg font-bold text-slate-900 truncate flex-1" [attr.aria-label]="t().ui.appTitle">
             {{ t().ui.appTitle }}
@@ -26,8 +27,8 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
           <div class="flex items-center gap-2">
             <!-- TTS Settings Toggle -->
             <div class="relative">
-              <button 
-                (click)="goToTtsSettings()" 
+              <button
+                (click)="goToTtsSettings()"
                 class="p-2 rounded-full border transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 [class.bg-emerald-500]="ttsService.isTtsActive()"
                 [class.text-white]="ttsService.isTtsActive()"
@@ -41,7 +42,7 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
               </button>
             </div>
 
-            <button 
+            <button
               (click)="toggleProfile()"
               class="ml-2 px-3 py-1.5 rounded-full text-xs font-bold border transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500"
               [class.bg-slate-900]="profile() === 'expert'"
@@ -58,11 +59,35 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
         <div class="h-1.5 w-full bg-slate-100" role="progressbar">
           <div class="h-full bg-emerald-500 transition-all duration-500 ease-out" [style.width.%]="progressPercentage()"></div>
         </div>
+        <!-- Step Navigator - Direct Jump Navigation -->
+        <nav class="bg-slate-50 border-t border-slate-200 px-2 py-2 overflow-x-auto" role="navigation" aria-label="Schritt-Navigation">
+          <div class="flex items-center justify-center gap-1 min-w-max">
+            <button
+              *ngFor="let stepInfo of stepsInfo; let i = index"
+              (click)="goToStep(i)"
+              class="flex items-center justify-center px-3 py-1.5 rounded-lg text-xs font-bold transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              [class.bg-emerald-600]="currentStep() === i"
+              [class.text-white]="currentStep() === i"
+              [class.bg-slate-200]="currentStep() !== i && isStepCompleted(i)"
+              [class.text-slate-700]="currentStep() !== i && isStepCompleted(i)"
+              [class.bg-slate-100]="currentStep() !== i && !isStepCompleted(i)"
+              [class.text-slate-500]="currentStep() !== i && !isStepCompleted(i)"
+              [attr.aria-label]="stepInfo.title || 'Schritt ' + (i + 1)"
+            >
+              <span class="w-5 h-5 flex items-center justify-center rounded-full mr-1 text-[10px]"
+                [class.bg-white]="currentStep() === i"
+                [class.bg-emerald-100]="currentStep() !== i && isStepCompleted(i)"
+                [class.bg-slate-200]="currentStep() !== i && !isStepCompleted(i)">
+                {{ i + 1 }}
+              </span>
+              <span class="hidden sm:inline truncate max-w-[120px]">{{ stepInfo.title || 'Schritt ' + (i + 1) }}</span>
+            </button>
+          </div>
+        </nav>
       </header>
 
       <!-- Main Content -->
       <main class="flex-1 container mx-auto max-w-4xl px-4 py-6 animate-fade-in focus:outline-none" role="main" id="main-content">
-        
         <!-- Step Header -->
         <div class="mb-6 text-center">
           <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 mb-1 block">
@@ -584,6 +609,25 @@ import { DATA_CONFIG, TEXTS, ProfileType } from '../../app.config.data';
             </fieldset>
             <hr class="border-slate-200" />
             <section>
+              <!-- TTS Volume/Rate Controls -->
+              <div *ngIf="getGermanVoices().length > 0" class="mb-6">
+                <h4 class="text-sm font-bold text-slate-600 mb-3">Vorlesefunktion Einstellungen</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label class="flex justify-between items-center mb-1">
+                      <span class="text-xs font-semibold">🔊 Lautstärke: {{ ttsService.getVolume() * 100 }}%</span>
+                    </label>
+                    <input type="range" min="0" max="1" step="0.1" [value]="ttsService.getVolume()" (input)="setVolume($event)" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                  </div>
+                  <div>
+                    <label class="flex justify-between items-center mb-1">
+                      <span class="text-xs font-semibold">⚡ Geschwindigkeit: {{ ttsService.getRate() }}x</span>
+                    </label>
+                    <input type="range" min="0.1" max="2" step="0.1" [value]="ttsService.getRate()" (input)="setRate($event)" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                  </div>
+                </div>
+              </div>
+
               <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">
                 {{ t().audio.title }}
                 <app-tts-icon [text]="t().audio.title"></app-tts-icon>
@@ -752,11 +796,70 @@ export class WizardComponent implements OnInit {
     return ((this.currentStep() + 1) / this.steps.length) * 100;
   });
 
+  // Step completion tracking (for navigator)
+  completedSteps = signal<Set<number>>(new Set());
+
+  // Step info for navigator - computed from steps
+  get stepsInfo() {
+    return this.t().steps.map(s => ({ title: s.title }));
+  }
+
+  // Accessibility service
+  private accessibilityService = inject(AccessibilityService);
+
   constructor(
     public ttsService: TtsService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
+
+  // Volume and Rate controls for step 4
+  setVolume(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const volume = parseFloat(input.value);
+    this.ttsService.setVolume(volume);
+  }
+
+  setRate(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const rate = parseFloat(input.value);
+    this.ttsService.setRate(rate);
+  }
+
+  getVolume(): number {
+    return this.ttsService.getVolume();
+  }
+
+  getRate(): number {
+    return this.ttsService.getRate();
+  }
+
+  // Navigator methods
+  goToStep(stepIndex: number) {
+    if (stepIndex >= 0 && stepIndex < this.steps.length) {
+      // Cancel any pending TTS
+      this.ttsService.cancelPendingSpeech();
+      this.ttsService.stop();
+
+      this.currentStep.set(stepIndex);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (this.ttsService.isTtsActive()) {
+        const stepTitle = this.t().steps[this.currentStep()]?.title || '';
+        this.ttsService.speak('Schritt ' + (stepIndex + 1) + ': ' + stepTitle);
+      }
+    }
+  }
+
+  isStepCompleted(stepIndex: number): boolean {
+    return this.completedSteps().has(stepIndex);
+  }
+
+  markStepCompleted(stepIndex: number) {
+    const completed = new Set(this.completedSteps());
+    completed.add(stepIndex);
+    this.completedSteps.set(completed);
+  }
 
   ngOnInit() {
     this.checkGeolocation();
@@ -988,13 +1091,13 @@ export class WizardComponent implements OnInit {
     const place = this.data.simplePlaces.find(p => p.name === area);
     const description = place?.ttsText || '';
 
+    // Wenn dieselbe Area bereits ausgewählt ist, nichts ändern (bleibt ausgewählt)
     if (this.config.area === area) {
-      this.config.area = ''; 
-      this.speakSelectionChange(area, false);
-    } else {
-      this.config.area = area;
-      this.speakSelectionChange(area, true, description);
+      return;
     }
+
+    this.config.area = area;
+    this.speakSelectionChange(area, true, description);
 
     // set coordinates in config object from selected place
     if (place) {
@@ -1050,17 +1153,24 @@ export class WizardComponent implements OnInit {
     const index = this.config.landmarks.indexOf(id);
     let name = this.t().landmarks.items[id] || id;
     let description = '';
-    
+
     // In expert mode, the id might be from catalog resources
     if (this.profile() === 'expert' && !this.t().landmarks.items[id]) {
        for (const cat of this.data.expertLandmarkResources) {
          const res = cat.resources.find(r => r.id === id);
-         if (res) { 
-           name = res.name; 
+         if (res) {
+           name = res.name;
            description = res.description || '';
-           break; 
+           break;
          }
        }
+    }
+
+    // Wenn es die letzte Auswahl wäre, nicht abwählen (im einfachen Modus)
+    const isLastSelection = this.config.landmarks.length === 1 && index > -1;
+    if (isLastSelection && this.profile() === 'simple') {
+      this.speakSelectionChange(name + ' bleibt ausgewählt, damit etwas immer aktiv ist', false);
+      return;
     }
 
     if (index > -1) {
@@ -1104,16 +1214,20 @@ export class WizardComponent implements OnInit {
 
   nextStep() {
     if (this.currentStep() < this.steps.length - 1) {
+      // Mark current step as completed
+      const current = this.currentStep();
+      this.markStepCompleted(current);
+
       this.currentStep.update(v => v + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       setTimeout(() => document.getElementById('main-content')?.focus(), 100);
-      
+
       const isFinalStep = this.currentStep() === this.steps.length - 1;
 
       if (this.ttsService.isTtsActive()) {
         const nextTitle = this.t().steps[this.currentStep()].title;
         let speakText = this.t().ui.nextStepLabel + " " + nextTitle;
-        
+
         // Bei Schritt 6 (Index 5) gratulieren
         if (isFinalStep) {
           speakText = this.t().summary.congratsTitle + ". " + this.t().summary.congratsMessage;

@@ -137,6 +137,25 @@ export const DATA_CONFIG = {
   // Override these values to change sizes globally
   stepIndicatorSizes: STEP_INDICATOR_SIZES,
 
+  // Font Settings (configurable)
+  fontSettings: {
+    label: 'Barrierefreiheit',
+    fontFamilyLabel: 'Schriftart',
+    fontSizeLabel: 'Schriftgröße',
+    fontFamilyOptions: {
+      openDyslexic: 'Lesehilfe',
+      default: 'Standard'
+    },
+    fontSizeOptions: {
+      small: 'A',
+      normal: 'A',
+      large: 'A',
+      'x-large': 'A'
+    },
+    defaultFontFamily: 'open-dyslexic',
+    defaultFontSize: 'normal'
+  },
+
   // TTS Preset Settings (configurable)
   ttsPresets: {
     volume: {

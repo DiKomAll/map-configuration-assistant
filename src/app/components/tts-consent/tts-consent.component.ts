@@ -122,23 +122,23 @@ import { TEXTS, ProfileType, DATA_CONFIG } from '../../app.config.data';
 
         <!-- Font Settings (always visible) -->
         <div class="accessibility-container" style="margin-top: 20px; padding-top: 20px;">
-          <p class="subtitle">Barrierefreiheit</p>
+          <p class="subtitle">{{ data.fontSettings.label }}</p>
 
           <div class="accessibility-section">
-            <span class="accessibility-label">Schriftart</span>
+            <span class="accessibility-label">{{ data.fontSettings.fontFamilyLabel }}</span>
             <div class="accessibility-options">
-              <button (click)="setFontFamily('open-dyslexic')" [class.active]="getFontFamily() === 'open-dyslexic'" class="accessibility-btn">OpenDyslexic</button>
-              <button (click)="setFontFamily('default')" [class.active]="getFontFamily() === 'default'" class="accessibility-btn">Standard</button>
+              <button (click)="setFontFamily('open-dyslexic')" [class.active]="getFontFamily() === 'open-dyslexic'" class="accessibility-btn dyslexic-font">{{ data.fontSettings.fontFamilyOptions.openDyslexic }}</button>
+              <button (click)="setFontFamily('default')" [class.active]="getFontFamily() === 'default'" class="accessibility-btn default-font-btn">{{ data.fontSettings.fontFamilyOptions.default }}</button>
             </div>
           </div>
 
           <div class="accessibility-section">
-            <span class="accessibility-label">Schriftgröße</span>
+            <span class="accessibility-label">{{ data.fontSettings.fontSizeLabel }}</span>
             <div class="accessibility-options">
-              <button (click)="setFontSize('small')" [class.active]="getFontSize() === 'small'" class="accessibility-btn">A</button>
-              <button (click)="setFontSize('normal')" [class.active]="getFontSize() === 'normal'" class="accessibility-btn">A</button>
-              <button (click)="setFontSize('large')" [class.active]="getFontSize() === 'large'" class="accessibility-btn">A</button>
-              <button (click)="setFontSize('x-large')" [class.active]="getFontSize() === 'x-large'" class="accessibility-btn">A</button>
+              <button (click)="setFontSize('small')" [class.active]="getFontSize() === 'small'" class="accessibility-btn fs-small">A</button>
+              <button (click)="setFontSize('normal')" [class.active]="getFontSize() === 'normal'" class="accessibility-btn fs-normal">A</button>
+              <button (click)="setFontSize('large')" [class.active]="getFontSize() === 'large'" class="accessibility-btn fs-large">A</button>
+              <button (click)="setFontSize('x-large')" [class.active]="getFontSize() === 'x-large'" class="accessibility-btn fs-x-large">A</button>
             </div>
           </div>
         </div>
@@ -179,10 +179,11 @@ import { TEXTS, ProfileType, DATA_CONFIG } from '../../app.config.data';
     h1 {
       color: #333;
       margin-bottom: 24px;
-      font-size: 2rem;
+      font-size: var(--font-size-xl);
+      line-height: 1.2;
     }
     .instruction {
-      font-size: 1.25rem;
+      font-size: var(--font-size-lg);
       margin-bottom: 40px;
       color: #555;
       line-height: 1.5;
@@ -200,7 +201,7 @@ import { TEXTS, ProfileType, DATA_CONFIG } from '../../app.config.data';
       padding: 20px;
       border: none;
       border-radius: 8px;
-      font-size: 1.25rem;
+      font-size: var(--font-size-lg);
       font-weight: bold;
       cursor: pointer;
       transition: transform 0.2s, background-color 0.2s;
@@ -236,7 +237,7 @@ import { TEXTS, ProfileType, DATA_CONFIG } from '../../app.config.data';
       border: 2px solid #10b981;
       border-radius: 16px;
       font-weight: bold;
-      font-size: 1rem;
+      font-size: var(--font-size-base);
       margin-bottom: 24px;
       cursor: pointer;
       transition: all 0.2s;
@@ -247,10 +248,10 @@ import { TEXTS, ProfileType, DATA_CONFIG } from '../../app.config.data';
       transform: scale(1.02);
     }
     .status-badge-btn .text {
-      font-size: 1.1rem;
+      font-size: var(--font-size-lg);
     }
     .change-label {
-      font-size: 0.8rem;
+      font-size: var(--font-size-sm);
       color: #047857;
       font-weight: normal;
       text-decoration: underline;
@@ -261,7 +262,7 @@ import { TEXTS, ProfileType, DATA_CONFIG } from '../../app.config.data';
       width: 100%;
       margin-top: 30px;
       padding: 25px !important;
-      font-size: 1.5rem !important;
+      font-size: var(--font-size-xl) !important;
       box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
     }
     .btn-start-app:hover {
@@ -296,11 +297,11 @@ import { TEXTS, ProfileType, DATA_CONFIG } from '../../app.config.data';
       display: block;
       font-weight: bold;
       color: #065f46;
-      font-size: 1.1rem;
+      font-size: var(--font-size-lg);
     }
     .switch-desc {
       margin: 4px 0 0 0;
-      font-size: 0.9rem;
+      font-size: var(--font-size-sm);
       color: #047857;
       line-height: 1.3;
     }
@@ -308,7 +309,7 @@ import { TEXTS, ProfileType, DATA_CONFIG } from '../../app.config.data';
       flex-shrink: 0;
     }
     .icon {
-      font-size: 2rem;
+      font-size: var(--font-size-xl);
       margin-right: 15px;
     }
     .voice-selection-container {
@@ -320,7 +321,7 @@ import { TEXTS, ProfileType, DATA_CONFIG } from '../../app.config.data';
       font-weight: bold;
       color: #666;
       margin-bottom: 20px;
-      font-size: 1.1rem;
+      font-size: var(--font-size-lg);
     }
     .voice-grid {
       display: grid;
@@ -499,13 +500,13 @@ import { TEXTS, ProfileType, DATA_CONFIG } from '../../app.config.data';
       display: block;
       font-weight: bold;
       color: #666;
-      margin-bottom: 10px;
-      font-size: 0.95rem;
+      margin-bottom: 12px;
     }
     .accessibility-options {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
+      justify-content: center;
     }
     .accessibility-btn {
       padding: 8px 16px;
@@ -524,6 +525,15 @@ import { TEXTS, ProfileType, DATA_CONFIG } from '../../app.config.data';
       background: #10b981;
       color: white;
       border-color: #059669;
+    }
+    /* Font size preview buttons - show actual size */
+    .fs-small { font-size: 0.8rem; }
+    .fs-normal { font-size: 1rem; }
+    .fs-large { font-size: 1.25rem; }
+    .fs-x-large { font-size: 1.5rem; }
+    /* Default font override - used for standard font button when OpenDyslexic is active on body */
+    .default-font-btn {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
   `]
 })

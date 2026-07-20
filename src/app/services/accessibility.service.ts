@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { DATA_CONFIG } from '../app.config.data';
 
 type FontSize = 'small' | 'normal' | 'large' | 'x-large';
 type FontFamily = 'default' | 'open-dyslexic';
@@ -7,8 +8,8 @@ type FontFamily = 'default' | 'open-dyslexic';
   providedIn: 'root'
 })
 export class AccessibilityService {
-  fontSize = signal<FontSize>('normal');
-  fontFamily = signal<FontFamily>('open-dyslexic');
+  fontSize = signal<FontSize>((DATA_CONFIG.fontSettings?.defaultFontSize as FontSize) || 'normal');
+  fontFamily = signal<FontFamily>((DATA_CONFIG.fontSettings?.defaultFontFamily as FontFamily) || 'open-dyslexic');
 
   private loadSettings() {
     try {

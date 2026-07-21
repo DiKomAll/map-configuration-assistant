@@ -238,6 +238,52 @@ body.default-font    { --font-family-body: Arial, Helvetica, sans-serif; }
   }
 }
 
+/* Scroll Indicator - Visual Cue for Mobile */
+.scroll-indicator {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  background: rgba(16, 185, 129, 0.85);
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: bounce 2s infinite;
+  z-index: 20;
+  display: none;
+}
+
+.scroll-indicator.visible {
+  display: flex;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Compact mobile styles */
+@media (max-width: 640px) {
+  /* Reduce vertical space in step headers */
+  .step-header {
+    margin-bottom: 1rem !important;
+  }
+
+  /* Thinner progress bar on mobile */
+  .progress-bar {
+    height: 1px !important;
+  }
+
+  /* More compact step navigation on mobile */
+  .step-nav-btn {
+    padding: 0.25rem 0.5rem !important;
+    min-height: 36px !important;
+  }
+}
+
 @media (min-width: 641px) and (max-width: 1024px) {
   .landmark-grid {
     grid-template-columns: repeat(2, 1fr) !important;

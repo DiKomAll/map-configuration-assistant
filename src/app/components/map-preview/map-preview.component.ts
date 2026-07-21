@@ -13,7 +13,7 @@ declare var OSMBuildings: any;
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="relative w-full h-[400px] md:h-[500px] rounded-2xl overflow-hidden border-2 border-slate-200 shadow-lg">
+    <div class="relative w-full h-[35vh] max-h-[300px] md:h-[50vh] md:max-h-[500px] rounded-2xl overflow-hidden border-2 border-slate-200 shadow-lg">
       <div #mapContainer class="w-full h-full z-10"></div>
       
       <!-- Interaction Hint Overlay -->

@@ -1,4 +1,4 @@
-import { Component, signal, computed, effect, OnInit, inject } from '@angular/core';
+import { Component, signal, computed, effect, OnInit, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -317,7 +317,7 @@ import { DATA_CONFIG, TEXTS, ProfileType, STEP_INDICATOR_SIZES } from '../../app
                   [class.border-transparent]="config.mapStyle !== map.id"
                   [ngClass]="{
                      'h-32 md:h-48': profile() === 'expert',
-                     'h-64 md:h-96': profile() === 'simple'
+                     'h-40 md:h-64': profile() === 'simple'
                   }"
                 >
                   <div class="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
@@ -420,68 +420,75 @@ import { DATA_CONFIG, TEXTS, ProfileType, STEP_INDICATOR_SIZES } from '../../app
                <app-tts-icon [text]="t().landmarks.subTabCatalog"></app-tts-icon>
             </div>
 
-            <!-- SIMPLE MODE CATEGORIZED VIEW -->
-            <div *ngIf="profile() === 'simple'" class="space-y-12 pb-10">
-              <div *ngFor="let cat of data.simpleLandmarkCategories; let i = index; let last = last" 
-                   class="bg-white rounded-[2rem] border-2 border-slate-200 shadow-xl overflow-hidden animate-fade-in relative">
+            <!-- SIMPLE MODE ACCORDION CATEGORIZED VIEW -->
+            <div *ngIf="profile() === 'simple'" class="space-y-0">
+              <div *ngFor="let cat of data.simpleLandmarkCategories"
+                   class="bg-white rounded-[2rem] border-2 border-slate-200 shadow-xl overflow-hidden mb-3">
                 
-                <!-- Kategorie-Nummer (Index) als Orientierungshilfe -->
-                <div class="absolute top-0 right-0 bg-slate-100 text-slate-400 text-[10px] font-black px-3 py-1 rounded-bl-xl border-l border-b border-slate-200 uppercase tracking-widest">
-                  {{ i + 1 }} / {{ data.simpleLandmarkCategories.length }}
-                </div>
-
-                <!-- Kategorie Header -->
-                <div class="p-6 border-b-2 border-slate-100 bg-slate-50/50">
-                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div class="flex items-center gap-4">
-                      <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-emerald-600 shadow-md border border-emerald-100 shrink-0">
-                         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="cat.icon" /></svg>
-                      </div>
-                      <div>
-                        <span class="font-black text-2xl text-slate-900 block leading-tight">
-                          {{ cat.name }}
-                          <app-tts-icon [text]="(cat.ttsText || cat.name) + '. ' + getSelectedCountInCategory(cat.id) + ' ' + t().landmarks.itemsSelectedSuffix"></app-tts-icon>
-                        </span>
-                        <span class="text-sm font-bold text-emerald-600 uppercase tracking-wide">
-                          {{ getSelectedCountInCategory(cat.id) }} {{ t().landmarks.itemsSelectedSuffix }}
-                        </span>
-                      </div>
+                <!-- Category Header - Clickable Toggle -->
+                <button (click)="toggleLandmarkCategoryExpansion(cat.id)"
+                  class="w-full p-4 flex items-center justify-between gap-3 hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-emerald-600 shadow-md border border-emerald-100 shrink-0">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="cat.icon" /></svg>
                     </div>
-                    
-                    <button (click)="toggleLandmarkCategory(cat.id)" 
-                      class="w-full sm:w-auto px-6 py-3 rounded-xl text-base font-black transition-all shadow-md active:scale-95 border-3"
-                      [class.bg-emerald-600]="isCategoryFullySelected(cat.id)" [class.text-white]="isCategoryFullySelected(cat.id)" [class.border-emerald-700]="isCategoryFullySelected(cat.id)"
-                      [class.bg-white]="!isCategoryFullySelected(cat.id)" [class.text-emerald-700]="!isCategoryFullySelected(cat.id)" [class.border-emerald-500]="!isCategoryFullySelected(cat.id)">
-                      <span class="flex items-center justify-center gap-2">
-                        <svg *ngIf="isCategoryFullySelected(cat.id)" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
-                        {{ isCategoryFullySelected(cat.id) ? t().landmarks.deselectAll : t().landmarks.selectAll }}
+                    <div class="text-left">
+                      <span class="font-black text-lg sm:text-xl text-slate-900 block">
+                        {{ cat.name }}
                       </span>
-                    </button>
+                      <span class="text-xs font-bold text-emerald-600 uppercase tracking-wide">
+                        {{ getSelectedCountInCategory(cat.id) }} {{ t().landmarks.itemsSelectedSuffix }}
+                      </span>
+                    </div>
                   </div>
-                </div>
 
-                <!-- Unterkategorien Grid -->
-                <div class="p-4 sm:p-6 bg-white">
-                  <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <!-- Expand/Collapse Indicator -->
+                  <div class="flex items-center gap-2 shrink-0">
+                    <button (click)="toggleLandmarkCategory(cat.id); $event.stopPropagation()"
+                      class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 border-2"
+                      [class.bg-emerald-600]="isCategoryFullySelected(cat.id)"
+                      [class.text-white]="isCategoryFullySelected(cat.id)"
+                      [class.border-emerald-700]="isCategoryFullySelected(cat.id)"
+                      [class.bg-white]="!isCategoryFullySelected(cat.id)"
+                      [class.text-emerald-700]="!isCategoryFullySelected(cat.id)"
+                      [class.border-emerald-500]="!isCategoryFullySelected(cat.id)">
+                      {{ isCategoryFullySelected(cat.id) ? t().landmarks.deselectAll : t().landmarks.selectAll }}
+                    </button>
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="h-4 w-4 text-slate-400 transition-transform duration-200"
+                         [class.rotate-180]="isCategoryExpanded(cat.id)"
+                         fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </button>
+
+                <!-- Expandable Content -->
+                <div *ngIf="isCategoryExpanded(cat.id)" class="px-3 pb-4 animate-fade-in">
+                  <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
                     <div *ngFor="let key of cat.items" class="relative group">
-                      <button (click)="toggleLandmark(key)" 
-                        class="w-full relative h-44 rounded-2xl overflow-hidden border-3 text-left transition-all focus:outline-none focus:ring-4 focus:ring-emerald-500/50" 
-                        [class.border-emerald-500]="config.landmarks.includes(key)" 
+                      <button (click)="toggleLandmark(key)"
+                        class="w-full relative rounded-xl overflow-hidden border-2 text-left transition-all focus:outline-none focus:ring-4 focus:ring-emerald-500/50"
+                        [class.border-emerald-500]="config.landmarks.includes(key)"
                         [class.border-slate-100]="!config.landmarks.includes(key)"
-                        [class.shadow-inner]="config.landmarks.includes(key)">
+                        [ngClass]="{'h-32': true, 'md:h-44': true}">
                         <div class="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" [style.background-image]="'url(' + getLandmarkData(key).image + ')'">
-                          <div class="absolute inset-0 transition-colors duration-300" 
+                          <div class="absolute inset-0 transition-colors duration-300"
                                [ngClass]="{'bg-emerald-600/40': config.landmarks.includes(key), 'bg-black/20': !config.landmarks.includes(key)}">
                           </div>
                         </div>
-                        <div class="absolute inset-0 z-10 flex flex-col items-center justify-center p-3 text-center">
-                          <span class="text-white font-black text-lg leading-tight drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">{{ t().landmarks.items[key] }}</span>
+                        <div class="absolute inset-0 z-10 flex flex-col items-center justify-center p-2 text-center">
+                          <span class="text-white font-black text-sm leading-tight drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
+                            {{ t().landmarks.items[key] }}
+                          </span>
                         </div>
-                        <div *ngIf="config.landmarks.includes(key)" class="absolute top-2 right-2 bg-emerald-500 text-white rounded-full p-1.5 z-20 shadow-lg border-2 border-white animate-scale-in">
-                          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7" /></svg>
+                        <div *ngIf="config.landmarks.includes(key)" class="absolute top-2 right-2 bg-emerald-500 text-white rounded-full p-1 shadow-lg border-2 border-white z-20 animate-scale-in">
+                          <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                          </svg>
                         </div>
                       </button>
-                      <div class="absolute bottom-2 left-2 z-20">
+                      <div class="absolute bottom-1 left-1 z-20">
                         <app-tts-icon [text]="(getLandmarkData(key).ttsText || t().landmarks.items[key])"></app-tts-icon>
                       </div>
                     </div>
@@ -489,8 +496,7 @@ import { DATA_CONFIG, TEXTS, ProfileType, STEP_INDICATOR_SIZES } from '../../app
                 </div>
               </div>
             </div>
-
-            <!-- EXPERT MODE VISUAL TAB (Original style) -->
+                      <!-- EXPERT MODE VISUAL TAB (Original style) -->
             <div *ngIf="profile() === 'expert' && expertLandmarkTab === 'visual'" class="grid grid-cols-2 md:grid-cols-3 gap-3">
               <div *ngFor="let key of landmarkKeys" class="relative group">
                 <button (click)="toggleLandmark(key)" class="w-full relative h-60 rounded-xl overflow-hidden border-2 text-left transition-all focus:outline-none focus:ring-4 focus:ring-emerald-500/50" [class.border-emerald-500]="config.landmarks.includes(key)" [class.border-slate-200]="!config.landmarks.includes(key)">
@@ -782,7 +788,7 @@ export class WizardComponent implements OnInit {
   expertLandmarkTab = 'visual';
 
   // Geolocation State
-  geolocationAvailable = true; 
+  geolocationAvailable = true;
   isDetectingLocation = false;
   locationError = '';
   detectedLocation: any = null;
@@ -793,6 +799,12 @@ export class WizardComponent implements OnInit {
   isSearching = false;
   searchResults: any[] = [];
   searchTimeout: any;
+
+  // Accordion state for landmark categories (mobile optimization)
+  categoryExpanded = signal<Set<string>>(new Set());
+
+  // Swipe gesture support for mobile navigation
+  swipeState: { start: number; delta: number } = { start: 0, delta: 0 };
 
   config: {
     mapStyle: string;
@@ -1413,5 +1425,43 @@ export class WizardComponent implements OnInit {
 
   getLandmarkData(key: string): any {
     return (this.data.landmarks as any)[key];
+  }
+
+  // --- MOBILE OPTIMIZATION: Accordion for landmark categories ---
+  toggleLandmarkCategoryExpansion(categoryId: string) {
+    const expanded = new Set(this.categoryExpanded());
+    if (expanded.has(categoryId)) {
+      expanded.delete(categoryId);
+    } else {
+      expanded.add(categoryId);
+    }
+    this.categoryExpanded.set(expanded);
+  }
+
+  isCategoryExpanded(categoryId: string): boolean {
+    return this.categoryExpanded().has(categoryId);
+  }
+
+  // --- MOBILE OPTIMIZATION: Swipe gesture navigation ---
+  @HostListener('touchstart', ['$event'])
+  onTouchStart(e: TouchEvent) {
+    this.swipeState.start = e.touches[0].clientX;
+  }
+
+  @HostListener('touchmove', ['$event'])
+  onTouchMove(e: TouchEvent) {
+    this.swipeState.delta = e.touches[0].clientX - this.swipeState.start;
+  }
+
+  @HostListener('touchend')
+  onTouchEnd() {
+    if (Math.abs(this.swipeState.delta) > 50) {
+      if (this.swipeState.delta > 0 && this.currentStep() > 0) {
+        this.prevStep(); // Swipe right = previous step
+      } else if (this.swipeState.delta < 0 && this.currentStep() < this.steps.length - 1) {
+        this.nextStep(); // Swipe left = next step
+      }
+    }
+    this.swipeState = { start: 0, delta: 0 };
   }
 }

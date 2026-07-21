@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed, inject } from '@angular/core';
+import { Component, OnInit, signal, computed, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TtsService } from '../../services/tts.service';
@@ -127,8 +127,34 @@ import { TEXTS, ProfileType, DATA_CONFIG } from '../../app.config.data';
           <div class="accessibility-section">
             <span class="accessibility-label">{{ data.fontSettings.fontFamilyLabel }}</span>
             <div class="accessibility-options">
-              <button (click)="setFontFamily('open-dyslexic')" [class.active]="getFontFamily() === 'open-dyslexic'" class="accessibility-btn dyslexic-font">{{ data.fontSettings.fontFamilyOptions.openDyslexic }}</button>
-              <button (click)="setFontFamily('default')" [class.active]="getFontFamily() === 'default'" class="accessibility-btn default-font-btn">{{ data.fontSettings.fontFamilyOptions.default }}</button>
+              <div class="font-dropdown-container">
+                <button (click)="toggleFontDropdown()" class="font-dropdown-trigger" [class.open]="fontDropdownOpen()">
+                  <span [ngClass]="getFontPreviewClass()">
+                    <!-- {{ getFontLabel(getFontFamily()) }} - {{ data.fontSettings.sampleText }} -->
+                    {{ data.fontSettings.sampleText }}
+                  </span>
+                  <svg class="dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </button>
+                <div class="font-dropdown-menu" *ngIf="fontDropdownOpen()">
+                  <button (click)="selectFontFamily('lexend-deca')" class="font-dropdown-item lexend-deca-preview" [class.active]="getFontFamily() === 'lexend-deca'">
+                    {{ data.fontSettings.fontFamilyOptions.lexendDeca }} - {{ data.fontSettings.sampleText }}
+                  </button>
+                  <button (click)="selectFontFamily('lexend-exa')" class="font-dropdown-item lexend-exa-preview" [class.active]="getFontFamily() === 'lexend-exa'">
+                    {{ data.fontSettings.fontFamilyOptions.lexendExa }} - {{ data.fontSettings.sampleText }}
+                  </button>
+                  <button (click)="selectFontFamily('lexend-giga')" class="font-dropdown-item lexend-giga-preview" [class.active]="getFontFamily() === 'lexend-giga'">
+                    {{ data.fontSettings.fontFamilyOptions.lexendGiga }} - {{ data.fontSettings.sampleText }}
+                  </button>
+                  <button (click)="selectFontFamily('open-dyslexic')" class="font-dropdown-item dyslexic-preview" [class.active]="getFontFamily() === 'open-dyslexic'">
+                    {{ data.fontSettings.fontFamilyOptions.openDyslexic }} - {{ data.fontSettings.sampleText }}
+                  </button>
+                  <button (click)="selectFontFamily('default')" class="font-dropdown-item default-preview" [class.active]="getFontFamily() === 'default'">
+                    {{ data.fontSettings.fontFamilyOptions.default }} - {{ data.fontSettings.sampleText }}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -531,8 +557,105 @@ import { TEXTS, ProfileType, DATA_CONFIG } from '../../app.config.data';
     .fs-normal { font-size: 1rem; }
     .fs-large { font-size: 1.25rem; }
     .fs-x-large { font-size: 1.5rem; }
-    /* Default font override - used for standard font button when OpenDyslexic is active on body */
-    .default-font-btn {
+
+    /* Font dropdown container */
+    .font-dropdown-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    /* Font dropdown trigger button */
+    .font-dropdown-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: 2px solid #ddd;
+      background: white;
+      font-weight: bold;
+      font-size: var(--font-size-base);
+      cursor: pointer;
+      min-width: 220px;
+      transition: all 0.2s;
+    }
+
+    .font-dropdown-trigger:hover {
+      background: #f5f5f5;
+    }
+
+    .font-dropdown-trigger.open {
+      border-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+
+    .font-dropdown-trigger.open .dropdown-icon {
+      transform: rotate(180deg);
+    }
+
+    .dropdown-icon {
+      width: 16px;
+      height: 16px;
+      margin-left: 8px;
+      transition: transform 0.2s;
+    }
+
+    /* Font dropdown menu */
+    .font-dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 5px;
+      min-width: 220px;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      z-index: 100;
+      padding: 5px;
+    }
+
+    /* Font dropdown items */
+    .font-dropdown-item {
+      display: block;
+      width: 100%;
+      padding: 10px 12px;
+      text-align: left;
+      border: none;
+      background: transparent;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+
+    .font-dropdown-item:hover {
+      background: #f0fdf4;
+    }
+
+    .font-dropdown-item.active {
+      background: #10b981;
+      color: white;
+    }
+
+    /* Font preview classes for dropdown options */
+    .lexend-deca-preview {
+      font-family: 'LexendDeca', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    .lexend-exa-preview {
+      font-family: 'LexendExa', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    .lexend-giga-preview {
+      font-family: 'LexendGiga', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    .dyslexic-preview {
+      font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    .default-preview {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
   `]
@@ -544,6 +667,7 @@ export class TtsConsentComponent implements OnInit {
   profile = signal<ProfileType>('simple');
   t = computed(() => TEXTS[this.profile()]);
   data = DATA_CONFIG;
+  fontDropdownOpen = signal(false);
 
   // Accessibility settings (using AccessibilityService)
   private accessibilityService = inject(AccessibilityService);
@@ -566,6 +690,19 @@ export class TtsConsentComponent implements OnInit {
 
     // Merken, zu welchem Schritt wir zurückkehren müssen
     this.returnStep = this.route.snapshot.queryParamMap.get('returnStep');
+  }
+
+  // Flag to prevent immediate close after opening
+  private ignoreNextDocumentClick = false;
+
+  // Close dropdown when clicking outside
+  @HostListener('document:click')
+  onDocumentClick() {
+    if (this.ignoreNextDocumentClick) {
+      this.ignoreNextDocumentClick = false;
+      return;
+    }
+    this.fontDropdownOpen.set(false);
   }
 
   // Methods moved to use AccessibilityService
@@ -709,6 +846,33 @@ export class TtsConsentComponent implements OnInit {
 
   setFontFamily(family: any) {
     this.accessibilityService.setFontFamily(family);
+  }
+
+  // Font dropdown methods
+  toggleFontDropdown() {
+    this.fontDropdownOpen.update(open => !open);
+    this.ignoreNextDocumentClick = true;
+  }
+
+  selectFontFamily(family: any) {
+    this.setFontFamily(family);
+    this.fontDropdownOpen.set(false);
+  }
+
+  // Get font label for display
+  getFontLabel(fontFamily: string): string {
+    const labels = this.data.fontSettings.fontFamilyOptions;
+    return labels[fontFamily as keyof typeof labels] || labels.default;
+  }
+
+  // Get font class for preview
+  getFontPreviewClass(): string {
+    const font = this.getFontFamily();
+    if (font === 'lexend-deca') return 'lexend-deca-preview';
+    if (font === 'lexend-exa') return 'lexend-exa-preview';
+    if (font === 'lexend-giga') return 'lexend-giga-preview';
+    if (font === 'open-dyslexic') return 'dyslexic-preview';
+    return 'default-preview';
   }
 
   getFontSize(): string {

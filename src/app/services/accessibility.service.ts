@@ -2,7 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { DATA_CONFIG } from '../app.config.data';
 
 type FontSize = 'small' | 'normal' | 'large' | 'x-large';
-type FontFamily = 'default' | 'open-dyslexic';
+type FontFamily = 'lexend-deca' | 'lexend-exa' | 'lexend-giga' | 'open-dyslexic' | 'default';
 
 @Injectable({
   providedIn: 'root'

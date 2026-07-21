@@ -142,9 +142,13 @@ export const DATA_CONFIG = {
     label: 'Barrierefreiheit',
     fontFamilyLabel: 'Schriftart',
     fontSizeLabel: 'Schriftgröße',
+    sampleText: 'Beispieltext',
     fontFamilyOptions: {
+      lexendDeca: 'Lexend Deca',
+      lexendExa: 'Lexend Exa',
+      lexendGiga: 'Lexend Giga',
       openDyslexic: 'Lesehilfe',
-      default: 'Standard'
+      default: 'System Font'
     },
     fontSizeOptions: {
       small: 'A',
@@ -152,7 +156,7 @@ export const DATA_CONFIG = {
       large: 'A',
       'x-large': 'A'
     },
-    defaultFontFamily: 'open-dyslexic',
+    defaultFontFamily: 'lexend-deca',
     defaultFontSize: 'normal'
   },
 

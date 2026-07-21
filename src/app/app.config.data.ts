@@ -140,9 +140,9 @@ export const DATA_CONFIG = {
   // Font Settings (configurable)
   fontSettings: {
     label: 'Barrierefreiheit',
-    fontFamilyLabel: 'Schriftart',
-    fontSizeLabel: 'Schriftgröße',
-    sampleText: 'Beispieltext',
+    fontFamilyLabel: 'Schriftart wechseln',
+    fontSizeLabel: 'Schriftgröße anpassen',
+    sampleText: 'gut lesbar',
     fontFamilyOptions: {
       lexendDeca: 'Lexend Deca',
       lexendExa: 'Lexend Exa',

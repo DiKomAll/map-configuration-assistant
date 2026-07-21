@@ -139,19 +139,24 @@ import { TEXTS, ProfileType, DATA_CONFIG } from '../../app.config.data';
                 </button>
                 <div class="font-dropdown-menu" *ngIf="fontDropdownOpen()">
                   <button (click)="selectFontFamily('lexend-deca')" class="font-dropdown-item lexend-deca-preview" [class.active]="getFontFamily() === 'lexend-deca'">
-                    {{ data.fontSettings.fontFamilyOptions.lexendDeca }} - {{ data.fontSettings.sampleText }}
+                    <!-- {{ data.fontSettings.fontFamilyOptions.lexendDeca }} - {{ data.fontSettings.sampleText }} -->
+                    {{ data.fontSettings.sampleText }}
                   </button>
                   <button (click)="selectFontFamily('lexend-exa')" class="font-dropdown-item lexend-exa-preview" [class.active]="getFontFamily() === 'lexend-exa'">
-                    {{ data.fontSettings.fontFamilyOptions.lexendExa }} - {{ data.fontSettings.sampleText }}
+                    <!-- {{ data.fontSettings.fontFamilyOptions.lexendExa }} - {{ data.fontSettings.sampleText }} -->
+                      {{ data.fontSettings.sampleText }}
                   </button>
                   <button (click)="selectFontFamily('lexend-giga')" class="font-dropdown-item lexend-giga-preview" [class.active]="getFontFamily() === 'lexend-giga'">
-                    {{ data.fontSettings.fontFamilyOptions.lexendGiga }} - {{ data.fontSettings.sampleText }}
+                    <!-- {{ data.fontSettings.fontFamilyOptions.lexendGiga }} - {{ data.fontSettings.sampleText }} -->
+                    {{ data.fontSettings.sampleText }}
                   </button>
                   <button (click)="selectFontFamily('open-dyslexic')" class="font-dropdown-item dyslexic-preview" [class.active]="getFontFamily() === 'open-dyslexic'">
-                    {{ data.fontSettings.fontFamilyOptions.openDyslexic }} - {{ data.fontSettings.sampleText }}
+                    <!-- {{ data.fontSettings.fontFamilyOptions.openDyslexic }} - {{ data.fontSettings.sampleText }} -->
+                    {{ data.fontSettings.sampleText }}  
                   </button>
                   <button (click)="selectFontFamily('default')" class="font-dropdown-item default-preview" [class.active]="getFontFamily() === 'default'">
-                    {{ data.fontSettings.fontFamilyOptions.default }} - {{ data.fontSettings.sampleText }}
+                    <!-- {{ data.fontSettings.fontFamilyOptions.default }} - {{ data.fontSettings.sampleText }} -->
+                      {{ data.fontSettings.sampleText }}
                   </button>
                 </div>
               </div>

@@ -1001,6 +1001,12 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
             const stepTitle = this.t().steps[this.currentStep()]?.title || '';
             this.ttsService.speak('Schritt ' + (stepIndex + 1) + ': ' + stepTitle);
           }
+
+          // Confetti on final step
+          const isFinalStep = stepIndex === this.steps.length - 1;
+          if (isFinalStep && this.data.celebrateAnimation) {
+            this.showConfetti();
+          }
         }, halfDuration);
       }, halfDuration);
     }

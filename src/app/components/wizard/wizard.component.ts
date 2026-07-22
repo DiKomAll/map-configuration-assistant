@@ -162,7 +162,7 @@ import { DATA_CONFIG, TEXTS, ProfileType, STEP_INDICATOR_SIZES } from '../../app
             </div>
 
             <!-- Tab Content Location -->
-            <div *ngIf="activeAreaTab === 'location' && geolocationAvailable" class="animate-fade-in">
+            <div *ngIf="activeAreaTab === 'location' && geolocationAvailable && data.areaOptions.location.enabled" class="animate-fade-in">
               <div class="bg-blue-50 border border-blue-100 rounded-2xl p-6 text-center">
                 <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-600 relative">
                   <svg *ngIf="!isDetectingLocation" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="data.icons.tabLocation" /></svg>
@@ -206,6 +206,20 @@ import { DATA_CONFIG, TEXTS, ProfileType, STEP_INDICATOR_SIZES } from '../../app
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-200" [class.rotate-180]="showLocationDetails" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                   </button>
                 </div>
+              </div>
+            </div>
+
+            <!-- Location unavailable message (when disabled by config or browser) -->
+            <div *ngIf="activeAreaTab === 'location' && (!geolocationAvailable || !data.areaOptions.location.enabled)" class="animate-fade-in">
+              <div class="bg-slate-50 border border-slate-200 rounded-2xl p-8 text-center">
+                <div class="w-12 h-12 bg-slate-200 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 15v2m0 0v2m0-2h2m-2 0h-2zm0 0V9a3 3 0 10-6 0v6m6 0H9m3 0V5m-3 0h6"/>
+                  </svg>
+                </div>
+                <p class="text-slate-500">{{ t().areas.locationUnavailable }}</p>
+                <app-tts-icon [text]="t().areas.locationUnavailable"></app-tts-icon>
               </div>
             </div>
 
@@ -272,7 +286,7 @@ import { DATA_CONFIG, TEXTS, ProfileType, STEP_INDICATOR_SIZES } from '../../app
             </div>
 
             <!-- Tab Content Search -->
-            <div *ngIf="activeAreaTab === 'search'" class="animate-fade-in space-y-4">
+            <div *ngIf="activeAreaTab === 'search' && data.areaOptions.search.enabled" class="animate-fade-in space-y-4">
               <div class="relative flex items-center gap-2">
                 <div class="relative flex-1">
                   <input type="text" [(ngModel)]="searchTerm" (input)="onSearchInput()" [placeholder]="t().areas.searchPlaceholder"
@@ -304,6 +318,20 @@ import { DATA_CONFIG, TEXTS, ProfileType, STEP_INDICATOR_SIZES } from '../../app
                      <app-tts-icon [text]="result.display_name"></app-tts-icon>
                    </div>
                  </div>
+              </div>
+            </div>
+
+            <!-- Search unavailable message (when disabled by config) -->
+            <div *ngIf="activeAreaTab === 'search' && !data.areaOptions.search.enabled" class="animate-fade-in">
+              <div class="bg-slate-50 border border-slate-200 rounded-2xl p-8 text-center">
+                <div class="w-12 h-12 bg-slate-200 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 15v2m0 0v2m0-2h2m-2 0h-2zm0 0V9a3 3 0 10-6 0v6m6 0H9m3 0V5m-3 0h6"/>
+                  </svg>
+                </div>
+                <p class="text-slate-500">{{ t().areas.searchUnavailable }}</p>
+                <app-tts-icon [text]="t().areas.searchUnavailable"></app-tts-icon>
               </div>
             </div>
           </div>
@@ -815,7 +843,16 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
   profile = signal<ProfileType>('simple');
   t = computed(() => TEXTS[this.profile()]);
   data = DATA_CONFIG;
-  
+
+  // Computed availability for area tabs (browser capability + config)
+  get locationTabEnabled(): boolean {
+    return this.geolocationAvailable && this.data.areaOptions.location.enabled;
+  }
+
+  get searchTabEnabled(): boolean {
+    return this.data.areaOptions.search.enabled;
+  }
+
   // Tab State
   activeAreaTab = DATA_CONFIG.defaultAreaTab; // Default: 'location'
   expertSelectionTab = 'favorites';
@@ -1138,9 +1175,16 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
   checkGeolocation() {
     if (!navigator.geolocation) {
       this.geolocationAvailable = false;
-      this.activeAreaTab = 'selection'; // Fallback to list
     } else {
       this.geolocationAvailable = true;
+    }
+
+    // Fallback to selection if the active tab is disabled by config
+    if (this.activeAreaTab === 'location' && !this.locationTabEnabled) {
+      this.activeAreaTab = 'selection';
+    }
+    if (this.activeAreaTab === 'search' && !this.searchTabEnabled) {
+      this.activeAreaTab = 'selection';
     }
   }
 
@@ -1226,6 +1270,8 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
       : `Standort (${this.detectedLocation.coords.latitude.toFixed(4)}, ${this.detectedLocation.coords.longitude.toFixed(4)})`;
     
     this.config.area = label;
+    this.config.lat = this.detectedLocation.coords.latitude;
+    this.config.lon = this.detectedLocation.coords.longitude;
   }
 
   // SEARCH LOGIC (Nominatim)
@@ -1256,6 +1302,8 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   selectSearchResult(result: any) {
     this.config.area = result.display_name;
+    this.config.lat = result.lat ? parseFloat(result.lat) : Number.NaN;
+    this.config.lon = result.lon ? parseFloat(result.lon) : Number.NaN;
   }
 
   toggleArea(area: string) {
@@ -1373,14 +1421,29 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   toggleProfile() {
     this.profile.update(p => p === 'simple' ? 'expert' : 'simple');
-    // Reset defaults
-    this.activeAreaTab = this.geolocationAvailable ? 'location' : 'selection';
-    this.config.area = '';
+    // Reset area and coordinates based on new profile
+    if (this.profile() === 'simple') {
+      const defaultPlace = this.data.simplePlaces[0];
+      if (defaultPlace) {
+        this.config.area = defaultPlace.name;
+        this.config.lat = defaultPlace.lat;
+        this.config.lon = defaultPlace.lon;
+      } else {
+        this.config.area = '';
+        this.config.lat = Number.NaN;
+        this.config.lon = Number.NaN;
+      }
+    } else {
+      this.config.area = '';
+      this.config.lat = Number.NaN;
+      this.config.lon = Number.NaN;
+    }
+    this.activeAreaTab = this.locationTabEnabled ? 'location' : 'selection';
     this.searchTerm = '';
     this.searchResults = [];
     this.detectedLocation = null;
     this.showLocationDetails = false;
-    this.config.landmarks = []; 
+    this.config.landmarks = [];
   }
 
   nextStep() {

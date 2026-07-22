@@ -69,7 +69,9 @@ export interface TranslationResource {
     searchResultLabel: string;
     manualSelectionTitle: string;
     spatialLevelLabel?: string;
-    orLabel?: string; 
+    orLabel?: string;
+    locationUnavailable: string;
+    searchUnavailable: string;
   };
   viewModes: Record<string, { name: string; description: string; disabled?: boolean; disabledText?: string }>;
   landmarks: {
@@ -203,7 +205,16 @@ export const DATA_CONFIG = {
   externalAppUrl: "https://kommonitor.fbg-hsbo.de/#!/",
   // externalAppUrl: "http://localhost:8000/#!/",
   defaultAreaTab: 'selection',
-  previewExampleLandmarkId: 'kirche', 
+
+  // Area tab enablement — set to false to deactivate a starting-place option
+  // When deactivated, the tab remains visible but its content window shows
+  // a configurable unavailable message instead of the feature UI
+  areaOptions: {
+    location: { enabled: false },  // device position (geolocation)
+    search: { enabled: false },    // address search (Nominatim)
+  },
+
+  previewExampleLandmarkId: 'kirche',
   celebrateAnimation: true,
   mapAnimationEnabled: true,
 
@@ -486,6 +497,8 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       searchPlaceholder: 'Adresse eingeben...',
       searchResultLabel: 'Gefunden:',
       manualSelectionTitle: 'Beliebte Orte',
+      locationUnavailable: 'Diese Option ist derzeit nicht verfügbar.',
+      searchUnavailable: 'Diese Option ist derzeit nicht verfügbar.',
     },
     viewModes: {
       'twodimensional': { name: 'Von oben ohne Gebäude', description: '', disabled: false },
@@ -600,6 +613,8 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       searchResultLabel: 'Ergebnisse aus Nominatim:',
       manualSelectionTitle: 'Raumeinheit wählen',
       spatialLevelLabel: 'Raumebene wählen:',
+      locationUnavailable: 'Diese Option wird derzeit nicht unterstützt.',
+      searchUnavailable: 'Diese Option wird derzeit nicht unterstützt.',
     },
     viewModes: {
       'twodimensional': { name: '2D Karte', description: 'Klassische Draufsicht.', disabled: false },

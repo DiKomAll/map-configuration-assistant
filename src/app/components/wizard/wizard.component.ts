@@ -299,6 +299,19 @@ import { DATA_CONFIG, TEXTS, ProfileType, STEP_INDICATOR_SIZES } from '../../app
                 </div>
                 <app-tts-icon [text]="t().areas.searchPlaceholder"></app-tts-icon>
               </div>
+
+              <!-- Search error message -->
+              <div *ngIf="searchError" class="bg-red-50 border border-red-100 rounded-xl p-4 text-center">
+                <p class="text-red-600 text-sm font-medium">{{ searchError }}</p>
+                <app-tts-icon [text]="searchError"></app-tts-icon>
+              </div>
+
+              <!-- No search results message -->
+              <div *ngIf="!isSearching && searchResults.length === 0 && searchTerm.length >= 3 && !searchError" class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                <p class="text-slate-500 text-sm">{{ t().areas.searchNoResults }}</p>
+                <app-tts-icon [text]="t().areas.searchNoResults"></app-tts-icon>
+              </div>
+
               <div *ngIf="searchResults.length > 0" class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
                  <div class="bg-slate-50 px-4 py-2 text-xs font-bold text-slate-500 border-b border-slate-100 uppercase tracking-wider flex justify-between items-center">
                    <span>{{ t().areas.searchResultLabel }}</span>
@@ -869,6 +882,7 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
   searchTerm = '';
   isSearching = false;
   searchResults: any[] = [];
+  searchError = '';
   searchTimeout: any;
 
   // Accordion state for landmark categories (mobile optimization)
@@ -1240,7 +1254,7 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
           this.ttsService.speak("Standort gefunden: " + (address || "Breitengrad " + coords.latitude.toFixed(2)));
         }
       },
-      (err) => {
+      (err: GeolocationPositionError) => {
         console.error(err);
         this.isDetectingLocation = false;
         let msg = 'Standort nicht abrufbar.';
@@ -1248,6 +1262,7 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
           case 1: msg = 'Keine Berechtigung für Standortzugriff.'; break;
           case 2: msg = 'Position nicht verfügbar.'; break;
           case 3: msg = 'Zeitüberschreitung bei der Ermittlung.'; break;
+          default: msg = 'Unbekannter Fehler bei der Standortbestimmung.'; break;
         }
         this.locationError = `Fehler: ${msg} (${err.message})`;
         if (this.ttsService.isTtsActive()) {
@@ -1283,18 +1298,30 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
   async performSearch() {
     if (this.searchTerm.length < 3) {
       this.searchResults = [];
+      this.searchError = '';
       return;
     }
-    
+
     this.isSearching = true;
+    this.searchError = '';
     try {
       const url = `${DATA_CONFIG.geocoder.searchUrl}?q=${encodeURIComponent(this.searchTerm)}&format=json&limit=${DATA_CONFIG.geocoder.limit}&addressdetails=1`;
       const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
       const data = await res.json();
       this.searchResults = data;
+      if (this.ttsService.isTtsActive() && data.length === 0) {
+        this.ttsService.speak(this.t().areas.searchNoResults);
+      }
     } catch (e) {
       console.error('Geocoding error', e);
       this.searchResults = [];
+      this.searchError = this.t().areas.searchError;
+      if (this.ttsService.isTtsActive()) {
+        this.ttsService.speak(this.searchError);
+      }
     } finally {
       this.isSearching = false;
     }
@@ -1441,6 +1468,7 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activeAreaTab = this.locationTabEnabled ? 'location' : 'selection';
     this.searchTerm = '';
     this.searchResults = [];
+    this.searchError = '';
     this.detectedLocation = null;
     this.showLocationDetails = false;
     this.config.landmarks = [];

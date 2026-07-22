@@ -72,6 +72,8 @@ export interface TranslationResource {
     orLabel?: string;
     locationUnavailable: string;
     searchUnavailable: string;
+    searchError: string;
+    searchNoResults: string;
   };
   viewModes: Record<string, { name: string; description: string; disabled?: boolean; disabledText?: string }>;
   landmarks: {
@@ -499,6 +501,8 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       manualSelectionTitle: 'Beliebte Orte',
       locationUnavailable: 'Diese Option ist derzeit nicht verfügbar.',
       searchUnavailable: 'Diese Option ist derzeit nicht verfügbar.',
+      searchError: 'Bei der Suche ist ein Fehler aufgetreten. Bitte versuche es später noch einmal.',
+      searchNoResults: 'Keine Ergebnisse gefunden. Bitte suche mit anderen Begriffen.',
     },
     viewModes: {
       'twodimensional': { name: 'Von oben ohne Gebäude', description: '', disabled: false },
@@ -615,6 +619,8 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       spatialLevelLabel: 'Raumebene wählen:',
       locationUnavailable: 'Diese Option wird derzeit nicht unterstützt.',
       searchUnavailable: 'Diese Option wird derzeit nicht unterstützt.',
+      searchError: 'Bei der Suche ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal.',
+      searchNoResults: 'Keine Ergebnisse gefunden. Bitte suchen Sie mit anderen Begriffen.',
     },
     viewModes: {
       'twodimensional': { name: '2D Karte', description: 'Klassische Draufsicht.', disabled: false },

@@ -222,6 +222,75 @@ body.default-font    { --font-family-body: Arial, Helvetica, sans-serif; }
   50% { transform: translateY(-10px); }
 }
 
+/* -----------------------------------------------------------------
+   Wizard Step Transition Animations
+   Two-phase: exit (slide out) → step change → enter (slide in)
+----------------------------------------------------------------- */
+
+/* Step content wrapper — holds transition config */
+.wizard-step-content {
+  /* Half-duration: exit phase takes half, enter phase takes half */
+  transition: transform var(--wizard-half-duration, 150ms) ease-out,
+              opacity var(--wizard-half-duration, 150ms) ease-out;
+  will-change: transform, opacity;
+}
+
+/* Exit animations (current step sliding out) */
+.wizard-step-exit-next { transform: translateX(-100%); opacity: 0; }
+.wizard-step-exit-prev { transform: translateX(100%); opacity: 0; }
+
+/* Enter animation (new step sliding in) */
+.wizard-step-enter { transform: translateX(0); opacity: 1; }
+
+/* Swipe hint indicator */
+.wizard-swipe-hint {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* -----------------------------------------------------------------
+   Global Animation Classes (used by wizard, map-preview, tts-consent)
+----------------------------------------------------------------- */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in { animation: fadeIn 0.3s ease-out; }
+.animate-scale-in { animation: scaleIn 0.3s ease-out; }
+
+/* -----------------------------------------------------------------
+   Confetti Animation (moved from app.css which is not imported)
+----------------------------------------------------------------- */
+
+.confetti-piece {
+  position: fixed;
+  top: -10px;
+  width: 10px;
+  height: 10px;
+  background-color: #ffd700;
+  z-index: 9999;
+  pointer-events: none;
+  border-radius: 2px;
+  animation: fall 4s ease-out forwards;
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
 /* Responsive Grid for Landmarks and Cards */
 @media (max-width: 640px) {
   .landmark-grid {
@@ -236,33 +305,6 @@ body.default-font    { --font-family-body: Arial, Helvetica, sans-serif; }
   .simple-place-tile {
     height: 140px !important;
   }
-}
-
-/* Scroll Indicator - Visual Cue for Mobile */
-.scroll-indicator {
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  background: rgba(16, 185, 129, 0.85);
-  color: white;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: bounce 2s infinite;
-  z-index: 20;
-  display: none;
-}
-
-.scroll-indicator.visible {
-  display: flex;
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
 }
 
 /* Compact mobile styles */

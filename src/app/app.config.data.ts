@@ -46,6 +46,7 @@ export interface TranslationResource {
     mapAnimationLabel: string;
     previewLabel: string;
     startAppHint: string;
+    swipeHint: string;
   };
   steps: {
     title: string;
@@ -205,6 +206,19 @@ export const DATA_CONFIG = {
   previewExampleLandmarkId: 'kirche', 
   celebrateAnimation: true,
   mapAnimationEnabled: true,
+
+  // Swipe gesture configuration
+  swipeConfig: {
+    enabled: true,                    // Enable/disable swipe gestures entirely
+    threshold: 50,                    // Min px to trigger step change
+    animationDuration: 300,           // CSS transition duration in ms
+    animationEasing: 'ease-out',      // CSS timing function
+    showSwipeHint: true,              // Show swipe hint on first visit
+    swipeHintDelay: 1000,             // ms before hint appears
+    swipeHintDuration: 4000,          // ms before hint auto-dismisses
+    preventScroll: true,              // Prevent vertical scroll during horizontal swipe
+    minSwipeVelocity: 0.3,            // Min velocity (px/ms) to trigger step change
+  },
 
   geocoder: {
     searchUrl: 'https://geocoder.fbg-hsbo.de/nominatim/search',
@@ -442,6 +456,7 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       mapAnimationLabel: 'Soll die Karte sich automatisch bewegen?',
       previewLabel: 'Vorschau: So sieht deine Karte aus',
       startAppHint: 'Klicke auf den grünen Knopf unten, um deine richtige Karte zu öffnen.',
+      swipeHint: 'Nach links oder rechts wischen, um zwischen den Schritten zu wechseln',
     },
     steps: [
       { title: 'Welchen Ort möchtest du sehen?', description: 'Wähle einen Ort aus der Liste oder suche nach einem bestimmten Ort.' },
@@ -554,6 +569,7 @@ export const TEXTS: Record<ProfileType, TranslationResource> = {
       mapAnimationLabel: 'Automatische Karten-Animation aktivieren',
       previewLabel: 'Interaktive Vorschau Ihrer Konfiguration',
       startAppHint: 'Nutzen Sie die Schaltfläche unten, um die Anwendung mit diesen Parametern zu starten.',
+      swipeHint: 'Wischen Sie nach links oder rechts, um zwischen den Schritten zu wechseln',
     },
     steps: [
       { title: 'Basiskarte', description: 'Wählen Sie die Datengrundlage.' },

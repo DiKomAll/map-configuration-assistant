@@ -1,4 +1,4 @@
-import { Component, signal, computed, effect, OnInit, inject, HostListener } from '@angular/core';
+import { Component, signal, computed, effect, OnInit, AfterViewInit, OnDestroy, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -65,6 +65,7 @@ import { DATA_CONFIG, TEXTS, ProfileType, STEP_INDICATOR_SIZES } from '../../app
             <button
               *ngFor="let stepInfo of stepsInfo; let i = index"
               (click)="goToStep(i)"
+              [disabled]="isStepTransitioning()"
               class="flex items-center justify-center px-2.5 py-2 rounded-lg text-xs font-bold transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500"
               [class.bg-emerald-600]="currentStep() === i"
               [class.text-white]="currentStep() === i"
@@ -116,9 +117,17 @@ import { DATA_CONFIG, TEXTS, ProfileType, STEP_INDICATOR_SIZES } from '../../app
           </p>
         </div>
 
-        <div [ngSwitch]="currentStep()">
+        <div class="wizard-step-wrapper relative overflow-hidden"
+             [style.--wizard-half-duration.px]="(data.swipeConfig.animationDuration / 2)">
+          <div class="wizard-step-content"
+               [class]="getStepContentClass()"
+               [style.transform]="getSwipeTransform()"
+               [style.transition]="getTransitionStyle()"
+               [style.touch-action]="data.swipeConfig.preventScroll ? 'pan-y' : 'auto'">
 
-        <!-- STEP 0: BEREICH (War Step 2 im Original-Code, aber Case 0 hier) -->
+            <div [ngSwitch]="currentStep()">
+
+            <!-- STEP 0: BEREICH (War Step 2 im Original-Code, aber Case 0 hier) -->
           <div *ngSwitchCase="0" class="max-w-lg mx-auto">
             
             <div class="flex rounded-xl bg-slate-100 p-1 mb-6 shadow-inner">
@@ -758,25 +767,40 @@ import { DATA_CONFIG, TEXTS, ProfileType, STEP_INDICATOR_SIZES } from '../../app
                </div>
             </div>
           </div>
+        </div>
+        </div>
+        </div>
 
+        <!-- Swipe Hint -->
+        <div *ngIf="showSwipeHint() && data.swipeConfig.showSwipeHint"
+             class="fixed bottom-20 left-1/2 transform -translate-x-1/2 z-40
+                    bg-slate-800/90 text-white px-4 py-2 rounded-full text-sm
+                    flex items-center gap-2 animate-fade-in"
+             (click)="showSwipeHint.set(false); swipeHintDismissed.set(true)">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M7 11l6-6 6 6m-6 6l6-6"/>
+          </svg>
+          <span>{{ t().ui.swipeHint }}</span>
+          <app-tts-icon [text]="t().ui.swipeHint"></app-tts-icon>
         </div>
       </main>
 
       <footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 z-40 flex gap-4 justify-between items-center safe-area-bottom" role="contentinfo">
         <div class="flex items-center gap-2">
-          <button (click)="prevStep()" [disabled]="currentStep() === 0" [class.invisible]="currentStep() === 0" class="flex items-center text-slate-600 font-bold px-4 py-3 rounded-lg hover:bg-slate-50 focus:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400 transition-all min-h-[48px]" [attr.aria-label]="t().ui.prevBtn"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg><span class="text-base">{{ t().ui.prevBtn }}</span></button>
+          <button (click)="prevStep()" [disabled]="currentStep() === 0 || isStepTransitioning()" [class.invisible]="currentStep() === 0" class="flex items-center text-slate-600 font-bold px-4 py-3 rounded-lg hover:bg-slate-50 focus:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400 transition-all min-h-[48px]" [attr.aria-label]="t().ui.prevBtn"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg><span class="text-base">{{ t().ui.prevBtn }}</span></button>
           <app-tts-icon *ngIf="currentStep() > 0" [text]="t().ui.prevBtn"></app-tts-icon>
         </div>
         
         <div class="flex items-center gap-2">
-          <button *ngIf="currentStep() < steps.length - 1" (click)="nextStep()" class="bg-slate-900 text-white font-bold px-6 py-3 rounded-xl shadow-md flex items-center gap-2 hover:bg-slate-800 active:bg-slate-900 focus:outline-none focus:ring-4 focus:ring-slate-500 transition-all min-h-[48px]"><span class="text-base">{{ t().ui.nextBtn }}</span><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
+          <button *ngIf="currentStep() < steps.length - 1" (click)="nextStep()" [disabled]="isStepTransitioning()" class="bg-slate-900 text-white font-bold px-6 py-3 rounded-xl shadow-md flex items-center gap-2 hover:bg-slate-800 active:bg-slate-900 focus:outline-none focus:ring-4 focus:ring-slate-500 transition-all min-h-[48px]"><span class="text-base">{{ t().ui.nextBtn }}</span><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
           <app-tts-icon *ngIf="currentStep() < steps.length - 1" [text]="t().ui.nextBtn"></app-tts-icon>
         </div>
       </footer>
     </div>
   `
 })
-export class WizardComponent implements OnInit {
+export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
   currentStep = signal(0);
   profile = signal<ProfileType>('simple');
   t = computed(() => TEXTS[this.profile()]);
@@ -804,7 +828,23 @@ export class WizardComponent implements OnInit {
   categoryExpanded = signal<Set<string>>(new Set());
 
   // Swipe gesture support for mobile navigation
-  swipeState: { start: number; delta: number } = { start: 0, delta: 0 };
+  // Step transition state for animated navigation
+  stepTransitionState = signal<'idle' | 'exiting' | 'entering'>('idle');
+  stepDirection = signal<'next' | 'prev'>('next');
+
+  // Real-time swipe offset for visual feedback (px)
+  swipeOffset = signal(0);
+
+  // Whether a swipe gesture is currently active
+  isSwiping = signal(false);
+
+  // Swipe hint visibility
+  showSwipeHint = signal(false);
+  swipeHintDismissed = signal(false);
+
+  // Private fields for touch tracking
+  private touchStartX: number = 0;
+  private touchStartTime: number = 0;
 
   config: {
     mapStyle: string;
@@ -936,18 +976,32 @@ export class WizardComponent implements OnInit {
 
   // Navigator methods
   goToStep(stepIndex: number) {
-    if (stepIndex >= 0 && stepIndex < this.steps.length) {
+    if (stepIndex >= 0 && stepIndex < this.steps.length && !this.isStepTransitioning() && !this.isSwiping()) {
       // Cancel any pending TTS
       this.ttsService.cancelPendingSpeech();
       this.ttsService.stop();
 
-      this.currentStep.set(stepIndex);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // For direct navigation, use a fade transition
+      this.isStepTransitioning.set(true);
+      this.stepTransitionState.set('exiting');
 
-      if (this.ttsService.isTtsActive()) {
-        const stepTitle = this.t().steps[this.currentStep()]?.title || '';
-        this.ttsService.speak('Schritt ' + (stepIndex + 1) + ': ' + stepTitle);
-      }
+      const duration = this.data.swipeConfig.animationDuration;
+      const halfDuration = duration / 2;
+
+      setTimeout(() => {
+        this.currentStep.set(stepIndex);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        this.stepTransitionState.set('entering');
+
+        setTimeout(() => {
+          this.stepTransitionState.set('idle');
+          this.isStepTransitioning.set(false);
+          if (this.ttsService.isTtsActive()) {
+            const stepTitle = this.t().steps[this.currentStep()]?.title || '';
+            this.ttsService.speak('Schritt ' + (stepIndex + 1) + ': ' + stepTitle);
+          }
+        }, halfDuration);
+      }, halfDuration);
     }
   }
 
@@ -1313,31 +1367,9 @@ export class WizardComponent implements OnInit {
   }
 
   nextStep() {
-    if (this.currentStep() < this.steps.length - 1) {
-      // Mark current step as completed
-      const current = this.currentStep();
-      this.markStepCompleted(current);
-
-      this.currentStep.update(v => v + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      setTimeout(() => document.getElementById('main-content')?.focus(), 100);
-
-      const isFinalStep = this.currentStep() === this.steps.length - 1;
-
-      if (this.ttsService.isTtsActive()) {
-        const nextTitle = this.t().steps[this.currentStep()].title;
-        let speakText = this.t().ui.nextStepLabel + " " + nextTitle;
-
-        // Bei Schritt 6 (Index 5) gratulieren
-        if (isFinalStep) {
-          speakText = this.t().summary.congratsTitle + ". " + this.t().summary.congratsMessage;
-        }
-        this.ttsService.speak(speakText);
-      }
-
-      if (isFinalStep && this.data.celebrateAnimation) {
-        this.showConfetti();
-      }
+    if (this.currentStep() < this.steps.length - 1 && !this.isStepTransitioning() && !this.isSwiping()) {
+      this.markStepCompleted(this.currentStep());
+      this.navigateWithAnimation('next');
     }
   }
 
@@ -1361,14 +1393,8 @@ export class WizardComponent implements OnInit {
   }
 
   prevStep() {
-    if (this.currentStep() > 0) {
-      this.currentStep.update(v => v - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      
-      if (this.ttsService.isTtsActive()) {
-        const prevTitle = this.t().steps[this.currentStep()].title;
-        this.ttsService.speak(this.t().ui.prevStepLabel + " " + prevTitle);
-      }
+    if (this.currentStep() > 0 && !this.isStepTransitioning() && !this.isSwiping()) {
+      this.navigateWithAnimation('prev');
     }
   }
 
@@ -1442,26 +1468,176 @@ export class WizardComponent implements OnInit {
     return this.categoryExpanded().has(categoryId);
   }
 
-  // --- MOBILE OPTIMIZATION: Swipe gesture navigation ---
+  // --- MOBILE OPTIMIZATION: Swipe gesture navigation with visual feedback ---
+
   @HostListener('touchstart', ['$event'])
   onTouchStart(e: TouchEvent) {
-    this.swipeState.start = e.touches[0].clientX;
+    if (!this.data.swipeConfig.enabled || e.touches.length !== 1 || this.isStepTransitioning()) {
+      return;
+    }
+    const touch = e.touches[0];
+    this.touchStartX = touch.clientX;
+    this.touchStartTime = Date.now();
+    this.isSwiping.set(true);
+    this.swipeOffset.set(0);
+    // Dismiss swipe hint on first interaction
+    if (this.showSwipeHint()) {
+      this.showSwipeHint.set(false);
+      this.swipeHintDismissed.set(true);
+    }
   }
 
   @HostListener('touchmove', ['$event'])
   onTouchMove(e: TouchEvent) {
-    this.swipeState.delta = e.touches[0].clientX - this.swipeState.start;
+    if (!this.data.swipeConfig.enabled || this.isStepTransitioning()) {
+      return;
+    }
+    const delta = e.touches[0].clientX - this.touchStartX;
+    // Only track horizontal swipes (ignore if vertical scroll is intended)
+    if (Math.abs(delta) > 5) {
+      this.swipeOffset.set(delta);
+    }
   }
 
   @HostListener('touchend')
   onTouchEnd() {
-    if (Math.abs(this.swipeState.delta) > 50) {
-      if (this.swipeState.delta > 0 && this.currentStep() > 0) {
-        this.prevStep(); // Swipe right = previous step
-      } else if (this.swipeState.delta < 0 && this.currentStep() < this.steps.length - 1) {
-        this.nextStep(); // Swipe left = next step
+    if (!this.data.swipeConfig.enabled) {
+      this.swipeOffset.set(0);
+      this.isSwiping.set(false);
+      return;
+    }
+
+    const delta = this.swipeOffset();
+    const threshold = this.data.swipeConfig.threshold;
+    const elapsed = Date.now() - this.touchStartTime;
+    const velocity = elapsed > 0 ? Math.abs(delta) / elapsed : 0;
+    const minVelocity = this.data.swipeConfig.minSwipeVelocity;
+
+    // Determine if swipe should trigger step change
+    const shouldNavigate = Math.abs(delta) >= threshold || (velocity >= minVelocity && Math.abs(delta) > 10);
+
+    if (shouldNavigate) {
+      if (delta < 0 && this.currentStep() < this.steps.length - 1) {
+        this.navigateWithAnimation('next');
+      } else if (delta > 0 && this.currentStep() > 0) {
+        this.navigateWithAnimation('prev');
       }
     }
-    this.swipeState = { start: 0, delta: 0 };
+
+    // Reset swipe state
+    this.swipeOffset.set(0);
+    this.isSwiping.set(false);
+  }
+
+  @HostListener('touchcancel')
+  onTouchCancel() {
+    // Handle interrupted touch (phone call, browser UI, etc.)
+    this.swipeOffset.set(0);
+    this.isSwiping.set(false);
+  }
+
+  // --- Animated step navigation (unified for swipe, buttons, and nav bar) ---
+
+  private navigateWithAnimation(direction: 'next' | 'prev') {
+    if (this.isStepTransitioning()) return;
+
+    // Reset any active swipe offset before starting transition
+    this.swipeOffset.set(0);
+    this.isSwiping.set(false);
+
+    const target = direction === 'next' ? this.currentStep() + 1 : this.currentStep() - 1;
+    if (target < 0 || target >= this.steps.length) return;
+
+    this.isStepTransitioning.set(true);
+    this.stepDirection.set(direction);
+    this.stepTransitionState.set('exiting');
+
+    const duration = this.data.swipeConfig.animationDuration;
+    const halfDuration = duration / 2;
+
+    // Phase 1: Exit animation (slide current step out)
+    setTimeout(() => {
+      this.currentStep.set(target);
+      this.stepTransitionState.set('entering');
+
+      // Phase 2: Enter animation (slide new step in)
+      setTimeout(() => {
+        this.stepTransitionState.set('idle');
+        this.isStepTransitioning.set(false);
+
+        // TTS feedback
+        if (this.ttsService.isTtsActive()) {
+          const title = this.t().steps[this.currentStep()]?.title || '';
+          const label = direction === 'next' ? this.t().ui.nextStepLabel : this.t().ui.prevStepLabel;
+          this.ttsService.speak(label + ' ' + title);
+        }
+
+        // Confetti on final step
+        const isFinalStep = this.currentStep() === this.steps.length - 1;
+        if (isFinalStep && this.data.celebrateAnimation) {
+          this.showConfetti();
+        }
+      }, halfDuration);
+    }, halfDuration);
+  }
+
+  // --- Helper methods for template bindings ---
+
+  // Whether a step transition is in progress
+  isStepTransitioning = signal(false);
+
+  // CSS class for step content based on transition state
+  getStepContentClass(): string {
+    const state = this.stepTransitionState();
+    const dir = this.stepDirection();
+    if (state === 'exiting') {
+      return dir === 'next' ? 'wizard-step-exit-next' : 'wizard-step-exit-prev';
+    }
+    if (state === 'entering') {
+      return 'wizard-step-enter';
+    }
+    return '';
+  }
+
+  // Swipe transform for real-time feedback (returns empty string during transition)
+  getSwipeTransform(): string {
+    if (this.stepTransitionState() !== 'idle') return '';
+    const offset = this.swipeOffset();
+    if (offset === 0) return 'translateX(0)';
+    // Apply a slight resistance factor for natural feel
+    const resistance = 0.7;
+    return `translateX(${offset * resistance}px)`;
+  }
+
+  // Transition style — 'none' during swipe for real-time feedback
+  getTransitionStyle(): string {
+    if (this.isSwiping() && this.swipeOffset() !== 0) {
+      return 'none';
+    }
+    return '';
+  }
+
+  // Swipe hint lifecycle
+  ngAfterViewInit() {
+    // Show swipe hint after delay if enabled and not dismissed
+    if (this.data.swipeConfig.showSwipeHint && !this.swipeHintDismissed()) {
+      const hintDelay = this.data.swipeConfig.swipeHintDelay ?? 1000;
+      const hintDuration = this.data.swipeConfig.swipeHintDuration ?? 4000;
+      setTimeout(() => {
+        if (!this.swipeHintDismissed()) {
+          this.showSwipeHint.set(true);
+          setTimeout(() => {
+            if (!this.swipeHintDismissed()) {
+              this.showSwipeHint.set(false);
+            }
+          }, hintDuration);
+        }
+      }, hintDelay);
+    }
+  }
+
+  // Clean up on destroy
+  ngOnDestroy() {
+    // Currently no animation frames to clean up, but keep for future use
   }
 }

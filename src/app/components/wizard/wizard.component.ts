@@ -844,6 +844,7 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Private fields for touch tracking
   private touchStartX: number = 0;
+  private touchStartY: number = 0;
   private touchStartTime: number = 0;
 
   config: {
@@ -976,7 +977,7 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Navigator methods
   goToStep(stepIndex: number) {
-    if (stepIndex >= 0 && stepIndex < this.steps.length && !this.isStepTransitioning() && !this.isSwiping()) {
+    if (stepIndex >= 0 && stepIndex < this.steps.length && !this.isStepTransitioning()) {
       // Cancel any pending TTS
       this.ttsService.cancelPendingSpeech();
       this.ttsService.stop();
@@ -1477,6 +1478,7 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     const touch = e.touches[0];
     this.touchStartX = touch.clientX;
+    this.touchStartY = touch.clientY;
     this.touchStartTime = Date.now();
     this.isSwiping.set(true);
     this.swipeOffset.set(0);
@@ -1492,10 +1494,14 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.data.swipeConfig.enabled || this.isStepTransitioning()) {
       return;
     }
-    const delta = e.touches[0].clientX - this.touchStartX;
-    // Only track horizontal swipes (ignore if vertical scroll is intended)
-    if (Math.abs(delta) > 5) {
-      this.swipeOffset.set(delta);
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - this.touchStartX;
+    const deltaY = touch.clientY - this.touchStartY;
+
+    // Only show swipe feedback when horizontal movement clearly exceeds vertical
+    // This prevents the screen from moving left/right during vertical scrolling
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
+      this.swipeOffset.set(deltaX);
     }
   }
 
@@ -1621,8 +1627,8 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     // Show swipe hint after delay if enabled and not dismissed
     if (this.data.swipeConfig.showSwipeHint && !this.swipeHintDismissed()) {
-      const hintDelay = this.data.swipeConfig.swipeHintDelay ?? 1000;
-      const hintDuration = this.data.swipeConfig.swipeHintDuration ?? 4000;
+      const hintDelay = this.data.swipeConfig.swipeHintDelay;
+      const hintDuration = this.data.swipeConfig.swipeHintDuration;
       setTimeout(() => {
         if (!this.swipeHintDismissed()) {
           this.showSwipeHint.set(true);

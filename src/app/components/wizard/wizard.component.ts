@@ -710,11 +710,14 @@ import { DATA_CONFIG, TEXTS, ProfileType, STEP_INDICATOR_SIZES } from '../../app
 
           <!-- STEP 5: Zusammenfassung -->
           <div *ngSwitchCase="5" class="text-center py-6">
-            <div class="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6 text-emerald-600 animate-bounce" aria-hidden="true">
+            <!-- hide jumping hook -->
+            <!-- <div class="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6 text-emerald-600 animate-bounce" aria-hidden="true">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-            </div>
+            </div> -->
+
+            <!-- hide congrats text as it consumes too much space and prevents display of preview map -->
             
-            <h2 class="text-4xl font-black text-slate-900 mb-2 drop-shadow-sm">
+            <!-- <h2 class="text-4xl font-black text-slate-900 mb-2 drop-shadow-sm">
               {{ t().summary.congratsTitle }}
               <app-tts-icon [text]="t().summary.congratsTitle"></app-tts-icon>
             </h2>
@@ -722,7 +725,26 @@ import { DATA_CONFIG, TEXTS, ProfileType, STEP_INDICATOR_SIZES } from '../../app
             <p class="text-xl text-emerald-700 font-bold mb-8 max-w-md mx-auto leading-tight">
               {{ t().summary.congratsMessage }}
               <app-tts-icon [text]="t().summary.congratsMessage"></app-tts-icon>
-            </p>
+            </p> -->
+
+            <!-- start external map - position it here to make it more visible to mobile users -->
+            <div class="bg-emerald-50 border-2 border-emerald-100 rounded-2xl p-6 mb-8 animate-pulse">
+                  <!-- hide additional text -->
+              <!-- <p class="text-emerald-900 font-black text-lg mb-4">
+                 {{ t().ui.startAppHint }}
+                 <app-tts-icon [text]="t().ui.startAppHint"></app-tts-icon>
+               </p> -->
+               <div class="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6 text-emerald-600 animate-bounce" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+              </div>
+               <div class="flex items-center gap-2">
+                 <button (click)="openExternalApp()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 focus:ring-4 focus:ring-emerald-500/50 text-white font-black text-xl py-5 px-8 rounded-2xl shadow-xl shadow-emerald-200 transform transition hover:scale-105 active:scale-95 outline-none flex items-center justify-center gap-3">
+                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 5l7 7-7 7M5 5l7 7-7 7" /></svg>
+                   {{ t().ui.finishBtn }}
+                 </button>
+                 <app-tts-icon [text]="t().ui.finishBtn"></app-tts-icon>
+               </div>
+            </div>
 
             <div class="h-px w-full bg-slate-200 mb-8"></div>
 
@@ -753,19 +775,7 @@ import { DATA_CONFIG, TEXTS, ProfileType, STEP_INDICATOR_SIZES } from '../../app
               </div> -->
             </div>
 
-            <div class="bg-emerald-50 border-2 border-emerald-100 rounded-2xl p-6 mb-8 animate-pulse">
-               <p class="text-emerald-900 font-black text-lg mb-4">
-                 {{ t().ui.startAppHint }}
-                 <app-tts-icon [text]="t().ui.startAppHint"></app-tts-icon>
-               </p>
-               <div class="flex items-center gap-2">
-                 <button (click)="openExternalApp()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 focus:ring-4 focus:ring-emerald-500/50 text-white font-black text-xl py-5 px-8 rounded-2xl shadow-xl shadow-emerald-200 transform transition hover:scale-105 active:scale-95 outline-none flex items-center justify-center gap-3">
-                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 5l7 7-7 7M5 5l7 7-7 7" /></svg>
-                   {{ t().ui.finishBtn }}
-                 </button>
-                 <app-tts-icon [text]="t().ui.finishBtn"></app-tts-icon>
-               </div>
-            </div>
+            
           </div>
         </div>
         </div>

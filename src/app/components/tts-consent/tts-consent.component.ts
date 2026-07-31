@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed, inject, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TtsService } from '../../services/tts.service';
@@ -665,7 +665,7 @@ import { TEXTS, ProfileType, DATA_CONFIG } from '../../app.config.data';
     }
   `]
 })
-export class TtsConsentComponent implements OnInit {
+export class TtsConsentComponent implements OnInit, OnDestroy {
   showStartButton = false;
   ttsChoiceMade = false; // Track if user made a TTS choice (yes/no)
   returnStep: string | null = null;
@@ -697,17 +697,60 @@ export class TtsConsentComponent implements OnInit {
     this.returnStep = this.route.snapshot.queryParamMap.get('returnStep');
   }
 
-  // Flag to prevent immediate close after opening
-  private ignoreNextDocumentClick = false;
+  ngOnDestroy() {
+    clearTimeout(this.closeFlagTimer);
+  }
 
-  // Close dropdown when clicking outside
+  /**
+   * Timestamp of the last dropdown trigger interaction (toggle or select).
+   * Uses a time-based window instead of a boolean flag because on iOS,
+   * click events can be suppressed by touchmove — a boolean flag may
+   * never be consumed, leaving the dropdown permanently open.
+   */
+  private lastTriggerTime = 0;
+
+  /** Timer handle for resetting the trigger debounce window. */
+  private closeFlagTimer: any = null;
+
+  /**
+   * Close dropdown when clicking or tapping outside.
+   * On iOS, click events can be suppressed by touchmove; we also
+   * listen to document:touchend as a fallback.
+   */
   @HostListener('document:click')
   onDocumentClick() {
-    if (this.ignoreNextDocumentClick) {
-      this.ignoreNextDocumentClick = false;
-      return;
-    }
+    if (this.isWithinTriggerWindow()) return;
     this.fontDropdownOpen.set(false);
+  }
+
+  @HostListener('document:touchend', ['$event'])
+  onDocumentTouchEnd(e: TouchEvent) {
+    // iOS fallback: click may be suppressed, so close on touchend outside dropdown
+    if (this.isWithinTriggerWindow()) return;
+    if (!this.fontDropdownOpen()) return;
+
+    const target = e.changedTouches[0]?.target as HTMLElement;
+    if (target && !target.closest('.font-dropdown-container')) {
+      this.fontDropdownOpen.set(false);
+    }
+  }
+
+  /**
+   * Check whether we're within the 500ms debounce window after
+   * a trigger interaction. This covers the iOS 300ms click delay
+   * plus margin for both click and touchend event types.
+   */
+  private isWithinTriggerWindow(): boolean {
+    return Date.now() - this.lastTriggerTime < 500;
+  }
+
+  /** Set the trigger timestamp and start the reset timer. */
+  private setTriggerDebounce() {
+    this.lastTriggerTime = Date.now();
+    clearTimeout(this.closeFlagTimer);
+    this.closeFlagTimer = setTimeout(() => {
+      this.lastTriggerTime = 0;
+    }, 500);
   }
 
   // Methods moved to use AccessibilityService
@@ -856,12 +899,13 @@ export class TtsConsentComponent implements OnInit {
   // Font dropdown methods
   toggleFontDropdown() {
     this.fontDropdownOpen.update(open => !open);
-    this.ignoreNextDocumentClick = true;
+    this.setTriggerDebounce();
   }
 
   selectFontFamily(family: any) {
     this.setFontFamily(family);
     this.fontDropdownOpen.set(false);
+    this.setTriggerDebounce();
   }
 
   // Get font label for display

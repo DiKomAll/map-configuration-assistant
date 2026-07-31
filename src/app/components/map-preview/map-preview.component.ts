@@ -123,10 +123,12 @@ export class MapPreviewComponent implements OnInit, OnChanges, AfterViewInit, On
       });
     }
 
-    // Stop animation on any user interaction
+    // Stop animation on any user interaction.
+    // 'mousedown' is the Leaflet equivalent for mouse, but on iOS it fires
+    // ~300ms after touchend. Adding 'touchstart' provides immediate feedback.
     this.map.on('dragstart', () => this.handleUserInteraction());
     this.map.on('zoomstart', () => this.handleUserInteraction());
-    this.map.on('mousedown', () => this.handleUserInteraction());
+    this.map.on('mousedown touchstart', () => this.handleUserInteraction());
 
     this.updateMap();
     

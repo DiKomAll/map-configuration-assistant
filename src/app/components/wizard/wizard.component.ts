@@ -1,4 +1,4 @@
-import { Component, signal, computed, effect, OnInit, AfterViewInit, OnDestroy, inject, HostListener } from '@angular/core';
+import { Component, signal, computed, OnInit, AfterViewInit, OnDestroy, inject, HostListener, ViewChild, Renderer2, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -119,7 +119,7 @@ import { DATA_CONFIG, TEXTS, ProfileType, STEP_INDICATOR_SIZES } from '../../app
 
         <div class="wizard-step-wrapper relative overflow-hidden"
              [style.--wizard-half-duration.px]="(data.swipeConfig.animationDuration / 2)">
-          <div class="wizard-step-content"
+          <div #wizardStepContent class="wizard-step-content"
                [class]="getStepContentClass()"
                [style.transform]="getSwipeTransform()"
                [style.transition]="getTransitionStyle()"
@@ -968,10 +968,33 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
   // Accessibility service
   private accessibilityService = inject(AccessibilityService);
 
+  /** Reference to the swipe container element for targeted touch listeners */
+  @ViewChild('wizardStepContent', { static: false }) wizardStepContent!: ElementRef<HTMLElement>;
+
+  /** Cleanup function for the dynamically attached passive touchmove listener */
+  private touchMoveUnlisten?: () => void;
+
+  /**
+   * True only when a genuine horizontal swipe is detected (deltaX > 10px).
+   * Distinct from isSwiping(): isSwiping is set on every touchstart
+   * and can still be true when iOS fires the synthetic click (~300ms
+   * after touchend). isGestureSwipe is only true for actual horizontal
+   * movement, so taps never trigger it. Used as a guard in
+   * nextStep()/prevStep() to prevent click + swipe double-navigation.
+   */
+  private isGestureSwipe = false;
+
+  /** Deferred delta for RAF-based signal updates */
+  private pendingDeltaX = 0;
+
+  /** requestAnimationFrame ID for canceling pending signal updates */
+  private rafId: number | null = null;
+
   constructor(
     public ttsService: TtsService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private renderer: Renderer2
   ) {}
 
   // Volume and Rate controls for step 4 with presets
@@ -1475,7 +1498,13 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   nextStep() {
-    if (this.currentStep() < this.steps.length - 1 && !this.isStepTransitioning() && !this.isSwiping()) {
+    if (this.currentStep() < this.steps.length - 1 && !this.isStepTransitioning()) {
+      // Prevent double-navigation: if a real horizontal swipe is in progress,
+      // the swipe handler will navigate. Don't also navigate from click.
+      // Note: we use isGestureSwipe (not isSwiping) because isSwiping is set
+      // on every touchstart and can still be true when iOS fires the synthetic
+      // click ~300ms after touchend.
+      if (this.isGestureSwipe) return;
       this.markStepCompleted(this.currentStep());
       this.navigateWithAnimation('next');
     }
@@ -1501,7 +1530,8 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   prevStep() {
-    if (this.currentStep() > 0 && !this.isStepTransitioning() && !this.isSwiping()) {
+    if (this.currentStep() > 0 && !this.isStepTransitioning()) {
+      if (this.isGestureSwipe) return;
       this.navigateWithAnimation('prev');
     }
   }
@@ -1583,12 +1613,24 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.data.swipeConfig.enabled || e.touches.length !== 1 || this.isStepTransitioning()) {
       return;
     }
+    // Ignore touches that originate on interactive elements (buttons,
+    // inputs, links) — these should not trigger swipe tracking.
+    // Setting isSwiping=true here causes a race condition with the
+    // subsequent click event on iOS (synthetic click fires ~300ms
+    // after touchend), which blocks navigation in nextStep()/prevStep().
+    const target = e.target as HTMLElement;
+    if (target.closest('button, input, select, textarea, a, [role="button"], .tts-button')) {
+      return;
+    }
     const touch = e.touches[0];
     this.touchStartX = touch.clientX;
     this.touchStartY = touch.clientY;
     this.touchStartTime = Date.now();
     this.isSwiping.set(true);
+    this.isGestureSwipe = false;
     this.swipeOffset.set(0);
+    // Add class to prevent iOS touch-action/transform bug on content div
+    this.wizardStepContent?.nativeElement.classList.add('is-swiping');
     // Dismiss swipe hint on first interaction
     if (this.showSwipeHint()) {
       this.showSwipeHint.set(false);
@@ -1596,9 +1638,22 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  @HostListener('touchmove', ['$event'])
-  onTouchMove(e: TouchEvent) {
+  /**
+   * Passive touchmove handler — attached via Renderer2.listen with
+   * { passive: true } in ngAfterViewInit. Using a passive listener
+   * tells iOS Safari that preventDefault() will NOT be called, which
+   * prevents iOS from suppressing the subsequent synthetic click
+   * event — the root cause of button taps failing on iOS.
+   *
+   * Signal updates are deferred via requestAnimationFrame to avoid
+   * triggering Angular change detection during the passive touchmove
+   * event, keeping the main thread free.
+   */
+  private onPassiveTouchMove(e: TouchEvent) {
     if (!this.data.swipeConfig.enabled || this.isStepTransitioning()) {
+      return;
+    }
+    if (e.touches.length !== 1 || !this.isSwiping()) {
       return;
     }
     const touch = e.touches[0];
@@ -1608,16 +1663,30 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
     // Only show swipe feedback when horizontal movement clearly exceeds vertical
     // This prevents the screen from moving left/right during vertical scrolling
     if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
-      this.swipeOffset.set(deltaX);
+      this.isGestureSwipe = true;
+      this.pendingDeltaX = deltaX;
+      // Defer signal write to next animation frame to avoid triggering
+      // Angular change detection during the passive touchmove event
+      if (this.rafId === null) {
+        this.rafId = requestAnimationFrame(() => {
+          this.swipeOffset.set(this.pendingDeltaX);
+          this.rafId = null;
+        });
+      }
     }
   }
 
   @HostListener('touchend')
   onTouchEnd() {
     if (!this.data.swipeConfig.enabled) {
-      this.swipeOffset.set(0);
-      this.isSwiping.set(false);
+      this.cleanupSwipeState();
       return;
+    }
+
+    // Cancel any pending RAF update
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
     }
 
     const delta = this.swipeOffset();
@@ -1629,7 +1698,10 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
     // Determine if swipe should trigger step change
     const shouldNavigate = Math.abs(delta) >= threshold || (velocity >= minVelocity && Math.abs(delta) > 10);
 
-    if (shouldNavigate) {
+    // Only navigate if a genuine horizontal swipe was detected.
+    // isGestureSwipe is only true if touchmove exceeded 10px horizontally,
+    // so taps (where the finger barely moved) never trigger navigation.
+    if (shouldNavigate && this.isGestureSwipe) {
       if (delta < 0 && this.currentStep() < this.steps.length - 1) {
         this.navigateWithAnimation('next');
       } else if (delta > 0 && this.currentStep() > 0) {
@@ -1637,16 +1709,33 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
 
-    // Reset swipe state
-    this.swipeOffset.set(0);
-    this.isSwiping.set(false);
+    // CRITICAL: Clean up all swipe state before any click event fires.
+    // On iOS, the synthetic click fires ~300ms after touchend. If
+    // isSwiping is still true, nextStep()/prevStep() will be blocked.
+    this.cleanupSwipeState();
   }
 
   @HostListener('touchcancel')
   onTouchCancel() {
     // Handle interrupted touch (phone call, browser UI, etc.)
+    this.cleanupSwipeState();
+  }
+
+  /**
+   * Reset all swipe-related state and restore touch-action on the
+   * content element. Called from touchend and touchcancel.
+   */
+  private cleanupSwipeState() {
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
+    this.pendingDeltaX = 0;
     this.swipeOffset.set(0);
     this.isSwiping.set(false);
+    this.isGestureSwipe = false;
+    // Remove the class that prevents iOS touch-action/transform bug
+    this.wizardStepContent?.nativeElement.classList.remove('is-swiping');
   }
 
   // --- Animated step navigation (unified for swipe, buttons, and nav bar) ---
@@ -1654,9 +1743,8 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
   private navigateWithAnimation(direction: 'next' | 'prev') {
     if (this.isStepTransitioning()) return;
 
-    // Reset any active swipe offset before starting transition
-    this.swipeOffset.set(0);
-    this.isSwiping.set(false);
+    // Reset all swipe state before starting transition
+    this.cleanupSwipeState();
 
     const target = direction === 'next' ? this.currentStep() + 1 : this.currentStep() - 1;
     if (target < 0 || target >= this.steps.length) return;
@@ -1747,10 +1835,32 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }, hintDelay);
     }
+
+    // Attach a PASSIVE touchmove listener to the swipe container only.
+    // Using { passive: true } tells iOS that this handler will NOT call
+    // preventDefault(), which prevents iOS from suppressing the subsequent
+    // synthetic click event — the root cause of button taps failing on iOS.
+    // Angular's @HostListener cannot set { passive: true }, so we use
+    // Renderer2.listen which supports the options parameter.
+    if (this.data.swipeConfig.enabled && this.wizardStepContent) {
+      const el = this.wizardStepContent.nativeElement;
+      this.touchMoveUnlisten = this.renderer.listen(
+        el,
+        'touchmove',
+        this.onPassiveTouchMove.bind(this),
+        { passive: true }
+      );
+    }
   }
 
   // Clean up on destroy
   ngOnDestroy() {
-    // Currently no animation frames to clean up, but keep for future use
+    // Cancel any pending animation frame
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
+    // Remove dynamically attached touchmove listener
+    this.touchMoveUnlisten?.();
   }
 }

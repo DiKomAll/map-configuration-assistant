@@ -222,7 +222,7 @@ export const DATA_CONFIG = {
 
   // Swipe gesture configuration
   swipeConfig: {
-    enabled: true,                    // Enable/disable swipe gestures entirely
+    enabled: false,                    // Enable/disable swipe gestures entirely
     threshold: 50,                    // Min px to trigger step change
     animationDuration: 300,           // CSS transition duration in ms
     animationEasing: 'ease-out',      // CSS timing function

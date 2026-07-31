@@ -226,7 +226,7 @@ export const DATA_CONFIG = {
     threshold: 50,                    // Min px to trigger step change
     animationDuration: 300,           // CSS transition duration in ms
     animationEasing: 'ease-out',      // CSS timing function
-    showSwipeHint: true,              // Show swipe hint on first visit
+    showSwipeHint: false,              // Show swipe hint on first visit
     swipeHintDelay: 1000,             // ms before hint appears
     swipeHintDuration: 4000,          // ms before hint auto-dismisses
     preventScroll: true,              // Prevent vertical scroll during horizontal swipe

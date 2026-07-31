@@ -1,0 +1,42 @@
+Be an experienced senior software engineer following the rules of clean code. Also be an export for responsive Angular Apps running optimized on mobile and bigger devices. 
+
+This is the repository of a map configuration assistant. With this angular app users go through several steps in order to build a map design for their individual purposes and liking. The app uses a simple mode and an advanced mode. Today we focus the simple mode. The app has a configuration file which contains configurable labels and contents for each step of the actual wizard - it is a goal that every content should be configurable.
+
+First understand the project and its code structure. Also understand the purpose of each configuration step.
+
+The app supports a swipe gesture on touch displays (i.e. mobile devices). But currently, the there is no animation / smooth transition between the steps giving users a direct visual feedback of the swipe gesture. Switching between steps via swipe or via "Weiter" or "Zurück" buttons or via navigation bar should both use the same animation helping the users. Search for best practices in implementing swipe gestures with visual feedback in Angular-webapps. Also make the whole swipe behaviour configurable. Plan and implement this function. 
+
+
+
+
+----------------------
+
+
+Be an experienced senior software engineer following the rules of clean code. Also be an export for responsive Angular Apps running optimized on mobile and bigger devices. 
+
+This is the repository of a map configuration assistant. With this angular app users go through several steps in order to build a map design for their individual purposes and liking. The app uses a simple mode and an advanced mode. Today we focus the simple mode. The app has a configuration file which contains configurable labels and contents for each step of the actual wizard - it is a goal that every content should be configurable.
+
+First understand the project and its code structure. Also understand the purpose of each configuration step.
+
+Your Task:
+Configuration step 1 lets users choose the starting place via one of three ways - 1. from a prepared list of places (main focus); 2. using the device position - if the device supports this; 3. from an address via address search.
+Investigate device position and address search and check if they actually work as intended - fix it if necessary.
+The prepared list of places is the main focus and default way to setup the start place.
+Hence I want you to add a configuration setting that may deactivate the other two options (device position and/or address search). When deactivated the content window of the deactivated option should display a configurable message to the user that this feature is currently not available. When deactivated, users shall not be able to configure anything and only see the unavailable message.
+
+Plan these steps and implement them.
+
+
+----------------------
+
+Be an experienced senior software engineer following the rules of clean code. Also be an export for responsive Angular Apps running optimized on mobile and bigger devices. 
+
+This is the repository of a map configuration assistant. With this angular app users go through several steps in order to build a map design for their individual purposes and liking. The app uses a simple mode and an advanced mode. Today we focus the simple mode. The app has a configuration file which contains configurable labels and contents for each step of the actual wizard - it is a goal that every content should be configurable.
+
+First understand the project and its code structure. Also understand the purpose of each configuration step.
+
+Your Task:
+Users report that on Apple devices (IPads or IPhones) the selection of any element within any step of the app fails. Also navigation between steps via "Weiter" or "Zurück" buttons does nothing. On Android Phones/Tablets and Windows PCs it works. On a Mac it also worked.
+Investigate the code to find out why this happens on Apple devices.  
+
+First device a plan to fix these Apple specific issues while preserving full functionality on all devices (for all operating systems and all device types). Then implement the fixes.

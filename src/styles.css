@@ -239,28 +239,45 @@ body.default-font    { --font-family-body: Arial, Helvetica, sans-serif; }
    Two-phase: exit (slide out) → step change → enter (slide in)
 ----------------------------------------------------------------- */
 
-/* Step content wrapper — holds transition config */
+/* Step content wrapper — holds transition config.
+   NOTE: will-change is NOT set here. On iOS Safari, will-change: transform
+   on an element with an inline transform creates a compositing layer that
+   captures all touch events and prevents them from reaching child elements
+   (buttons, links, etc.). will-change is only applied during active
+   transitions (see .wizard-step-exit-next/prev and .wizard-step-enter below). */
 .wizard-step-content {
   /* Half-duration: exit phase takes half, enter phase takes half */
   transition: transform var(--wizard-half-duration, 150ms) ease-out,
               opacity var(--wizard-half-duration, 150ms) ease-out;
-  will-change: transform, opacity;
 }
 
-/* During active swipe, remove will-change to prevent iOS from
-   ignoring touch-action when transforms are applied.
-   Toggled by the WizardComponent's touch handlers.               */
+/* During active swipe, disable the touch-action/transform compositing bug.
+   Toggled by the WizardComponent's touch handlers. */
 .wizard-step-content.is-swiping {
   will-change: auto;
   touch-action: none;
 }
 
-/* Exit animations (current step sliding out) */
-.wizard-step-exit-next { transform: translateX(-100%); opacity: 0; }
-.wizard-step-exit-prev { transform: translateX(100%); opacity: 0; }
+/* Exit animations (current step sliding out).
+   will-change is only active here — not on .wizard-step-content itself —
+   to prevent iOS from creating a permanent compositing layer. */
+.wizard-step-exit-next {
+  transform: translateX(-100%);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.wizard-step-exit-prev {
+  transform: translateX(100%);
+  opacity: 0;
+  will-change: transform, opacity;
+}
 
 /* Enter animation (new step sliding in) */
-.wizard-step-enter { transform: translateX(0); opacity: 1; }
+.wizard-step-enter {
+  transform: translateX(0);
+  opacity: 1;
+  will-change: transform, opacity;
+}
 
 /* Swipe hint indicator */
 .wizard-swipe-hint {

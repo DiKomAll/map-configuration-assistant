@@ -1,4 +1,4 @@
-import { Component, signal, computed, OnInit, AfterViewInit, OnDestroy, inject, HostListener, ViewChild, Renderer2, ElementRef } from '@angular/core';
+import { Component, signal, computed, OnInit, AfterViewInit, OnDestroy, inject, ViewChild, Renderer2, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -15,7 +15,13 @@ import { DATA_CONFIG, TEXTS, ProfileType, STEP_INDICATOR_SIZES } from '../../app
   standalone: true,
   imports: [CommonModule, FormsModule, TtsIconComponent, MapPreviewComponent],
   template: `
-    <div class="min-h-screen bg-slate-50 text-slate-800 pb-28 relative overflow-hidden flex flex-col" style="font-family: var(--font-family-body);">
+    <!-- NOTE: overflow-hidden is intentionally removed from this root div.
+         On iOS Safari, overflow:hidden on a container with position:fixed
+         children (the header and footer) causes the fixed elements to
+         capture all touch events and prevent clicks from reaching the
+         main content. The .wizard-step-wrapper inside <main> already has
+         its own overflow-hidden for swipe animation clipping. -->
+    <div class="min-h-screen bg-slate-50 text-slate-800 pb-28 relative flex flex-col" style="font-family: var(--font-family-body);">
       
       <!-- Top Bar -->
       <header class="bg-white sticky top-0 z-40 shadow-sm safe-area-top" role="banner">
@@ -971,16 +977,23 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Reference to the swipe container element for targeted touch listeners */
   @ViewChild('wizardStepContent', { static: false }) wizardStepContent!: ElementRef<HTMLElement>;
 
-  /** Cleanup function for the dynamically attached passive touchmove listener */
+  /** Cleanup functions for the dynamically attached passive touch listeners.
+   *  All touch listeners are attached via Renderer2.listen with { passive: true }
+   *  to prevent iOS Safari from suppressing synthetic click events. They are
+   *  only attached when swipeConfig.enabled is true. */
+  private touchStartUnlisten?: () => void;
   private touchMoveUnlisten?: () => void;
+  private touchEndUnlisten?: () => void;
+  private touchCancelUnlisten?: () => void;
 
   /**
    * True only when a genuine horizontal swipe is detected (deltaX > 10px).
-   * Distinct from isSwiping(): isSwiping is set on every touchstart
-   * and can still be true when iOS fires the synthetic click (~300ms
-   * after touchend). isGestureSwipe is only true for actual horizontal
-   * movement, so taps never trigger it. Used as a guard in
+   * Distinct from isSwiping(): isSwiping is set on every touchstart,
+   * while isGestureSwipe is only set when touchmove exceeds 10px
+   * horizontally — so taps never trigger it. Used as a guard in
    * nextStep()/prevStep() to prevent click + swipe double-navigation.
+   * (The primary defense is isStepTransitioning(), set by navigateWithAnimation
+   * for ~600ms, which covers iOS's ~300ms synthetic click delay.)
    */
   private isGestureSwipe = false;
 
@@ -1499,11 +1512,11 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   nextStep() {
     if (this.currentStep() < this.steps.length - 1 && !this.isStepTransitioning()) {
-      // Prevent double-navigation: if a real horizontal swipe is in progress,
-      // the swipe handler will navigate. Don't also navigate from click.
-      // Note: we use isGestureSwipe (not isSwiping) because isSwiping is set
-      // on every touchstart and can still be true when iOS fires the synthetic
-      // click ~300ms after touchend.
+      // Prevent double-navigation: if a real horizontal swipe triggered
+      // navigation, the synthetic click from that swipe (~300ms after touchend
+      // on iOS) could also fire. isGestureSwipe is only true for genuine
+      // horizontal swipes, while isStepTransitioning() (checked above) covers
+      // the ~600ms animation window.
       if (this.isGestureSwipe) return;
       this.markStepCompleted(this.currentStep());
       this.navigateWithAnimation('next');
@@ -1608,16 +1621,15 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // --- MOBILE OPTIMIZATION: Swipe gesture navigation with visual feedback ---
 
-  @HostListener('touchstart', ['$event'])
   onTouchStart(e: TouchEvent) {
     if (!this.data.swipeConfig.enabled || e.touches.length !== 1 || this.isStepTransitioning()) {
       return;
     }
     // Ignore touches that originate on interactive elements (buttons,
     // inputs, links) — these should not trigger swipe tracking.
-    // Setting isSwiping=true here causes a race condition with the
-    // subsequent click event on iOS (synthetic click fires ~300ms
-    // after touchend), which blocks navigation in nextStep()/prevStep().
+    // Touch listeners are attached as { passive: true } via Renderer2.listen
+    // in ngAfterViewInit (not @HostListener), which prevents iOS Safari from
+    // suppressing the synthetic click event that fires ~300ms after touchend.
     const target = e.target as HTMLElement;
     if (target.closest('button, input, select, textarea, a, [role="button"], .tts-button')) {
       return;
@@ -1676,7 +1688,6 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  @HostListener('touchend')
   onTouchEnd() {
     if (!this.data.swipeConfig.enabled) {
       this.cleanupSwipeState();
@@ -1709,13 +1720,15 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
 
-    // CRITICAL: Clean up all swipe state before any click event fires.
-    // On iOS, the synthetic click fires ~300ms after touchend. If
-    // isSwiping is still true, nextStep()/prevStep() will be blocked.
+    // Clean up all swipe state. The synthetic click fires ~300ms after
+    // touchend on iOS; thanks to passive listeners (see ngAfterViewInit),
+    // that click is NOT suppressed. If a swipe triggered navigation,
+    // isStepTransitioning() (set by navigateWithAnimation) guards
+    // nextStep()/prevStep() against double-navigation within the ~600ms
+    // transition window.
     this.cleanupSwipeState();
   }
 
-  @HostListener('touchcancel')
   onTouchCancel() {
     // Handle interrupted touch (phone call, browser UI, etc.)
     this.cleanupSwipeState();
@@ -1804,7 +1817,8 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
   getSwipeTransform(): string {
     if (this.stepTransitionState() !== 'idle') return '';
     const offset = this.swipeOffset();
-    if (offset === 0) return 'translateX(0)';
+    if (offset === 0) return ''; // No transform when not swiping — prevents iOS
+    // compositing layer bug where transform + will-change captures all touches
     // Apply a slight resistance factor for natural feel
     const resistance = 0.7;
     return `translateX(${offset * resistance}px)`;
@@ -1836,19 +1850,37 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
       }, hintDelay);
     }
 
-    // Attach a PASSIVE touchmove listener to the swipe container only.
-    // Using { passive: true } tells iOS that this handler will NOT call
-    // preventDefault(), which prevents iOS from suppressing the subsequent
-    // synthetic click event — the root cause of button taps failing on iOS.
-    // Angular's @HostListener cannot set { passive: true }, so we use
-    // Renderer2.listen which supports the options parameter.
+    // Attach PASSIVE touch event listeners ONLY when swipe is enabled.
+    //
+    // CRITICAL iOS FIX: Angular's @HostListener creates non-passive listeners
+    // that CANNOT be marked as passive. On iOS Safari, any non-passive
+    // touchstart/touchend listener on an element causes iOS to suppress
+    // the synthetic click event (~300ms tap delay), which broke ALL button
+    // taps and selections on iPhone/iPad — even when swipe gestures were
+    // disabled in the config.
+    //
+    // By using Renderer2.listen with { passive: true } and conditionally
+    // attaching only when swipeConfig.enabled is true, we ensure:
+    // 1. When swipe is DISABLED (default): zero touch listeners attached →
+    //    no iOS click suppression, all taps work on all devices.
+    // 2. When swipe is ENABLED: passive listeners allow real-time swipe
+    //    feedback without iOS click suppression.
+    //
+    // All listeners are attached to wizardStepContent (the .wizard-step-content
+    // div), NOT the host element, so footer/header buttons are never affected.
     if (this.data.swipeConfig.enabled && this.wizardStepContent) {
       const el = this.wizardStepContent.nativeElement;
+      this.touchStartUnlisten = this.renderer.listen(
+        el, 'touchstart', this.onTouchStart.bind(this), { passive: true }
+      );
       this.touchMoveUnlisten = this.renderer.listen(
-        el,
-        'touchmove',
-        this.onPassiveTouchMove.bind(this),
-        { passive: true }
+        el, 'touchmove', this.onPassiveTouchMove.bind(this), { passive: true }
+      );
+      this.touchEndUnlisten = this.renderer.listen(
+        el, 'touchend', this.onTouchEnd.bind(this), { passive: true }
+      );
+      this.touchCancelUnlisten = this.renderer.listen(
+        el, 'touchcancel', this.onTouchCancel.bind(this), { passive: true }
       );
     }
   }
@@ -1860,7 +1892,10 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
       cancelAnimationFrame(this.rafId);
       this.rafId = null;
     }
-    // Remove dynamically attached touchmove listener
+    // Remove all dynamically attached passive touch listeners
+    this.touchStartUnlisten?.();
     this.touchMoveUnlisten?.();
+    this.touchEndUnlisten?.();
+    this.touchCancelUnlisten?.();
   }
 }

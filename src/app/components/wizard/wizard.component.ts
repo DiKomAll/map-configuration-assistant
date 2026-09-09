@@ -1570,6 +1570,7 @@ export class WizardComponent implements OnInit, AfterViewInit, OnDestroy {
       params.set('lat', String(this.config.lat));
       params.set('lon', String(this.config.lon));
       params.set('zoom', '18');
+      params.set('placeName', this.config.area);
     }
 
     // Map style & view

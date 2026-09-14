@@ -527,8 +527,8 @@ import { DATA_CONFIG, TEXTS, ProfileType, STEP_INDICATOR_SIZES } from '../../app
                         class="w-full relative rounded-xl overflow-hidden border-2 text-left transition-all focus:outline-none focus:ring-4 focus:ring-emerald-500/50"
                         [class.border-emerald-500]="config.landmarks.includes(key)"
                         [class.border-slate-100]="!config.landmarks.includes(key)"
-                        [ngClass]="{'h-32': true, 'md:h-44': true}">
-                        <div class="absolute inset-0 z-0 bg-contain bg-center bg-no-repeat bg-slate-50 transition-transform duration-700 group-hover:scale-110" [style.background-image]="'url(' + getLandmarkData(key).image + ')'">
+                        [ngClass]="{'aspect-square': true}">
+                        <div class="absolute inset-2 z-0 bg-contain bg-center bg-no-repeat bg-slate-50 transition-transform duration-700 group-hover:scale-110" [style.background-image]="'url(' + getLandmarkData(key).image + ')'">
                           <div class="absolute inset-0 transition-colors duration-300"
                                [ngClass]="{'bg-emerald-600/40': config.landmarks.includes(key), 'bg-black/20': !config.landmarks.includes(key)}">
                           </div>

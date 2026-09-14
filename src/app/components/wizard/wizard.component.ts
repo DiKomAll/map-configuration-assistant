@@ -521,7 +521,7 @@ import { DATA_CONFIG, TEXTS, ProfileType, STEP_INDICATOR_SIZES } from '../../app
 
                 <!-- Expandable Content -->
                 <div *ngIf="isCategoryExpanded(cat.id)" class="px-3 pb-4 animate-fade-in">
-                  <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-3">
                     <div *ngFor="let key of cat.items" class="relative group">
                       <button (click)="toggleLandmark(key)"
                         class="w-full relative rounded-xl overflow-hidden border-2 text-left transition-all focus:outline-none focus:ring-4 focus:ring-emerald-500/50"

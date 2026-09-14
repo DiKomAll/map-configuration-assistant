@@ -477,9 +477,9 @@ import { DATA_CONFIG, TEXTS, ProfileType, STEP_INDICATOR_SIZES } from '../../app
             </div>
 
             <!-- SIMPLE MODE ACCORDION CATEGORIZED VIEW -->
-            <div *ngIf="profile() === 'simple'" class="space-y-0">
+            <div *ngIf="profile() === 'simple'" class="space-y-3">
               <div *ngFor="let cat of data.simpleLandmarkCategories"
-                   class="bg-white rounded-[2rem] border-2 border-slate-200 shadow-xl overflow-hidden mb-3">
+                   class="bg-white rounded-[2rem] border-2 border-slate-200 shadow-xl overflow-hidden">
                 
                 <!-- Category Header - Clickable Toggle -->
                 <button (click)="toggleLandmarkCategoryExpansion(cat.id)"
@@ -511,10 +511,10 @@ import { DATA_CONFIG, TEXTS, ProfileType, STEP_INDICATOR_SIZES } from '../../app
                       {{ isCategoryFullySelected(cat.id) ? t().landmarks.deselectAll : t().landmarks.selectAll }}
                     </button>
                     <svg xmlns="http://www.w3.org/2000/svg"
-                         class="h-4 w-4 text-slate-400 transition-transform duration-200"
+                         class="h-6 w-6 text-slate-500 transition-transform duration-200"
                          [class.rotate-180]="isCategoryExpanded(cat.id)"
                          fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7" />
                     </svg>
                   </div>
                 </button>
@@ -528,7 +528,7 @@ import { DATA_CONFIG, TEXTS, ProfileType, STEP_INDICATOR_SIZES } from '../../app
                         [class.border-emerald-500]="config.landmarks.includes(key)"
                         [class.border-slate-100]="!config.landmarks.includes(key)"
                         [ngClass]="{'h-32': true, 'md:h-44': true}">
-                        <div class="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" [style.background-image]="'url(' + getLandmarkData(key).image + ')'">
+                        <div class="absolute inset-0 z-0 bg-contain bg-center bg-no-repeat bg-slate-50 transition-transform duration-700 group-hover:scale-110" [style.background-image]="'url(' + getLandmarkData(key).image + ')'">
                           <div class="absolute inset-0 transition-colors duration-300"
                                [ngClass]="{'bg-emerald-600/40': config.landmarks.includes(key), 'bg-black/20': !config.landmarks.includes(key)}">
                           </div>

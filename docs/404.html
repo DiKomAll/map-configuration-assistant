@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Redirecting…</title>
+  <!-- GitHub Pages 404 fallback for Angular client-side routing.
+       When a user refreshes on a client-side route (e.g. /wizard),
+       GitHub Pages can't find a physical file there and serves this
+       404.html instead. The script below strips the route segment
+       and redirects to the app's base path so it reloads fresh. -->
+  <script>
+    (function () {
+      // On GitHub Pages the path looks like /project-name/wizard.
+      // Keep only the first segment (project name) and redirect there.
+      var segments = window.location.pathname.split('/').filter(Boolean);
+      var basePath = segments.length > 1 ? '/' + segments[0] + '/' : '/';
+      window.location.replace(basePath);
+    })();
+  </script>
+</head>
+<body>
+</body>
+</html>

@@ -504,13 +504,15 @@ import { DATA_CONFIG, TEXTS, ProfileType, STEP_INDICATOR_SIZES } from '../../app
                   <!-- Expand/Collapse Indicator: compact checkbox on mobile, full button on sm+ -->
                   <div class="flex items-center justify-end gap-2 shrink-0 mt-2 sm:mt-0">
                     <!-- Mobile only: small select-all checkbox replaces the bulky button -->
-                    <input (change)="toggleLandmarkCategory(cat.id); $event.stopPropagation()"
+                    <input (click)="$event.stopPropagation()"
+                      (change)="toggleLandmarkCategory(cat.id); $event.stopPropagation()"
                       [checked]="isCategoryFullySelected(cat.id)"
                       type="checkbox"
                       class="sm:hidden w-5 h-5 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500"
                       [attr.aria-label]="isCategoryFullySelected(cat.id) ? t().landmarks.deselectAll : t().landmarks.selectAll" />
                     <!-- sm+ only: select/deselect all button -->
-                    <button class="hidden sm:inline-block px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 border-2"
+                    <button (click)="toggleLandmarkCategory(cat.id); $event.stopPropagation()"
+                      class="hidden sm:inline-block px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 border-2"
                       [attr.aria-label]="isCategoryFullySelected(cat.id) ? t().landmarks.deselectAll : t().landmarks.selectAll"
                       [class.bg-emerald-600]="isCategoryFullySelected(cat.id)"
                       [class.text-white]="isCategoryFullySelected(cat.id)"

@@ -482,8 +482,11 @@ import { DATA_CONFIG, TEXTS, ProfileType, STEP_INDICATOR_SIZES } from '../../app
                    class="bg-white rounded-[2rem] border-2 border-slate-200 shadow-xl overflow-hidden">
                 
                 <!-- Category Header - Clickable Toggle -->
+                <!-- MOBILE: Stacked vertical layout (name on top, select-all + chevron below)
+                     to prevent category name truncation on small screens with large fonts.
+                     On sm+ screens: original horizontal layout with full-width "Alle auswählen" button. -->
                 <button (click)="toggleLandmarkCategoryExpansion(cat.id)"
-                  class="w-full p-4 flex items-center justify-between gap-3 hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                  class="w-full p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between sm:gap-3 hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500">
                   <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-emerald-600 shadow-md border border-emerald-100 shrink-0">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="cat.icon" /></svg>
@@ -498,10 +501,17 @@ import { DATA_CONFIG, TEXTS, ProfileType, STEP_INDICATOR_SIZES } from '../../app
                     </div>
                   </div>
 
-                  <!-- Expand/Collapse Indicator -->
-                  <div class="flex items-center gap-2 shrink-0">
-                    <button (click)="toggleLandmarkCategory(cat.id); $event.stopPropagation()"
-                      class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 border-2"
+                  <!-- Expand/Collapse Indicator: compact checkbox on mobile, full button on sm+ -->
+                  <div class="flex items-center justify-end gap-2 shrink-0 mt-2 sm:mt-0">
+                    <!-- Mobile only: small select-all checkbox replaces the bulky button -->
+                    <input (change)="toggleLandmarkCategory(cat.id); $event.stopPropagation()"
+                      [checked]="isCategoryFullySelected(cat.id)"
+                      type="checkbox"
+                      class="sm:hidden w-5 h-5 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500"
+                      [attr.aria-label]="isCategoryFullySelected(cat.id) ? t().landmarks.deselectAll : t().landmarks.selectAll" />
+                    <!-- sm+ only: select/deselect all button -->
+                    <button class="hidden sm:inline-block px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 border-2"
+                      [attr.aria-label]="isCategoryFullySelected(cat.id) ? t().landmarks.deselectAll : t().landmarks.selectAll"
                       [class.bg-emerald-600]="isCategoryFullySelected(cat.id)"
                       [class.text-white]="isCategoryFullySelected(cat.id)"
                       [class.border-emerald-700]="isCategoryFullySelected(cat.id)"

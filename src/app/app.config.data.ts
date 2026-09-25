@@ -204,7 +204,7 @@ export const DATA_CONFIG = {
       normalUpper: 1.1
     }
   },
-  externalAppUrl: "https://kommonitor.fbg-hsbo.de/#!/",
+  externalAppUrl: "https://kommonitor.fbg-hsbo.de/dikomall-map-brewer/#!/",
   // externalAppUrl: "http://localhost:8000/#!/",
   defaultAreaTab: 'selection',
 
